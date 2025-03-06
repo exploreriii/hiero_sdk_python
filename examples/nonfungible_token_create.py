@@ -8,7 +8,8 @@ from hiero_sdk_python import (
     PrivateKey,
     TokenCreateTransaction,
     Network,
-    TokenType
+    TokenType,
+    SupplyType
 )
 
 load_dotenv()
@@ -21,18 +22,17 @@ def create_token():
     operator_key = PrivateKey.from_string(os.getenv('OPERATOR_KEY'))
     admin_key = PrivateKey.from_string(os.getenv('ADMIN_KEY'))
     supply_key = PrivateKey.from_string(os.getenv('ADMIN_KEY')) #Optional
-
     freeze_key = PrivateKey.from_string(os.getenv('FREEZE_KEY')) #Optional
 
     client.set_operator(operator_id, operator_key)
 
     transaction = (
         TokenCreateTransaction()
-        .set_token_name("MyToken")
-        .set_token_symbol("MTK")
+        .set_token_name("MyNFTToken")
+        .set_token_symbol("MTKNFT")
         .set_decimals(2)
         .set_initial_supply(10)
-        .set_token_type(TokenType.FUNGIBLE_COMMON)
+        .set_token_type(TokenType.NON_FUNGIBLE_COMMON)
         .set_supply_type(SupplyType.FINITE)
         .set_treasury_account_id(operator_id)
         .set_admin_key(admin_key)

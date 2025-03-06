@@ -2,6 +2,8 @@ from hiero_sdk_python.transaction.transaction import Transaction
 from hiero_sdk_python.hapi.services import token_create_pb2, basic_types_pb2
 from hiero_sdk_python.response_code import ResponseCode
 from hiero_sdk_python.tokens.token_type import TokenType
+from hiero_sdk_python.tokens.supply_type import SupplyType
+
 from cryptography.hazmat.primitives import serialization
 
 class TokenCreateTransaction(Transaction):
@@ -15,8 +17,19 @@ class TokenCreateTransaction(Transaction):
     to build and execute a token creation transaction.
     """
 
-    def __init__(self, token_name=None, token_symbol=None, decimals=None, initial_supply=None, token_type=None,
-                 treasury_account_id=None, admin_key=None, supply_key=None, freeze_key=None):
+    def __init__(
+            self, 
+            token_name=None, 
+            token_symbol=None, 
+            decimals=None, 
+            initial_supply=None, 
+            token_type=None,
+            supply_type=None,
+            max_supply = None,
+            treasury_account_id=None, 
+            admin_key=None, 
+            supply_key=None, 
+            freeze_key=None):
         """
         Initializes a new TokenCreateTransaction instance with optional keyword arguments.
 
@@ -26,10 +39,11 @@ class TokenCreateTransaction(Transaction):
             decimals (int, optional): The number of decimals for the token.
             initial_supply (int, optional): The initial supply of the token.
             token_type (int or TokenType, optional): The type of the token, defaulting to fungible.
+            max_supply (int, optional): The total possible supply of the token, if finite.
+            supply_type (int oy SupplyType, optional): The type of the supply, defauling to infinite.
             treasury_account_id (AccountId, optional): The treasury account ID.
             admin_key (PrivateKey, optional): The admin key for the token.
             supply_key (PrivateKey, optional): The supply key for the token.
-
             freeze_key (PrivateKey, optional): The freeze key for the token.
         """
         super().__init__()
@@ -38,6 +52,8 @@ class TokenCreateTransaction(Transaction):
         self.decimals = decimals
         self.initial_supply = initial_supply
         self.token_type = token_type
+        self.supply_type = supply_type
+        self.max_supply = max_supply
         self.treasury_account_id = treasury_account_id
         self.admin_key = admin_key
         self.supply_key = supply_key
@@ -68,6 +84,16 @@ class TokenCreateTransaction(Transaction):
     def set_token_type(self, token_type):
         self._require_not_frozen()
         self.token_type = token_type
+        return self
+    
+    def set_supply_type(self, supply_type):
+        self._require_not_frozen()
+        self.supply_type = supply_type
+        return self
+
+    def set_max_supply(self, max_supply):
+        self._require_not_frozen()
+        self.max_supply = max_supply
         return self
 
     def set_treasury_account_id(self, account_id):
@@ -132,6 +158,24 @@ class TokenCreateTransaction(Transaction):
             token_type_value = self.token_type.value
         else:
             token_type_value = self.token_type 
+        
+        if self.supply_type is None:
+            # Default to INFINITE
+            supply_type_value = 1
+        elif isinstance(self.supply_type, SupplyType):
+            supply_type_value = self.supply_type.value
+        else:
+            supply_type_value = int(self.supply_type)
+
+        if supply_type_value == 0:  # FINITE
+            if self.max_supply is None:
+                raise ValueError("For a finite token, you must set maxSupply.")
+            max_supply_value = self.max_supply
+        else:  # INFINITE
+            if self.max_supply is not None:
+                raise ValueError("Cannot set maxSupply on an infinite token.")
+            max_supply_value = None
+
 
         token_create_body = token_create_pb2.TokenCreateTransactionBody(
             name=self.token_name,
@@ -139,12 +183,17 @@ class TokenCreateTransaction(Transaction):
             decimals=self.decimals,
             initialSupply=self.initial_supply,
             tokenType=token_type_value,
+            supplyType=supply_type_value,
             treasury=self.treasury_account_id.to_proto(),
             adminKey=admin_key_proto,
             supplyKey=supply_key_proto,
             freezeKey=freeze_key_proto
 
         )
+
+        # If finite, set maxSupply
+        if supply_type_value == 0:  # FINITE
+            token_create_body.maxSupply = self.max_supply
         
         transaction_body = self.build_base_transaction_body()
         transaction_body.tokenCreation.CopyFrom(token_create_body)
