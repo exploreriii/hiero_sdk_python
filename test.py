@@ -74,6 +74,7 @@ def load_operator_credentials():
         operator_key = PrivateKey.from_string(os.getenv('OPERATOR_KEY'))
     except Exception as e:
         print(f"Error parsing operator credentials: {e}")
+        print(traceback.format_exc())
         sys.exit(1)
     return operator_id, operator_key
 
@@ -101,6 +102,7 @@ def create_new_account(client, initial_balance=100000000):
             raise Exception("AccountID not found in receipt. Account may not have been created.")
     except Exception as e:
         print(f"Account creation failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     return new_account_id, new_account_private_key
@@ -146,6 +148,7 @@ def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Fungible Token creation failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if not receipt.tokenId:
