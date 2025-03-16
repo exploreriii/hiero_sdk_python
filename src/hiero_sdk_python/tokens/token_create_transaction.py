@@ -338,7 +338,7 @@ class TokenCreateTransaction(Transaction):
             error_message = ResponseCode.get_name(error_code)
             raise Exception(f"Error during transaction submission: {error_code} ({error_message})")
 
-        return self._get_receipt(client, response.transactionID)
+        receipt = self.get_receipt(client)
 
     def _get_receipt(self, client, transaction_id):
         """
