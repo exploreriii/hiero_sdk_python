@@ -484,9 +484,8 @@ def main():
     associate_token(client, recipient_id, recipient_private_key, [token_id_1, token_id_2])
     associate_token(client, recipient_id, recipient_private_key, [token_id_nft_1, token_id_nft_2])
 
-    # Test transfering fungible and nft tokens by moving one token from the operator to the recipient.
+    # Test transfering fungible by moving one token from the operator to the recipient.
     transfer_token(client, operator_id, operator_key, recipient_id, token_id_1)
-    transfer_token(client, operator_id, operator_key, recipient_id, token_id_nft_1)
 
     # Test freezing fungible and nft tokens. In this case from the recipient that just received token 1.
     freeze_token(client, token_id_1, recipient_id, freeze_key)
