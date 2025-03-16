@@ -21,6 +21,7 @@ Usage:
 import os
 import sys
 from dotenv import load_dotenv
+import traceback
 
 # Client and network-related imports
 from hiero_sdk_python.client.network import Network
@@ -50,7 +51,6 @@ from hiero_sdk_python.tokens.token_freeze_transaction import TokenFreezeTransact
 from hiero_sdk_python.transaction.transfer_transaction import TransferTransaction
 
 # Topic related imports
-# from hiero_sdk_python.consensus.topic_id import TopicId #Check
 from hiero_sdk_python.consensus.topic_create_transaction import TopicCreateTransaction
 from hiero_sdk_python.consensus.topic_message_submit_transaction import (
     TopicMessageSubmitTransaction
@@ -112,7 +112,7 @@ def query_balance(client, account_id):
     print(f"Account {account_id} balance: {balance.hbars}")
     return balance
 
-def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key): #token params and keys?
+def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key):
     """Tests creation of a fungible token"""
 
     # Creating TokenParams
@@ -140,9 +140,7 @@ def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key
 
     # Sign the transaction
     transaction.sign(client.operator_private_key) # Required to sign with operator (treasury)
-    # Sign with admin key only if it's provided
-    if admin_key:
-        transaction.sign(admin_key)
+    transaction.sign(client.admin_key) # Required to sign with admin key since it exists
 
     try:
         receipt = transaction.execute(client)
@@ -186,14 +184,14 @@ def create_nft_token(client, operator_id, admin_key, supply_key, freeze_key):
 
     # Sign the transaction
     transaction.sign(client.operator_private_key) # Required to sign with operator (treasury)
-    # Sign with admin key only if it's provided
-    if admin_key:
-        transaction.sign(admin_key)
+    transaction.sign(client.admin_key) # Required to sign with admin key since it exists
+
         
     try:
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Non-Fungible Token creation failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if not receipt.tokenId:
@@ -222,6 +220,7 @@ def associate_token(client, recipient_id, recipient_private_key, token_ids):
         print("Token association successful.")
     except Exception as e:
         print(f"Token association failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def dissociate_token(client, recipient_id, recipient_private_key, token_id):
@@ -241,6 +240,7 @@ def dissociate_token(client, recipient_id, recipient_private_key, token_id):
         print("Token dissociation successful.")
     except Exception as e:
         print(f"Token dissociation failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def transfer_token(client, source_id, source_private_key, recipient_id, token_id):
@@ -261,6 +261,7 @@ def transfer_token(client, source_id, source_private_key, recipient_id, token_id
         print("Token transfer successful.")
     except Exception as e:
         print(f"Token transfer failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 
@@ -279,6 +280,7 @@ def delete_token(client, token_id, admin_key):
         print("Token deletion successful.")
     except Exception as e:
         print(f"Token deletion failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def freeze_token(client, token_id, account_id, freeze_key):
@@ -296,6 +298,7 @@ def freeze_token(client, token_id, account_id, freeze_key):
         print("Token freeze successful.")
     except Exception as e:
         print(f"Token freeze failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def mint_fungible_token(client, token_id, supply_key, amount=2000):
@@ -313,6 +316,7 @@ def mint_fungible_token(client, token_id, supply_key, amount=2000):
         print("Token minting successful.")
     except Exception as e:
         print(f"Token minting failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def mint_nft_token(client, token_id, supply_key, metadata=[b"Token A"]):
@@ -330,6 +334,7 @@ def mint_nft_token(client, token_id, supply_key, metadata=[b"Token A"]):
         print("Token minting successful.")
     except Exception as e:
         print(f"Token minting failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
 def create_topic(client):
@@ -346,6 +351,7 @@ def create_topic(client):
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Topic creation failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if not receipt.topicId:
@@ -371,6 +377,7 @@ def submit_message(client, topic_id):
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Message submission failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if receipt.status != ResponseCode.SUCCESS:
@@ -394,6 +401,7 @@ def update_topic(client, topic_id):
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Topic update failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if receipt.status != ResponseCode.SUCCESS:
@@ -413,6 +421,7 @@ def delete_topic(client, topic_id):
         receipt = transaction.execute(client)
     except Exception as e:
         print(f"Topic deletion failed: {str(e)}")
+        print(traceback.format_exc())
         sys.exit(1)
 
     if receipt.status != ResponseCode.SUCCESS:
@@ -429,6 +438,7 @@ def query_topic_info(client, topic_id):
         print(f"Topic Info: {topic_info}")
     except Exception as e:
         print(f"Failed to retrieve topic info: {str(e)}")
+        print(traceback.format_exc())
 
 
 def main():
