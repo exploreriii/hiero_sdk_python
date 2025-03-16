@@ -140,7 +140,7 @@ def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key
 
     # Sign the transaction
     transaction.sign(client.operator_private_key) # Required to sign with operator (treasury)
-    transaction.sign(client.admin_key) # Required to sign with admin key since it exists
+    transaction.sign(admin_key) # Required to sign with admin key since it exists
 
     try:
         receipt = transaction.execute(client)
@@ -184,7 +184,7 @@ def create_nft_token(client, operator_id, admin_key, supply_key, freeze_key):
 
     # Sign the transaction
     transaction.sign(client.operator_private_key) # Required to sign with operator (treasury)
-    transaction.sign(client.admin_key) # Required to sign with admin key since it exists
+    transaction.sign(admin_key) # Required to sign with admin key since it exists
 
         
     try:
