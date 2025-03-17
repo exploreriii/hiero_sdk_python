@@ -455,8 +455,8 @@ def test_overwrite_defaults(mock_account_ids):
     token_tx = TokenCreateTransaction()
 
     # Assert the internal defaults.
-    assert token_tx._token_params.token_name == ""
-    assert token_tx._token_params.token_symbol == ""
+    assert token_tx._token_params.token_name == "" #Empty string
+    assert token_tx._token_params.token_symbol == "" #Empty string
     assert token_tx._token_params.treasury_account_id == AccountId(0, 0, 1)
     assert token_tx._token_params.decimals == 0
     assert token_tx._token_params.initial_supply == 0
@@ -520,8 +520,8 @@ def test_transaction_freeze_prevents_modification(mock_account_ids):
     transaction = TokenCreateTransaction()
 
     # Set some initial parameters
-    transaction.set_token_name("InitialToken")
-    transaction.set_token_symbol("ITK")
+    transaction.set_token_name("MyTestToken")
+    transaction.set_token_symbol("TEST")
     transaction.set_initial_supply(1000)
     transaction.set_decimals(2)
     transaction.set_treasury_account_id(treasury_account_id)
@@ -546,8 +546,8 @@ def test_transaction_freeze_prevents_modification(mock_account_ids):
         transaction.set_token_type(TokenType.NON_FUNGIBLE_UNIQUE) # Should have defaulted to this
 
     # Confirm that values remain unchanged after freeze attempt
-    assert transaction._token_params.token_name == "InitialToken"
-    assert transaction._token_params.token_symbol == "ITK"    
+    assert transaction._token_params.token_name == "MyTestToken"
+    assert transaction._token_params.token_symbol == "TEST"    
     assert transaction._token_params.initial_supply == 1000
     assert transaction._token_params.decimals == 2
     assert transaction._token_params.treasury_account_id == treasury_account_id
