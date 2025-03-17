@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime, UTC
+from datetime import datetime
 from dotenv import load_dotenv
 
 from hiero_sdk_python import Network, Client, TopicMessageQuery
@@ -19,7 +19,7 @@ def query_topic_messages():
 
     query = TopicMessageQuery(
         topic_id=os.getenv('TOPIC_ID'),
-        start_time=datetime.now(datetime.UTC),
+        start_time=datetime.utcnow(),
         limit=0,
         chunking_enabled=True
     )

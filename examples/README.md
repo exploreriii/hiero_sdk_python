@@ -481,7 +481,7 @@ query.subscribe(client)
 query = (
     TopicMessageQuery()
     .set_topic_id(topic_id) 
-    .set_start_time(datetime.utcnow()) 
+    .set_start_time(datetime.utcnow())
     .set_chunking_enabled(True) 
     .set_limit(0) 
     )
