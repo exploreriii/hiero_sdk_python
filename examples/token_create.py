@@ -46,6 +46,7 @@ def create_token():
     admin_key = PrivateKey.from_string(os.getenv('ADMIN_KEY'))# Optional
     supply_key = PrivateKey.from_string(os.getenv('SUPPLY_KEY')) # Optional
     freeze_key = PrivateKey.from_string(os.getenv('FREEZE_KEY')) # Optional
+    pause_key = PrivateKey.from_string(os.getenv('PAUSE_KEY')) # Optional
 
     # Set the operator for the client
     client.set_operator(operator_id, operator_key)
@@ -63,6 +64,7 @@ def create_token():
         .set_admin_key(admin_key) # Optional
         .set_supply_key(supply_key) # Optional
         .set_freeze_key(freeze_key) # Optional
+        .set_pause_key(pause_key)  # Optional
         .freeze_with(client) # Freeze the transaction. Returns self so we can sign.
         .sign(operator_key) # Required signature of treasury account
         .sign(admin_key) if admin_key else None  # Only sign if admin_key is present. No need to sign with the supply or freeze keys to create the token.

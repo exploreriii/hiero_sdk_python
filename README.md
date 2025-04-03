@@ -97,8 +97,9 @@ Create a .env file in the root of your project with the following (replace with 
 OPERATOR_ID=0.0.1234xx
 OPERATOR_KEY=302e020100300506032b657004220420...
 ADMIN_KEY=302a300506032b65700321009308ecfdf...
-SUPPLY_KEY =302a300506032b6570032100c5e4af5..."
+SUPPLY_KEY =302a300506032b6570032100c5e4af5...
 FREEZE_KEY=302a300306072b65700321009308ecfdf...
+PAUSE_KEY=302a300306072b6570032100af12b3c4d...
 RECIPIENT_ID=0.0.789xx
 TOKEN_ID=0.0.100xx
 TOPIC_ID=0.0.200xx
@@ -134,6 +135,7 @@ Token dissociation successful.
 Token minting successful.
 Token transfer successful.
 Token freeze successful.
+Token pause succesful.
 Token deletion successful.
 Topic creation successful.
 Topic Message submitted.

@@ -46,6 +46,7 @@ from hiero_sdk_python.tokens.token_dissociate_transaction import TokenDissociate
 from hiero_sdk_python.tokens.token_mint_transaction import TokenMintTransaction
 from hiero_sdk_python.tokens.token_delete_transaction import TokenDeleteTransaction
 from hiero_sdk_python.tokens.token_freeze_transaction import TokenFreezeTransaction
+from hiero_sdk_python.tokens.token_pause_transaction import TokenPauseTransaction
 
 # Transaction-related imports
 from hiero_sdk_python.transaction.transfer_transaction import TransferTransaction
@@ -114,7 +115,7 @@ def query_balance(client, account_id):
     print(f"Account {account_id} balance: {balance.hbars}")
     return balance
 
-def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key):
+def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key):
     """Tests creation of a fungible token"""
 
     # Creating TokenParams
@@ -131,7 +132,8 @@ def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key
     token_keys = TokenKeys(
         admin_key=admin_key,
         supply_key=supply_key,
-        freeze_key=freeze_key
+        freeze_key=freeze_key,
+        pause_key=pause_key
     )
 
     # Creating the transaction using TokenParams and TokenKeys
@@ -159,7 +161,7 @@ def create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key
     print(f"Fungible Token creation successful. Token ID: {token_id}")
     return token_id
 
-def create_nft_token(client, operator_id, admin_key, supply_key, freeze_key):
+def create_nft_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key):
     """Tests creation of a non-fungible unique token"""
 
     # Creating TokenParams
@@ -176,7 +178,8 @@ def create_nft_token(client, operator_id, admin_key, supply_key, freeze_key):
     token_keys = TokenKeys(
         admin_key=admin_key,
         supply_key=supply_key,
-        freeze_key=freeze_key
+        freeze_key=freeze_key,
+        pause_key=pause_key
     )
 
     # Creating the transaction using TokenParams and TokenKeys
@@ -267,6 +270,27 @@ def transfer_token(client, source_id, source_private_key, recipient_id, token_id
         print(traceback.format_exc())
         sys.exit(1)
 
+def pause_token(client, token_id, pause_key):
+    """
+    Tests pausing a token using a valid pause key.
+    """
+    # 1) Build the transaction
+    transaction = TokenPauseTransaction(token_id=token_id)
+    
+    transaction.freeze_with(client)
+    transaction.sign(client.operator_private_key)
+    transaction.sign(pause_key)
+
+    try:
+        receipt = transaction.execute(client)
+        if receipt.status != ResponseCode.SUCCESS:
+            status_message = ResponseCode.get_name(receipt.status)
+            raise Exception(f"Token pause failed with status: {status_message}")
+        print("Token pause successful.")
+    except Exception as e:
+        print(f"Token pause failed: {str(e)}")
+        print(traceback.format_exc())
+        sys.exit(1)
 
 def delete_token(client, token_id, admin_key):
     """Tests token deletion"""
@@ -454,6 +478,7 @@ def main():
     admin_key = PrivateKey.generate()
     supply_key = PrivateKey.generate()
     freeze_key = PrivateKey.generate()
+    pause_key = PrivateKey.generate()
 
     # Set up the client for the given network
     network_type = os.getenv('NETWORK')
@@ -468,12 +493,12 @@ def main():
     query_balance(client, recipient_id)
 
     # Test creating a fungible token. Two are created in this case to enable subsequent operations.
-    token_id_1 = create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key)
-    token_id_2 = create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key)
+    token_id_1 = create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key)
+    token_id_2 = create_fungible_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key)
 
     # Test creating an NFT token. Two are created in this case to enable subsequent operations.
-    token_id_nft_1 = create_nft_token(client, operator_id, admin_key, supply_key, freeze_key)
-    token_id_nft_2 = create_nft_token(client, operator_id, admin_key, supply_key, freeze_key)
+    token_id_nft_1 = create_nft_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key)
+    token_id_nft_2 = create_nft_token(client, operator_id, admin_key, supply_key, freeze_key, pause_key)
 
     # Test the minting of both a fungible and nft token. One of each is sufficient.
     mint_fungible_token(client, token_id_1, supply_key)
@@ -494,6 +519,10 @@ def main():
     # Test dissociating a fungible and nft token. In this case the tokens that were not transferred or frozen.
     dissociate_token(client, recipient_id, recipient_private_key, [token_id_2])
     dissociate_token(client, recipient_id, recipient_private_key, [token_id_nft_2])
+
+    # Test pausing a fungible and nft token.
+    pause_token(client, token_id_1, pause_key)
+    pause_token(client, token_id_nft_1, pause_key)
 
     # Test deleting a fungible and nft token. In this case, the token 1 that was transferred and frozen.
     delete_token(client, token_id_1, admin_key)

@@ -20,6 +20,7 @@ You can choose either syntax or even mix both styles in your projects.
   - [Associating a Token](#associating-a-token)
   - [Dissociating a Token](#dissociating-a-token)
   - [Transferring Tokens](#transferring-tokens)
+  - [Pausing a Token](#pausing-a-token)
   - [Deleting a Token](#deleting-a-token)
   - [Freezing a Token](#freezing-a-token)
 - [HBAR Transactions](#hbar-transactions)
@@ -253,6 +254,31 @@ transaction.execute(client)
         .sign(operator_key)
     )
 
+    transaction.execute(client)
+```
+
+### Pausing a Token
+
+#### Pythonic Syntax:
+```
+transaction = TokenPauseTransaction(
+    token_id=token_id
+).freeze_with(client)
+
+transaction.sign(pause_key) # Pause key must have been set during token creation
+transaction.sign(operator_key)
+transaction.execute(client)
+```
+#### Method Chaining:
+```
+    transaction = (
+        TokenPauseTransaction()
+        .set_token_id(token_id)
+        .freeze_with(client)
+    )
+
+    transaction.sign(pause_key) # Pause key must have been set during token creation
+    transaction.sign(operator_key)
     transaction.execute(client)
 ```
 

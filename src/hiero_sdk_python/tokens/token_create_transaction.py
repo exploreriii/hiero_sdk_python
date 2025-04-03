@@ -146,11 +146,13 @@ class TokenKeys:
         admin_key: The admin key for the token to update and delete.
         supply_key: The supply key for the token to mint and burn.
         freeze_key: The freeze key for the token to freeze and unfreeze.
+        pause_key: The pause key for the token to pause and unpause.
     """
 
     admin_key: Optional[PrivateKey] = None
     supply_key: Optional[PrivateKey] = None
     freeze_key: Optional[PrivateKey] = None
+    pause_key: Optional[PrivateKey] = None
 
 class TokenCreateTransaction(Transaction):
     """
@@ -265,7 +267,12 @@ class TokenCreateTransaction(Transaction):
         self._require_not_frozen()
         self._keys.freeze_key = key
         return self
-
+    
+    def set_pause_key(self, key):
+        self._require_not_frozen()
+        self._keys.pause_key = key
+        return self
+    
     def freeze(self):
         """Marks the transaction as frozen to prevent further modifications."""
         self._is_frozen = True
@@ -309,6 +316,11 @@ class TokenCreateTransaction(Transaction):
             freeze_public_key_bytes = self._keys.freeze_key.public_key().to_bytes_raw()
             freeze_key_proto = basic_types_pb2.Key(ed25519=freeze_public_key_bytes)
 
+        pause_key_proto = None
+        if self._keys.pause_key:
+            pause_public_key_bytes = self._keys.pause_key.public_key().to_bytes_raw()
+            pause_key_proto = basic_types_pb2.Key(ed25519=pause_public_key_bytes)
+
 
         # Ensure token type is correctly set with default to fungible
         if self._token_params.token_type is None:
@@ -329,6 +341,7 @@ class TokenCreateTransaction(Transaction):
             adminKey=admin_key_proto,
             supplyKey=supply_key_proto,
             freezeKey=freeze_key_proto,
+            pause_key=pause_key_proto,
         )
         # Build the base transaction body and attach the token creation details
         transaction_body = self.build_base_transaction_body()
