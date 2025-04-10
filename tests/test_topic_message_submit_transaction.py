@@ -26,7 +26,7 @@ def test_execute_topic_submit_message():
     tx.operator_account_id = AccountId(0, 0, 2)
 
     client = MagicMock(spec=Client)
-    client.operator_private_key = PrivateKey.generate()
+    client.operator_private_key = PrivateKey.generate_ed25519()
     client.operator_account_id = AccountId(0, 0, 2)
     client.node_account_id = AccountId(0, 0, 3) 
 

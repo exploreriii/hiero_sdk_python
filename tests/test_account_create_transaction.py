@@ -29,7 +29,7 @@ def test_account_create_transaction_build(mock_account_ids):
     """Test building an account create transaction body with valid parameters."""
     operator_id, node_account_id = mock_account_ids
 
-    new_private_key = PrivateKey.generate()
+    new_private_key = PrivateKey.generate_ed25519()
     new_public_key = new_private_key.public_key()
 
     account_tx = (
@@ -53,9 +53,9 @@ def test_account_create_transaction_sign(mock_account_ids):
     """Test signing the account create transaction."""
     operator_id, node_account_id = mock_account_ids
 
-    new_private_key = PrivateKey.generate()
+    new_private_key = PrivateKey.generate_ed25519()
     new_public_key = new_private_key.public_key()
-    operator_private_key = PrivateKey.generate()
+    operator_private_key = PrivateKey.generate_ed25519()
 
     account_tx = (
         AccountCreateTransaction()
@@ -74,9 +74,9 @@ def test_account_create_transaction_execute(mock_account_ids):
     """Test executing the account create transaction."""
     operator_id, node_account_id = mock_account_ids
 
-    new_private_key = PrivateKey.generate()
+    new_private_key = PrivateKey.generate_ed25519()
     new_public_key = new_private_key.public_key()
-    operator_private_key = PrivateKey.generate()
+    operator_private_key = PrivateKey.generate_ed25519()
 
     account_tx = (
         AccountCreateTransaction()

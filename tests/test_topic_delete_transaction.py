@@ -47,7 +47,7 @@ def test_sign_topic_delete_transaction(mock_account_ids):
     tx.operator_account_id = AccountId(0, 0, 2)
     tx.node_account_id = node_account_id
 
-    private_key = PrivateKey.generate()
+    private_key = PrivateKey.generate_ed25519()
 
     body_bytes = tx.build_transaction_body().SerializeToString()
     tx.transaction_body_bytes = body_bytes
@@ -65,7 +65,7 @@ def test_execute_topic_delete_transaction(mock_account_ids):
     tx.operator_account_id = AccountId(0, 0, 2)
 
     client = MagicMock(spec=Client)
-    client.operator_private_key = PrivateKey.generate()
+    client.operator_private_key = PrivateKey.generate_ed25519()
     client.operator_account_id = AccountId(0, 0, 2)
     client.node_account_id = node_account_id
 

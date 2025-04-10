@@ -19,7 +19,7 @@ def test_build_topic_create_transaction_body(mock_account_ids):
     """
     _, _, node_account_id, _, _ = mock_account_ids
 
-    tx = TopicCreateTransaction(memo="Hello Topic", admin_key=PrivateKey.generate().public_key())
+    tx = TopicCreateTransaction(memo="Hello Topic", admin_key=PrivateKey.generate_ed25519().public_key())
 
     tx.operator_account_id = AccountId(0, 0, 2)
     tx.node_account_id = node_account_id
@@ -60,7 +60,7 @@ def test_sign_topic_create_transaction(mock_account_ids):
     tx.operator_account_id = AccountId(0, 0, 2)
     tx.node_account_id = node_account_id
 
-    private_key = PrivateKey.generate()
+    private_key = PrivateKey.generate_ed25519()
 
     body_bytes = tx.build_transaction_body().SerializeToString()
     tx.transaction_body_bytes = body_bytes
@@ -78,7 +78,7 @@ def test_execute_topic_create_transaction(mock_account_ids):
     tx.operator_account_id = AccountId(0, 0, 2)
 
     client = MagicMock(spec=Client)
-    client.operator_private_key = PrivateKey.generate()
+    client.operator_private_key = PrivateKey.generate_ed25519()
     client.operator_account_id = AccountId(0, 0, 2)
     client.node_account_id = node_account_id
 

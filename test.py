@@ -74,7 +74,7 @@ def load_operator_credentials():
     """Load operator credentials from environment variables."""
     try:
         operator_id = AccountId.from_string(os.getenv('OPERATOR_ID'))
-        operator_key = PrivateKey.from_string(os.getenv('OPERATOR_KEY'))
+        operator_key = PrivateKey.from_string_ed25519(os.getenv('OPERATOR_KEY'))
     except Exception as e:
         print(f"Error parsing operator credentials: {e}")
         print(traceback.format_exc())
@@ -83,7 +83,8 @@ def load_operator_credentials():
 
 def create_new_account(client, initial_balance=100000000):
     """Tests account creation"""
-    new_account_private_key = PrivateKey.generate()
+    new_account_private_key = PrivateKey.generate_ed25519()
+
     new_account_public_key = new_account_private_key.public_key()
 
     transaction = AccountCreateTransaction(
@@ -476,9 +477,9 @@ def main():
     operator_id, operator_key = load_operator_credentials()
 
     # Generate new keys for the admin, supply, and freeze to use as needed
-    admin_key = PrivateKey.generate()
-    supply_key = PrivateKey.generate()
-    freeze_key = PrivateKey.generate()
+    admin_key = PrivateKey.generate_ed25519()
+    supply_key = PrivateKey.generate_ed25519()
+    freeze_key = PrivateKey.generate_ed25519()
 
     # Set up the client for the given network
     network_type = os.getenv('NETWORK')

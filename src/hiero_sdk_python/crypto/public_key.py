@@ -1,3 +1,4 @@
+import warnings
 from cryptography.hazmat.primitives.asymmetric import ed25519, ec
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
@@ -14,70 +15,112 @@ class PublicKey:
         """
         self._public_key = public_key
 
+    #
+    # ---------------------------------
+    # Type-specific 'from bytes' loaders
+    # ---------------------------------
+    #
+
     @classmethod
-    def from_bytes(cls, key_bytes: bytes):
+    def from_bytes_ed25519(cls, pub: bytes) -> "PublicKey":
         """
-        Load a public key from bytes.
-        For Ed25519, expects 32 bytes (raw).
-        For ECDSA, can interpret 33 or 65 bytes (compressed or uncompressed).
-        If not recognized, tries DER for either Ed25519 or ECDSA.
-
-        Args:
-            key_bytes (bytes): Public key bytes.
-
-        Returns:
-            PublicKey: A new instance of PublicKey.
-
-        Raises:
-            ValueError: If the key is invalid or unsupported.
+        Load an Ed25519 public key from 32 raw bytes.
+        Raises ValueError if not exactly 32 bytes or invalid.
         """
-
-        if len(key_bytes) == 32:
-            try:
-                ed_pub = ed25519.Ed25519PublicKey.from_public_bytes(key_bytes)
-                return cls(ed_pub)
-            except Exception:
-                raise ValueError("Invalid 32-byte public key (not Ed25519).")
-
-        if len(key_bytes) in (33, 65):
-            try:
-                ec_pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), key_bytes)
-                return cls(ec_pub)
-            except Exception:
-                raise ValueError("Failed to parse ECDSA public key from raw bytes.")
-
+        if len(pub) != 32:
+            raise ValueError(f"Ed25519 public key must be 32 bytes, got {len(pub)}.")
         try:
-            maybe_pub = serialization.load_der_public_key(key_bytes, backend=default_backend())
-            if isinstance(maybe_pub, ed25519.Ed25519PublicKey):
-                return cls(maybe_pub)
-            if isinstance(maybe_pub, ec.EllipticCurvePublicKey):
-                curve = maybe_pub.curve
-                if not isinstance(curve, ec.SECP256K1):
-                    raise ValueError("Only secp256k1 ECDSA is supported.")
-                return cls(maybe_pub)
-            raise ValueError("Unsupported public key type (not Ed25519 or ECDSA).")
+            ed_pub = ed25519.Ed25519PublicKey.from_public_bytes(pub)
+            return cls(ed_pub)
         except Exception as e:
-            raise ValueError(f"Failed to load public key (DER): {e}")
+            raise ValueError(f"Invalid Ed25519 public key bytes: {e}")
 
     @classmethod
-    def from_string(cls, key_str):
+    def from_bytes_ecdsa(cls, pub: bytes) -> "PublicKey":
         """
-        Load a public key from a hex-encoded string.
-        For Ed25519, expects 32 bytes. Raw bytes string for ECDSA is not supported for now.
-        If the key is DER-encoded, tries to parse and detect Ed25519 vs ECDSA.
-        Args:
-            key_str (str): The hex-encoded public key string.
-        Returns:
-            PublicKey: A new instance of PublicKey.
-        Raises:
-            ValueError: If the key is invalid or unsupported.
+        Load an ECDSA secp256k1 public key from raw bytes (commonly 33 or 65 bytes).
+        Raises ValueError if invalid or unsupported length.
+        """
+        if len(pub) not in (33, 65):
+            raise ValueError(
+                f"ECDSA (secp256k1) pubkey must be 33 or 65 bytes, got {len(pub)}."
+            )
+        try:
+            ec_pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), pub)
+            return cls(ec_pub)
+        except Exception as e:
+            raise ValueError(f"Invalid ECDSA public key point: {e}")
+
+    @classmethod
+    def from_der(cls, der_bytes: bytes) -> "PublicKey":
+        """
+        Load a public key from DER encoding.
+        Detects Ed25519 vs ECDSA(secp256k1). Raises ValueError if unsupported/invalid.
         """
         try:
-            key_bytes = bytes.fromhex(key_str.removeprefix("0x"))
-        except ValueError:
-            raise ValueError("Invalid hex-encoded public key string.")
+            maybe_pub = serialization.load_der_public_key(der_bytes, backend=default_backend())
+        except Exception as e:
+            raise ValueError(f"Could not parse DER public key: {e}")
 
-        return cls.from_bytes(key_bytes)
+        # Check Ed25519
+        if isinstance(maybe_pub, ed25519.Ed25519PublicKey):
+            return cls(maybe_pub)
+
+        # Check ECDSA
+        if isinstance(maybe_pub, ec.EllipticCurvePublicKey):
+            if not isinstance(maybe_pub.curve, ec.SECP256K1):
+                raise ValueError("Only secp256k1 ECDSA is supported.")
+            return cls(maybe_pub)
+
+        raise ValueError("Unsupported public key type in DER (not Ed25519 or ECDSA).")
+
+    #
+    # -----------------------------------
+    # Type-specific 'from string' loaders
+    # -----------------------------------
+    #
+
+    @classmethod
+    def from_string_ed25519(cls, hex_str: str) -> "PublicKey":
+        """
+        Interpret the given string as a hex-encoded 32-byte Ed25519 public key.
+        """
+        hex_str = hex_str.removeprefix("0x")
+        try:
+            pub = bytes.fromhex(hex_str)
+        except ValueError:
+            raise ValueError(f"Invalid hex string for Ed25519 public key: {hex_str}")
+        return cls.from_bytes_ed25519(pub)
+
+    @classmethod
+    def from_string_ecdsa(cls, hex_str: str) -> "PublicKey":
+        """
+        Interpret the given string as a hex-encoded compressed/uncompressed ECDSA pubkey (33/65 bytes).
+        """
+        hex_str = hex_str.removeprefix("0x")
+        try:
+            pub = bytes.fromhex(hex_str)
+        except ValueError:
+            raise ValueError(f"Invalid hex string for ECDSA public key: {hex_str}")
+        return cls.from_bytes_ecdsa(pub)
+
+    @classmethod
+    def from_string_der(cls, hex_str: str) -> "PublicKey":
+        """
+        Interpret the given string as hex-encoded DER bytes containing a public key.
+        """
+        hex_str = hex_str.removeprefix("0x")
+        try:
+            der_bytes = bytes.fromhex(hex_str)
+        except ValueError:
+            raise ValueError(f"Invalid hex string for DER public key: {hex_str}")
+        return cls.from_der(der_bytes)
+
+    #
+    # ----------------------------
+    # Others
+    # ----------------------------
+    #
 
     def verify(self, signature: bytes, data: bytes) -> None:
         """
@@ -91,7 +134,13 @@ class PublicKey:
         Raises:
             cryptography.exceptions.InvalidSignature: If the signature is invalid.
         """
-        self._public_key.verify(signature, data)
+        if self.is_ed25519():
+            self._public_key.verify(signature, data)
+        else:
+            # ECDSA requires specifying a hash algorithm
+            from cryptography.hazmat.primitives.asymmetric import ec
+            from cryptography.hazmat.primitives import hashes
+            self._public_key.verify(signature, data, ec.ECDSA(hashes.SHA256()))
 
     def to_bytes_raw(self) -> bytes:
         """
@@ -114,6 +163,13 @@ class PublicKey:
                 format=serialization.PublicFormat.CompressedPoint
             )
 
+    def to_bytes_der(self) -> bytes:
+        """DER-encoded public key."""
+        return self._public_key.public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+
     def to_string(self) -> str:
         """
         Returns the private key as a hex string (raw).
@@ -121,7 +177,15 @@ class PublicKey:
         """
         return self.to_string_raw()
 
+    def to_string_der(self) -> str:
+        """Hex-encoded DER form of the public key."""
+        return self.to_bytes_der().hex()
+
     def to_string_raw(self) -> str:
+        """
+        Kept for old usage: returns the raw hex-encoded public key.
+        For new usage, prefer `to_string_raw()` or `to_string_der()`.
+        """
         """
         Returns the raw public key as a hex-encoded string.
         """
