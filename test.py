@@ -83,7 +83,7 @@ def load_operator_credentials():
 
 def create_new_account(client, initial_balance=100000000):
     """Tests account creation"""
-    new_account_private_key = PrivateKey.generate_ed25519()
+    new_account_private_key = PrivateKey.generate("ed25519")
 
     new_account_public_key = new_account_private_key.public_key()
 

@@ -21,7 +21,7 @@ def create_new_account():
     operator_key = PrivateKey.from_string_ed25519(os.getenv('OPERATOR_KEY'))
     client.set_operator(operator_id, operator_key)
 
-    new_account_private_key = PrivateKey.generate_ed25519()
+    new_account_private_key = PrivateKey.generate("ed25519")
     new_account_public_key = new_account_private_key.public_key()
 
     transaction = (

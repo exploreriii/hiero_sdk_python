@@ -26,7 +26,7 @@ def create_account_and_transfer():
     client.set_operator(operator_id, operator_key)
 
     # Create new account
-    new_account_private_key = PrivateKey.generate_ed25519()
+    new_account_private_key = PrivateKey.generate("ed25519")
     new_account_public_key = new_account_private_key.public_key()
     transaction = AccountCreateTransaction(
         key=new_account_public_key,
