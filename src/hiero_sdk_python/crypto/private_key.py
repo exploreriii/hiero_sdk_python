@@ -288,15 +288,25 @@ class PrivateKey:
             # ECDSA => integer scalar in big-endian
             return self._private_key.private_numbers().private_value.to_bytes(32, "big")
 
-    def to_string(self) -> str:
+    def to_bytes_ed25519_raw(self) -> bytes:
         """
-        Returns the private key as a hex string (raw).
-        Matches old usage that calls to_string().
+        Return the raw 32-byte seed (Ed25519).
         """
-        return self.to_string_raw()
+        if self.is_ed25519():
+            return self._private_key.private_bytes(
+                encoding=serialization.Encoding.Raw,
+                format=serialization.PrivateFormat.Raw,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+        raise ValueError("Not Ed25519).")
 
-    def to_string_raw(self) -> str:
-        return self.to_bytes_raw().hex()
+    def to_bytes_ecdsa_raw(self) -> bytes:
+        """
+        Return the raw 32-byte seed (ecdsa).
+        """
+        if self.is_ecdsa():
+            return self._private_key.private_numbers().private_value.to_bytes(32, "big")
+        raise ValueError("Not ecdsa).")
 
     def to_bytes_der(self) -> bytes:
         """
@@ -307,10 +317,25 @@ class PrivateKey:
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption()
         )
+    
+    def to_string_raw(self) -> str:
+        return self.to_bytes_raw().hex()
 
+    def to_string_ed25519_raw(self) -> str:
+        return self.to_bytes_ed25519_raw().hex()
+
+    def to_string_ecdsa_raw(self) -> str:
+        return self.to_bytes_ecdsa_raw().hex()
+        
     def to_string_der(self) -> str:
         return self.to_bytes_der().hex()
 
+    def to_string(self) -> str:
+        """
+        Returns the private key as a hex string (raw).
+        Matches old usage that calls to_string().
+        """
+        return self.to_string_raw()
     #
     # ---------------------------------
     # is_ed25519 / is_ecdsa checks

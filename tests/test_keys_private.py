@@ -29,11 +29,11 @@ def test_generate_ed25519():
     pub.verify(sig, data)  # should succeed if signature is valid
 
     # Check round-trip raw bytes
-    raw_bytes = priv.to_bytes_raw()
+    raw_bytes = priv.to_bytes_ed25519_raw()
     assert len(raw_bytes) == 32
 
     # Check hex string conversion
-    raw_hex = priv.to_string_raw()
+    raw_hex = priv.to_string_ed25519_raw()
     assert len(raw_hex) == 64
     assert raw_hex == raw_bytes.hex()
 
@@ -68,11 +68,11 @@ def test_generate_ecdsa():
     pub.verify(sig, data)  # should succeed
 
     # Check raw bytes
-    raw_bytes = priv.to_bytes_raw()
+    raw_bytes = priv.to_bytes_ecdsa_raw()
     assert len(raw_bytes) == 32
 
     # Check hex string
-    raw_hex = priv.to_string_raw()
+    raw_hex = priv.to_string_ecdsa_raw()
     assert len(raw_hex) == 64
     assert raw_hex == raw_bytes.hex()
 
@@ -167,7 +167,7 @@ def test_from_string_der_ecdsa_round_trip():
     assert loaded.is_ecdsa()
 
     # 4) Confirm the raw scalar round-trips perfectly
-    assert loaded.to_bytes_raw() == scalar_one
+    assert loaded.to_bytes_ecdsa_raw() == scalar_one
 
 
 def test_from_string_der_invalid_hex():
@@ -333,7 +333,7 @@ def test_from_bytes_ambiguity_prefers_ecdsa_when_ed25519_fails(monkeypatch):
 
     assert priv.is_ecdsa(), "from_bytes should have returned an ECDSA key"
     # And round-trip raw scalar
-    assert priv.to_bytes_raw() == ecdsa_scalar_one
+    assert priv.to_bytes_ecdsa_raw() == ecdsa_scalar_one
 
 
 def test_type_checks_are_mutually_exclusive():
