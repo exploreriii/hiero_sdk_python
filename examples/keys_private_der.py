@@ -13,7 +13,7 @@ def example_serialize_ed25519_der() -> None:
     privkey = PrivateKey.generate("ed25519")
     print("Generated Ed25519 key:", privkey)
     
-    # This emits PKCS#8 DER by default
+    # This emits Traditional Open SSL DER by default
     der_bytes = privkey.to_bytes_der()
     print("DER bytes length =", len(der_bytes))
 

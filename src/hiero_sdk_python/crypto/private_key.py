@@ -179,7 +179,7 @@ class PrivateKey:
     @staticmethod
     def _try_load_der(key_bytes: bytes) -> Optional[Union[ed25519.Ed25519PrivateKey, ec.EllipticCurvePrivateKey]]:
         """
-        Attempt to parse the bytes as a DER-encoded private key (PKCS#8 or TraditionalOpenSSL).
+        Attempt to parse the bytes as a DER-encoded private key.
         Auto-detect Ed25519 vs. ECDSA(secp256k1). Return None on failure.
         """
         try:
@@ -227,7 +227,7 @@ class PrivateKey:
     @classmethod
     def from_der(cls, der_data: bytes) -> "PrivateKey":
         """
-        Interpret bytes as a DER-encoded private key (PKCS#8 or TraditionalOpenSSL).
+        Interpret bytes as a DER-encoded private key.
         Auto-detect Ed25519 vs. ECDSA(secp256k1).
         """
         try:
@@ -310,11 +310,11 @@ class PrivateKey:
 
     def to_bytes_der(self) -> bytes:
         """
-        Return the DER-encoded private key PKCS8.
+        Return the DER-encoded private key.
         """
         return self._private_key.private_bytes(
             encoding=serialization.Encoding.DER,
-            format=serialization.PrivateFormat.PKCS8,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption()
         )
     
