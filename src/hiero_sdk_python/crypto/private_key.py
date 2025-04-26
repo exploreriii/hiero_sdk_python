@@ -93,15 +93,23 @@ class PrivateKey:
     @classmethod
     def generate(cls, key_type: str = "ed25519") -> "PrivateKey":
         """
-        Generate a new private key. key_type can be "ed25519" or "ecdsa".
+        Generate a new private key, defaulting to ed25519. key_type can be "ed25519" or "ecdsa".
         """
         if key_type.lower() == "ed25519":
-            return cls(ed25519.Ed25519PrivateKey.generate())
+            return cls.generate_ed25519()
         elif key_type.lower() == "ecdsa":
-            private_key = ec.generate_private_key(ec.SECP256K1())
-            return cls(private_key)
+            return cls.generate_ecdsa()
         else:
             raise ValueError("Invalid key_type. Use 'ed25519' or 'ecdsa'.")
+
+    @classmethod
+    def generate_ed25519(cls):
+        return cls(ed25519.Ed25519PrivateKey.generate())
+
+    @classmethod
+    def generate_ecdsa(cls):
+        private_key = ec.generate_private_key(ec.SECP256K1())
+        return cls(private_key)
 
     #
     # ---------------------------------
