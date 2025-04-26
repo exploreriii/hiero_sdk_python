@@ -305,17 +305,26 @@ class PrivateKey:
             raise ValueError("Not an ECDSA key.")
         return self._private_key.private_numbers()\
                    .private_value.to_bytes(32, "big")
-
+    
     def to_bytes_der(self) -> bytes:
         """
         Return the DER-encoded private key.
         """
-        return self._private_key.private_bytes(
-            encoding=serialization.Encoding.DER,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption()
-        )
-    
+        if self.is_ed25519():
+            # Ed25519 only supports PKCS#8 for DER exports
+            return self._private_key.private_bytes(
+                encoding=serialization.Encoding.DER,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+        else:
+            # ECDSA can be exported in Traditional OpenSSL or PKCS#8
+            return self._private_key.private_bytes(
+                encoding=serialization.Encoding.DER,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+
     def to_string_raw(self) -> str:
         return self.to_bytes_raw().hex()
 
