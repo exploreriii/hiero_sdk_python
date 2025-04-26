@@ -279,34 +279,32 @@ class PrivateKey:
         Return the raw 32-byte seed (Ed25519) or 32-byte scalar (ECDSA).
         """
         if self.is_ed25519():
-            return self._private_key.private_bytes(
-                encoding=serialization.Encoding.Raw,
-                format=serialization.PrivateFormat.Raw,
-                encryption_algorithm=serialization.NoEncryption()
-            )
+            return self.to_bytes_ed25519_raw()
+        elif self.is_ecdsa():
+            return self.to_bytes_ecdsa_raw()
         else:
-            # ECDSA => integer scalar in big-endian
-            return self._private_key.private_numbers().private_value.to_bytes(32, "big")
+            raise ValueError("Unknown key type; cannot extract raw bytes.")
 
     def to_bytes_ed25519_raw(self) -> bytes:
         """
-        Return the raw 32-byte seed (Ed25519).
+        Return the raw 32-byte Ed25519 seed.
         """
-        if self.is_ed25519():
-            return self._private_key.private_bytes(
-                encoding=serialization.Encoding.Raw,
-                format=serialization.PrivateFormat.Raw,
-                encryption_algorithm=serialization.NoEncryption()
-            )
-        raise ValueError("Not Ed25519).")
+        if not self.is_ed25519():
+            raise ValueError("Not an Ed25519 key.")
+        return self._private_key.private_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PrivateFormat.Raw,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
 
     def to_bytes_ecdsa_raw(self) -> bytes:
         """
-        Return the raw 32-byte seed (ecdsa).
+        Return the raw 32-byte ECDSA (secp256k1) scalar.
         """
-        if self.is_ecdsa():
-            return self._private_key.private_numbers().private_value.to_bytes(32, "big")
-        raise ValueError("Not ecdsa).")
+        if not self.is_ecdsa():
+            raise ValueError("Not an ECDSA key.")
+        return self._private_key.private_numbers()\
+                   .private_value.to_bytes(32, "big")
 
     def to_bytes_der(self) -> bytes:
         """
