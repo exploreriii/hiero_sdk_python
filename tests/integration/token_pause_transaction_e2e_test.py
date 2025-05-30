@@ -87,24 +87,23 @@ def test_pause_fails_for_unpausable_token(env, unpausable_token):
 def test_pause_requires_pause_key_signature(env, pausable_token):
     """
     A pausable token has a pause key.  If you submit a pause tx without
-    that pause-key signature, you get TOKEN_HAS_NO_PAUSE_KEY.
+    that pause-key signature, the service rejects it with INVALID_PAUSE_KEY.
     """
     # Build & freeze, but never sign with the pause key:
     tx = TokenPauseTransaction().set_token_id(pausable_token)
     tx = tx.freeze_with(env.client)
     receipt = tx.execute(env.client) # This autosigns with operator key, which is different to the pause key
 
-    assert receipt.status == ResponseCode.TOKEN_HAS_NO_PAUSE_KEY, (
-        f"Expected TOKEN_HAS_NO_PAUSE_KEY but got "
+    assert receipt.status == ResponseCode.INVALID_PAUSE_KEY, (
+        f"Expected INVALID_PAUSE_KEY but got "
         f"{ResponseCode.get_name(receipt.status)}"
     )
-# Really, I want to pause no pause key signature but execute auto-signs. Thinking.
 
 @mark.integration
 def test_pause_with_invalid_key(env, pausable_token):
     """
     A pausable token created with a pause key must be signed with it—
-    signing with some other key causes an INVALID_SIGNATURE.
+    signing with some other key causes an INVALID_PAUSE_KEY.
     """
     bad_key = PrivateKey.generate()
 
@@ -113,7 +112,7 @@ def test_pause_with_invalid_key(env, pausable_token):
     tx = tx.sign(bad_key) # ← signed with wrong key
     receipt = tx.execute(env.client)
 
-    assert receipt.status == ResponseCode.INVALID_SIGNATURE, (
+    assert receipt.status == ResponseCode.INVALID_PAUSE_KEY, (
         f"Expected INVALID_PAUSE_KEY but got "
         f"{ResponseCode.get_name(receipt.status)}"
     )
