@@ -75,11 +75,16 @@ def test_pause_nonexistent_token_id_raises_precheck_error(env):
     fake = TokenId(0, 0, 99999999)
     tx = TokenPauseTransaction().set_token_id(fake)
 
-    with pytest.raises(ReceiptStatusError, match=ResponseCode.get_name(ResponseCode.INVALID_TOKEN_ID)):
-        # .execute() will auto‐freeze and auto‐sign with the operator key
-        tx.execute(env.client)   # ← this is what runs the precheck
+    # with pytest.raises(ReceiptStatusError, match=ResponseCode.get_name(ResponseCode.INVALID_TOKEN_ID)):
+    #     # .execute() will auto‐freeze and auto‐sign with the operator key
+    #     tx.execute(env.client)   # ← this is what runs the precheck
 
+    receipt = tx.execute(env.client)
 
+    assert receipt.status == ResponseCode.INVALID_TOKEN_ID, (
+        f"Expected INVALID_TOKEN_ID but got "
+        f"{ResponseCode.get_name(receipt.status)}"
+    )
 
 @mark.integration
 def test_pause_fails_for_unpausable_token(env, unpausable_token):
@@ -89,7 +94,7 @@ def test_pause_fails_for_unpausable_token(env, unpausable_token):
     """
     tx = TokenPauseTransaction().set_token_id(unpausable_token)
 
-    with pytest.raises(PrecheckError, match=ResponseCode.get_name(ResponseCode.TOKEN_HAS_NO_PAUSE_KEY),):
+    with pytest.raises(ReceiptStatusError, match=ResponseCode.get_name(ResponseCode.TOKEN_HAS_NO_PAUSE_KEY),):
         # .execute() will auto‐freeze and auto‐sign with the operator key
         tx.execute(env.client)   # ← this is what runs the precheck
 
@@ -103,7 +108,7 @@ def test_pause_requires_pause_key_signature(env, pausable_token):
     tx = TokenPauseTransaction().set_token_id(pausable_token)
     tx = tx.freeze_with(env.client)
 
-    with pytest.raises(PrecheckError, match=ResponseCode.get_name(ResponseCode.TOKEN_HAS_NO_PAUSE_KEY),):
+    with pytest.raises(ReceiptStatusError, match=ResponseCode.get_name(ResponseCode.TOKEN_HAS_NO_PAUSE_KEY),):
         tx.execute(env.client)   # ← this is what runs the precheck
 
 @mark.integration
@@ -113,7 +118,7 @@ def test_pause_with_invalid_key_fails_precheck(env, pausable_token):
     signing with some other key causes an INVALID_PAUSE_KEY precheck failure.
     """
     bad_key = PrivateKey.generate()
-    with pytest.raises(PrecheckError,match=ResponseCode.get_name(ResponseCode.INVALID_PAUSE_KEY)):
+    with pytest.raises(ReceiptStatusError,match=ResponseCode.get_name(ResponseCode.INVALID_PAUSE_KEY)):
         # freeze, sign with wrong key, then execute
         tx = TokenPauseTransaction().set_token_id(pausable_token)
         tx = tx.freeze_with(env.client)
