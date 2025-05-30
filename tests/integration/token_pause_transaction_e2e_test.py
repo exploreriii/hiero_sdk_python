@@ -35,7 +35,7 @@ def account(env):
 # Signing by the treasury account handled by the executable method in env
 @fixture
 def pausable_token(env):
-    create_fungible_token(env, opts=[lambda tx: tx.set_pause_key(pause_key)])
+    return create_fungible_token(env, opts=[lambda tx: tx.set_pause_key(pause_key)])
 
 # Fungible token in env has no pause key
 @fixture
