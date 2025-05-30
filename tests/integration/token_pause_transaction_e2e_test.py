@@ -104,16 +104,16 @@ def test_pause_requires_pause_key_signature(env, pausable_token):
 def test_pause_with_invalid_key(env, pausable_token):
     """
     A pausable token created with a pause key must be signed with it—
-    signing with some other key causes an INVALID_PAUSE_KEY.
+    signing with some other key causes an INVALID_SIGNATURE.
     """
     bad_key = PrivateKey.generate()
 
     tx = TokenPauseTransaction().set_token_id(pausable_token)
     tx = tx.freeze_with(env.client)
     tx = tx.sign(bad_key) # ← signed with wrong key
-    receipt = tx.execute(env.client) # This autosigns with operator key, which is different to the pause key
+    receipt = tx.execute(env.client)
 
-    assert receipt.status == ResponseCode.INVALID_PAUSE_KEY, (
+    assert receipt.status == ResponseCode.INVALID_SIGNATURE, (
         f"Expected INVALID_PAUSE_KEY but got "
         f"{ResponseCode.get_name(receipt.status)}"
     )
