@@ -1,9 +1,10 @@
-import warnings 
-from hiero_sdk_python.file.file_id import FileId
+from typing import Optional
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.consensus.topic_id import TopicId
 from hiero_sdk_python.account.account_id import AccountId
-from hiero_sdk_python._deprecated import _DeprecatedAliasesMixin
+from hiero_sdk_python.transaction.transaction_id import TransactionId
+from hiero_sdk_python.hapi.services import transaction_receipt_pb2, transaction_get_receipt_pb2
+from transaction import transaction_id
 
 class TransactionReceipt(_DeprecatedAliasesMixin):
     """
@@ -18,19 +19,21 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         _receipt_proto (TransactionReceiptProto): The underlying protobuf receipt.
     """
 
-    def __init__(self, receipt_proto, transaction_id=None):
+    def __init__(self, receipt_proto: Optional[transaction_receipt_pb2.TransactionReceipt] = None, transaction_id: TransactionId = None):
+
         """
         Initializes the TransactionReceipt with the provided protobuf receipt.
 
         Args:
-            receipt_proto (TransactionReceiptProto): The protobuf transaction receipt.
+            receipt_proto (transaction_receipt_pb2.TransactionReceiptProto, optional): The protobuf transaction receipt.
+            transaction_id (TransactionId, optional): The transaction ID associated with this receipt.
         """
-        self._transaction_id = transaction_id
-        self.status = receipt_proto.status
-        self._receipt_proto = receipt_proto
+        self._transaction_id: Optional[TransactionId] = transaction_id
+        self.status: Optional[transaction_receipt_pb2.TransactionReceipt] = receipt_proto.status
+        self._receipt_proto: Optional[transaction_receipt_pb2.TransactionReceipt] = receipt_proto
 
     @property
-    def token_id(self):
+    def tokenId(self) -> Optional[TokenId]:
         """
         Retrieves the TokenId associated with the transaction receipt, if available.
 
@@ -43,7 +46,7 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
             return None
 
     @property
-    def topic_id(self):
+    def topicId(self) -> Optional[TopicId]:
         """
         Retrieves the TopicId associated with the transaction receipt, if available.
 
@@ -56,7 +59,7 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
             return None
 
     @property
-    def account_id(self):
+    def accountId(self) -> Optional[AccountId]:
         """
         Retrieves the AccountId associated with the transaction receipt, if available.
 
@@ -69,7 +72,7 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
             return None
 
     @property
-    def serial_numbers(self):
+    def serial_numbers(self) -> list[int]:
         """
         Retrieves the serial numbers associated with the transaction receipt, if available.
         
@@ -89,7 +92,7 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
             return None
           
     @property
-    def transaction_id(self):
+    def transaction_id(self) -> Optional[TransactionId]:
         """
         Returns the transaction ID associated with this receipt.
 
@@ -98,15 +101,20 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         """
         return self._transaction_id
 
-    def _to_proto(self):
+    def _to_proto(self) -> transaction_receipt_pb2.TransactionReceipt:
         """
         Returns the underlying protobuf transaction receipt.
 
         Returns:
-            TransactionReceiptProto: The protobuf transaction receipt.
+            transaction_receipt_pb2.TransactionReceipt: The protobuf transaction receipt.
         """
         return self._receipt_proto
 
     @classmethod
-    def _from_proto(cls, proto, transaction_id=None):
+    def _from_proto(cls, proto: transaction_receipt_pb2.TransactionReceipt, transaction_id: TransactionId = transaction_id) -> "TransactionReceipt":
+        """
+        Creates a TransactionReceipt instance from a protobuf TransactionReceipt object.
+        Args:
+            proto (transaction_receipt_pb2.TransactionReceipt): The protobuf TransactionReceipt object.
+        """
         return cls(receipt_proto=proto, transaction_id=transaction_id)
