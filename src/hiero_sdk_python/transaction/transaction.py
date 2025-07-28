@@ -1,5 +1,5 @@
 import hashlib
-from typing import Union, Optional, Dict, Any
+from typing import Optional, Dict, Any
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.client.client import Client
 from hiero_sdk_python.Duration import Duration
@@ -13,6 +13,7 @@ from hiero_sdk_python.hapi.services import (
     transaction_response_pb2
 )
 from hiero_sdk_python.crypto.public_key import PublicKey
+from hiero_sdk_python.crypto.private_key import PrivateKey
 from hiero_sdk_python.response_code import ResponseCode
 from hiero_sdk_python.transaction.transaction_id import TransactionId
 from hiero_sdk_python.transaction.transaction_response import TransactionResponse
@@ -39,7 +40,7 @@ class Transaction(_Executable):
 
         self.transaction_id: Optional[TransactionId] = None
         self.transaction_fee: Optional[int] = None
-        self.transaction_valid_duration: Optional[Duration] = 120 
+        self.transaction_valid_duration: Duration = Duration(120) 
         self.generate_record: bool = False
         self.memo: str = ""
         # Maps each node's AccountId to its corresponding transaction body bytes
@@ -55,6 +56,7 @@ class Transaction(_Executable):
         self._signature_map: Dict[bytes, basic_types_pb2.SignatureMap] = {}
         self._default_transaction_fee: int = 2_000_000
         self.operator_account_id: AccountId = None  
+        self.node_account_id: AccountId = None
 
     def _make_request(self) -> transaction_pb2.Transaction:
         """
@@ -71,7 +73,7 @@ class Transaction(_Executable):
     def _map_response(
         self,
         response: Any, 
-        node_id: Union[int,str], 
+        node_id: AccountId, 
         proto_request: transaction_pb2.Transaction
     ) -> TransactionResponse:
         """
@@ -82,7 +84,7 @@ class Transaction(_Executable):
 
         Args:
             response (Any): The response from the network
-            node_id (Union[int,str]): The ID of the node that processed the request
+            node_id (AccountId): The ID of the node that processed the request
             proto_request: The protobuf request that was sent
 
         Returns:
@@ -92,7 +94,7 @@ class Transaction(_Executable):
             ValueError: If proto_request is not a Transaction
         """
         if not isinstance(proto_request, transaction_pb2.Transaction):
-            return ValueError(f"Expected Transaction but got {type(proto_request)}")
+            raise ValueError(f"Expected Transaction but got {type(proto_request)}")
 
         hash_obj = hashlib.sha384()
         hash_obj.update(proto_request.signedTransactionBytes)
@@ -155,7 +157,7 @@ class Transaction(_Executable):
         
         return PrecheckError(error_code, tx_id)
 
-    def sign(self, private_key) -> "Transaction":
+    def sign(self, private_key: PrivateKey) -> "Transaction":
         """
         Signs the transaction using the provided private key.
 
@@ -349,7 +351,7 @@ class Transaction(_Executable):
 
         transaction_body.transactionFee = self.transaction_fee or self._default_transaction_fee
 
-        transaction_body.transactionValidDuration.seconds = self.transaction_valid_duration
+        transaction_body.transactionValidDuration.seconds = self.transaction_valid_duration.seconds
         transaction_body.generateRecord = self.generate_record
         transaction_body.memo = self.memo
 

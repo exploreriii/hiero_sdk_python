@@ -29,9 +29,9 @@ class TransferTransaction(Transaction):
             nft_transfers (dict[TokenId, list[tuple[AccountId, AccountId, int, bool]]], optional): Initial NFT transfers.
         """
         super().__init__()
-        self.hbar_transfers:  Optional[Dict[AccountId, int]] = defaultdict(int)
-        self.token_transfers: Optional[Dict[TokenId, Dict[AccountId, int]]] = defaultdict(lambda: defaultdict(int))
-        self.nft_transfers:   Optional[Dict[TokenId, List[Tuple[AccountId, AccountId, int, bool]]]] = defaultdict(list[TokenNftTransfer])
+        self.hbar_transfers:  Dict[AccountId, int] = defaultdict(int)
+        self.token_transfers: Dict[TokenId, Dict[AccountId, int]] = defaultdict(lambda: defaultdict(int))
+        self.nft_transfers:   Dict[TokenId, List[TokenNftTransfer]] = defaultdict(list)
         self._default_transaction_fee: int = 100_000_000
 
         if hbar_transfers:
@@ -134,21 +134,21 @@ class TransferTransaction(Transaction):
             crypto_transfer_tx_body.transfers.CopyFrom(transfer_list)
 
         # NFTs
-        for token_id, transfers in self.nft_transfers.items():
+        for token_id, nft_transfers in self.nft_transfers.items():
             token_transfer_list = basic_types_pb2.TokenTransferList(
                 token=token_id._to_proto()
             )
-            for transfer in transfers:
+            for transfer in nft_transfers:
                 token_transfer_list.nftTransfers.append(transfer._to_proto())
 
             crypto_transfer_tx_body.tokenTransfers.append(token_transfer_list)
 
         # Tokens
-        for token_id, transfers in self.token_transfers.items():
+        for token_id, token_transfers in self.token_transfers.items():
             token_transfer_list = basic_types_pb2.TokenTransferList(
                 token=token_id._to_proto()
             )
-            for account_id, amount in transfers.items():
+            for account_id, amount in token_transfers.items():
                 token_transfer_list.transfers.append(
                     basic_types_pb2.AccountAmount(
                         accountID=account_id._to_proto(),

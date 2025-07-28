@@ -12,8 +12,8 @@ import warnings
 from dataclasses import dataclass, field, fields, MISSING
 from typing import Optional, ClassVar, Dict, Any, Callable
 
-from dataclasses import dataclass
-from typing import Optional, Union
+from dataclasses import dataclass, field
+from typing import Optional
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.crypto.public_key import PublicKey

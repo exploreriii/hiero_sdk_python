@@ -22,7 +22,6 @@ from hiero_sdk_python.crypto.private_key import PrivateKey
 
 DEFAULT_TRANSACTION_FEE = 3_000_000_000
 
-
 class TokenCreateValidator:
     """Token, key and freeze checks for creating a token as per the proto"""
 
@@ -62,11 +61,10 @@ class TokenCreateValidator:
             raise ValueError("Token symbol must be between 1 and 100 bytes")
 
         # Ensure the token name and symbol do not contain a NUL character
-        for attr in ("token_name", "token_symbol"):
+        for attr in ["token_name", "token_symbol"]:
             if "\x00" in getattr(token_params, attr):
-                name = attr.replace("_", " ").capitalize()
                 raise ValueError(
-                    f"{name} must not contain the Unicode NUL character"
+                    f"{attr.replace('_', ' ').capitalize()} must not contain the Unicode NUL character"
                 )
 
     @staticmethod
@@ -120,8 +118,8 @@ class TokenCreateValidator:
         """Ensure max supply and supply type constraints."""
         # An infinite token must have max supply = 0.
         # A finite token must have max supply > 0.
-        if token_params.max_supply != 0: # Finite tokens may have max supply
-            if token_params.supply_type != SupplyType.FINITE:
+        if token_params.max_supply != 0: # Setting a max supply is only approprite for a finite token.
+            if token_params.supply_type != SupplyType.FINITE: 
                 raise ValueError("Setting a max supply field requires setting a finite supply type")
 
         # Finite tokens have the option to set a max supply >0.

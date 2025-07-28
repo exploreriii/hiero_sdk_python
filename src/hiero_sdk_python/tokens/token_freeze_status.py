@@ -25,6 +25,7 @@ class TokenFreezeStatus(Enum):
             return TokenFreezeStatus.FROZEN
         elif proto_obj == proto_TokenFreezeStatus.Unfrozen:
             return TokenFreezeStatus.UNFROZEN
+        raise ValueError(f"Unknown TokenFreezeStatus proto value: {proto_obj}")
 
     def __eq__(self, other: Any) -> bool:
         """Checks equality with another TokenFreezeStatus or an integer."""
@@ -32,3 +33,4 @@ class TokenFreezeStatus(Enum):
             return self.value == other.value
         elif isinstance(other, int):
             return self.value == other
+        return False

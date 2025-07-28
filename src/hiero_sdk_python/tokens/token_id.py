@@ -16,7 +16,7 @@ class TokenId:
     realm: int
     num: int
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not isinstance(self.shard, int):
             raise TypeError('Shard must be an integer')
         if not isinstance(self.realm, int):
@@ -29,8 +29,6 @@ class TokenId:
             raise ValueError('Realm must be >= 0')
         if self.num < 0:
             raise ValueError('Num must be >= 0')
-        return True
-
 
     @classmethod
     def _from_proto(cls, token_id_proto: Optional[basic_types_pb2.TokenID] = None) -> "TokenId":
@@ -38,7 +36,7 @@ class TokenId:
         Creates a TokenId instance from a protobuf TokenID object.
         """
         if token_id_proto is None:
-            return ValueError('TokenId is required')
+            raise ValueError('TokenId is required')
         elif not isinstance(token_id_proto, basic_types_pb2.TokenID):
             raise TypeError('TokenId must be an instance of TokenID')
 
