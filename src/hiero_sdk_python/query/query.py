@@ -1,5 +1,5 @@
 """
-Base class for all network queries.
+Base class for all network queries. 
 """
 
 import time
