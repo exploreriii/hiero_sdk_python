@@ -6,7 +6,7 @@ Defines TokenId, a frozen dataclass for representing Hedera token identifiers
 (shard, realm, num) with validation and protobuf conversion utilities.
 """
 from dataclasses import dataclass
-from typing import List,Optional
+from typing import List, Optional
 from hiero_sdk_python.hapi.services import basic_types_pb2
 
 @dataclass(frozen=True, eq=True, init=True, repr=True)
@@ -37,7 +37,7 @@ class TokenId:
         """
         if token_id_proto is None:
             raise ValueError('TokenId is required')
-        elif not isinstance(token_id_proto, basic_types_pb2.TokenID):
+        if not isinstance(token_id_proto, basic_types_pb2.TokenID):
             raise TypeError('TokenId must be an instance of TokenID')
 
         return cls(
@@ -63,7 +63,7 @@ class TokenId:
         """
         if token_id_str == "":
             raise ValueError('TokenId cannot be empty')
-        elif not isinstance(token_id_str, str):
+        if not isinstance(token_id_str, str):
             raise TypeError('TokenId must be a string')
 
         parts: List[str] = token_id_str.strip().split('.')
