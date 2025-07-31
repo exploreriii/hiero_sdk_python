@@ -1,11 +1,13 @@
-from typing import Optional, TYPE_CHECKING
+"""
+transaction_response.py
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Represents the response from a transaction submitted to the Hedera network.
+Provides methods to retrieve the receipt and access core transaction details.
+"""
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.transaction.transaction_id import TransactionId
-from hiero_sdk_python.transaction.transaction_receipt import TransactionReceipt
-from hiero_sdk_python.client.client import Client
-
-if TYPE_CHECKING:
-    from hiero_sdk_python.transaction.transaction import Transaction
+# pylint: disable=too-few-public-methods
 
 class TransactionResponse:
     """
@@ -16,13 +18,13 @@ class TransactionResponse:
         """
         Initialize a new TransactionResponse instance with default values.
         """
-        self.transaction_id: TransactionId = TransactionId()
+        self.transaction_id = TransactionId()
         self.node_id: AccountId = AccountId()
         self.hash: bytes = bytes()
         self.validate_status: bool = False
-        self.transaction: Optional["Transaction"] = None
+        self.transaction = None
 
-    def get_receipt(self, client: Client) -> TransactionReceipt:
+    def get_receipt(self, client):
         """
         Retrieves the receipt for this transaction from the Hedera network.
 
@@ -36,6 +38,10 @@ class TransactionResponse:
         # TODO: Decide how to avoid circular imports
         from hiero_sdk_python.query.transaction_get_receipt_query import TransactionGetReceiptQuery
         # TODO: Implement set_node_account_ids() to get failure reason for preHandle failures
-        receipt: TransactionReceipt  = TransactionGetReceiptQuery().set_transaction_id(self.transaction_id).execute(client)
-    
+        receipt = (
+            TransactionGetReceiptQuery()
+            .set_transaction_id(self.transaction_id)
+            .execute(client)
+        )
+
         return receipt
