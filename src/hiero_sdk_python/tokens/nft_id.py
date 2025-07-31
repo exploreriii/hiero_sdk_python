@@ -46,7 +46,6 @@ class NftId(_DeprecatedAliasesMixin):
             )
             token_id = tokenId
 
-<<<<<<< HEAD
         # Map legacy serialNumber -> serial_number
         if serial_number is None and serialNumber is not None:
             warnings.warn(
@@ -79,18 +78,6 @@ class NftId(_DeprecatedAliasesMixin):
             raise TypeError(f"serial_number must be an integer, got {type(self.serial_number)}")
         if self.serial_number < 0:
             raise ValueError("serial_number must be non-negative")
-=======
-    def __post_init__(self) -> None:
-        """Validate the NftId after initialization."""
-        if self.tokenId is None:
-            raise TypeError("token_id is required")
-        if not isinstance(self.tokenId, TokenId):
-            raise TypeError(f"token_id must be of type TokenId, got {type(self.tokenId)}")
-        if not isinstance(self.serialNumber, int):
-            raise TypeError(f"Expected an integer for serial_number, got {type(self.serialNumber)}")
-        if self.serialNumber < 0:
-            raise ValueError("serial_number must be positive")
->>>>>>> 1c940df (chore: Add Typehinting to tokens module)
 
     @classmethod
     def _from_proto(cls, nft_id_proto: Optional[basic_types_pb2.NftID] = None) -> "NftId":
@@ -109,21 +96,16 @@ class NftId(_DeprecatedAliasesMixin):
         """
         :return: a protobuf NftID object representation of this NftId object
         """
-<<<<<<< HEAD
         nft_id_proto = basic_types_pb2.NftID(
             token_ID=self.token_id._to_proto(),
             serial_number=self.serial_number,
         )
-=======
-        nft_id_proto:basic_types_pb2.NftID = basic_types_pb2.NftID(token_ID=self.tokenId._to_proto(), serial_number=self.serialNumber)
-
->>>>>>> 1c940df (chore: Add Typehinting to tokens module)
         return nft_id_proto
 
     @classmethod
     def from_string(cls, nft_id_str: str) -> "NftId":
         """
-        :param nft_id_str (str): a string NftId representation
+        :param nft_id_str: a string NftId representation
         :return: returns the NftId parsed from the string input
         """
         parts = re.split(r"/", nft_id_str)
