@@ -1,11 +1,27 @@
-from typing import Optional
+"""
+transaction_receipt.py
+~~~~~~~~~~~~~~~~~~~~~~
+
+Defines the TransactionReceipt class, which represents the outcome of a Hedera transaction.
+
+This module provides structured access to fields in a transaction receipt,
+including associated IDs like TokenId, TopicId, AccountId, and FileId.
+It wraps the underlying protobuf object and exposes key properties with
+optional deprecated alias support via `_DeprecatedAliasesMixin`.
+
+Classes:
+    - TransactionReceipt: Parses and exposes fields from a transaction receipt protobuf.
+"""
+from typing import Optional, cast
+from hiero_sdk_python.file.file_id import FileId
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.consensus.topic_id import TopicId
 from hiero_sdk_python.account.account_id import AccountId
+from hiero_sdk_python._deprecated import _DeprecatedAliasesMixin
 from hiero_sdk_python.transaction.transaction_id import TransactionId
 from hiero_sdk_python.hapi.services import transaction_receipt_pb2, response_code_pb2
 
-class TransactionReceipt(_DeprecatedAliasesMixin):
+class TransactionReceipt(_DeprecatedAliasesMixin):  # type: ignore[misc]
     """
     Represents the receipt of a transaction.
     Imports deprecated aliases for tokenId, topicId and accountId.
@@ -20,8 +36,8 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
     """
 
     def __init__(
-        self, 
-        receipt_proto: Optional[transaction_receipt_pb2.TransactionReceipt] = None, 
+        self,
+        receipt_proto: transaction_receipt_pb2.TransactionReceipt,
         transaction_id: Optional[TransactionId] = None
     ) -> None:
         """
@@ -33,10 +49,10 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         """
         self._transaction_id: Optional[TransactionId] = transaction_id
         self.status: Optional[response_code_pb2.ResponseCodeEnum] = receipt_proto.status
-        self._receipt_proto: Optional[transaction_receipt_pb2.TransactionReceipt] = receipt_proto
+        self._receipt_proto: transaction_receipt_pb2.TransactionReceipt = receipt_proto
 
     @property
-    def tokenId(self) -> Optional[TokenId]:
+    def token_id(self) -> Optional[TokenId]:
         """
         Retrieves the TokenId associated with the transaction receipt, if available.
 
@@ -45,11 +61,10 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         """
         if self._receipt_proto.HasField('tokenID') and self._receipt_proto.tokenID.tokenNum != 0:
             return TokenId._from_proto(self._receipt_proto.tokenID)
-        else:
-            return None
+        return None
 
     @property
-    def topicId(self) -> Optional[TopicId]:
+    def topic_id(self) -> Optional[TopicId]:
         """
         Retrieves the TopicId associated with the transaction receipt, if available.
 
@@ -58,21 +73,22 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         """
         if self._receipt_proto.HasField('topicID') and self._receipt_proto.topicID.topicNum != 0:
             return TopicId._from_proto(self._receipt_proto.topicID)
-        else:
-            return None
+        return None
 
     @property
-    def accountId(self) -> Optional[AccountId]:
+    def account_id(self) -> Optional[AccountId]:
         """
         Retrieves the AccountId associated with the transaction receipt, if available.
 
         Returns:
             AccountId or None: The AccountId if present; otherwise, None.
         """
-        if self._receipt_proto.HasField('accountID') and self._receipt_proto.accountID.accountNum != 0:
+        if (
+            self._receipt_proto.HasField('accountID')
+            and self._receipt_proto.accountID.accountNum != 0
+        ):
             return AccountId._from_proto(self._receipt_proto.accountID)
-        else:
-            return None
+        return None
 
     @property
     def serial_numbers(self) -> list[int]:
@@ -82,18 +98,17 @@ class TransactionReceipt(_DeprecatedAliasesMixin):
         Returns:
             list of int: The serial numbers if present; otherwise, an empty list.
         """
-        return self._receipt_proto.serialNumbers
+        return cast(list[int], self._receipt_proto.serialNumbers)
 
     @property
-    def file_id(self):
+    def file_id(self) -> Optional[FileId]:
         """
         Returns the file ID associated with this receipt.
         """
         if self._receipt_proto.HasField('fileID') and self._receipt_proto.fileID.fileNum != 0:
             return FileId._from_proto(self._receipt_proto.fileID)
-        else:
-            return None
-          
+        return None
+
     @property
     def transaction_id(self) -> Optional[TransactionId]:
         """
