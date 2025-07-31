@@ -72,7 +72,10 @@ def test_integration_account_info_query_token_relationship_info():
         new_account = env.create_account()
         
         # Create token with kyc key and freeze default and associate it with the new account
-        token_id = create_fungible_token(env, [lambda tx: tx.set_kyc_key(env.operator_key), lambda tx: tx.set_freeze_default(True)])
+        token_id = create_fungible_token(env, 
+                                         [lambda tx: tx.set_kyc_key(env.operator_key), 
+                                          lambda tx: tx.set_freeze_key(env.operator_key),  # ensure it has a key to enable token operations while its frozen
+                                          lambda tx: tx.set_freeze_default(True)])
         
         receipt = (
             TokenAssociateTransaction()
