@@ -25,9 +25,9 @@ class TokenBurnTransaction(Transaction):
     to build and execute a token burn transaction.
     """
     def __init__(
-        self, 
+        self,
         token_id: Optional[TokenId] = None, 
-        amount: Optional[int] = None, 
+        amount: Optional[int] = None,
         serials: Optional[List[int]] = None
     ) -> None:
         """
@@ -41,8 +41,8 @@ class TokenBurnTransaction(Transaction):
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
         self.amount: Optional[int] = amount
-        self.serials: Optional[List[int]] = serials if serials else []
-    
+        self.serials: list[int] = serials if serials else []
+
     def set_token_id(self, token_id: TokenId) -> "TokenBurnTransaction":
         """
         Sets the token ID for this burn transaction.
@@ -56,7 +56,7 @@ class TokenBurnTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_amount(self, amount: int) -> "TokenBurnTransaction":
         """
         Sets the amount of fungible tokens to burn.
@@ -70,7 +70,7 @@ class TokenBurnTransaction(Transaction):
         self._require_not_frozen()
         self.amount = amount
         return self
-    
+
     def set_serials(self, serials: List[int]) -> "TokenBurnTransaction":
         """
         Sets the list of serial numbers of non-fungible tokens to burn.
@@ -84,7 +84,7 @@ class TokenBurnTransaction(Transaction):
         self._require_not_frozen()
         self.serials = serials
         return self
-        
+
     def add_serial(self, serial: int) -> "TokenBurnTransaction":
         """
         Adds a single serial number to the list of non-fungible tokens to burn.
@@ -99,7 +99,7 @@ class TokenBurnTransaction(Transaction):
         self._require_not_frozen()
         self.serials.append(serial)
         return self
-        
+
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds the transaction body for this token burn transaction.
@@ -142,7 +142,7 @@ class TokenBurnTransaction(Transaction):
             transaction_func=channel.token.burnToken,
             query_func=None
         )
-    
+
     def _from_proto(self, proto: TokenBurnTransactionBody) -> "TokenBurnTransaction":
         """
         Deserializes a TokenBurnTransactionBody from a protobuf object.
