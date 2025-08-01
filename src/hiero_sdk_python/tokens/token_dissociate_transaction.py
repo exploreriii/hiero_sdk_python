@@ -44,7 +44,7 @@ class TokenDissociateTransaction(Transaction):
         """
         super().__init__()
         self.account_id: Optional[AccountId] = account_id
-        self.token_ids: Optional[List[TokenId]] = token_ids or []
+        self.token_ids: List[TokenId] = token_ids or []
 
         self._default_transaction_fee: int = 500_000_000
 
