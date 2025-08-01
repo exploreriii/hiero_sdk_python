@@ -35,8 +35,8 @@ class TokenAssociateTransaction(Transaction):
             token_ids (list of TokenId, optional): The tokens to associate with the account.
         """
         super().__init__()
-        self.account_id: Optional[AccountId] = account_id
-        self.token_ids: Optional[List[TokenId]] = token_ids or []
+        self.account_id = account_id
+        self.token_ids = token_ids or []
 
         self._default_transaction_fee: int = 500_000_000
 
@@ -53,6 +53,7 @@ class TokenAssociateTransaction(Transaction):
         return self
 
     def add_token_id(self, token_id: TokenId) -> "TokenAssociateTransaction":
+        """Add a token ID to the association list."""
         self._require_not_frozen()
         self.token_ids.append(token_id)
         return self
