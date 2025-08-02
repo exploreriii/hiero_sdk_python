@@ -23,8 +23,8 @@ class TokenGrantKycTransaction(Transaction):
     to build and execute a token grant KYC transaction.
     """
     def __init__(
-        self, 
-        token_id: Optional[TokenId] = None, 
+        self,
+        token_id: Optional[TokenId] = None,
         account_id: Optional[AccountId] = None
     ) -> None:
         """
@@ -37,7 +37,7 @@ class TokenGrantKycTransaction(Transaction):
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
         self.account_id: Optional[AccountId] = account_id
-    
+
     def set_token_id(self, token_id: TokenId) -> "TokenGrantKycTransaction":
         """
         Sets the token ID for this grant KYC transaction.
@@ -51,7 +51,7 @@ class TokenGrantKycTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_account_id(self, account_id: AccountId) -> "TokenGrantKycTransaction":
         """
         Sets the account ID for this grant KYC transaction.
@@ -65,7 +65,7 @@ class TokenGrantKycTransaction(Transaction):
         self._require_not_frozen()
         self.account_id = account_id
         return self
-    
+
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds the transaction body for this token grant KYC transaction.
@@ -81,7 +81,7 @@ class TokenGrantKycTransaction(Transaction):
 
         if self.account_id is None:
             raise ValueError("Missing account ID")
-        
+
         token_grant_kyc_body = token_grant_kyc_pb2.TokenGrantKycTransactionBody(
             token=self.token_id._to_proto(),
             account=self.account_id._to_proto()
@@ -108,12 +108,16 @@ class TokenGrantKycTransaction(Transaction):
             query_func=None
         )
 
-    def _from_proto(self, proto: token_grant_kyc_pb2.TokenGrantKycTransactionBody) -> "TokenGrantKycTransaction":
+    def _from_proto(
+            self,
+            proto: token_grant_kyc_pb2.TokenGrantKycTransactionBody
+        ) -> "TokenGrantKycTransaction":
         """
         Initializes a new TokenGrantKycTransaction instance from a protobuf object.
 
         Args:
-            proto (token_grant_kyc_pb2.TokenGrantKycTransactionBody): The protobuf object to initialize from.
+            proto (token_grant_kyc_pb2.TokenGrantKycTransactionBody): 
+            The protobuf object to initialize from.
 
         Returns:
             TokenGrantKycTransaction: This transaction instance.
