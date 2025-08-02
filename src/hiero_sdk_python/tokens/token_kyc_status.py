@@ -26,9 +26,9 @@ class TokenKycStatus(Enum):
         """Converts a proto TokenKycStatus object to a TokenKycStatus enum."""
         if proto_obj == basic_types_pb2.TokenKycStatus.KycNotApplicable:
             return TokenKycStatus.KYC_NOT_APPLICABLE
-        elif proto_obj == basic_types_pb2.TokenKycStatus.Granted:
+        if proto_obj == basic_types_pb2.TokenKycStatus.Granted:
             return TokenKycStatus.GRANTED
-        elif proto_obj == basic_types_pb2.TokenKycStatus.Revoked:
+        if proto_obj == basic_types_pb2.TokenKycStatus.Revoked:
             return TokenKycStatus.REVOKED
         raise ValueError(f"Unknown TokenKycStatus proto value: {proto_obj}")
 
@@ -36,6 +36,6 @@ class TokenKycStatus(Enum):
         """Checks equality with another TokenKycStatus or an integer."""
         if isinstance(other, TokenKycStatus):
             return self.value == other.value
-        elif isinstance(other, int):
+        if isinstance(other, int):
             return self.value == other
         return False
