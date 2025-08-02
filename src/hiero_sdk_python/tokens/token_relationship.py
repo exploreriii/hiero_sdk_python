@@ -70,7 +70,7 @@ class TokenRelationship:
             kyc_status = TokenKycStatusProto.Revoked
 
         return TokenRelationshipProto(
-            tokenId=self.token_id._to_proto(),
+            tokenId=self.token_id._to_proto() if self.token_id else None,
             symbol=self.symbol,
             balance=self.balance,
             kycStatus=kyc_status,
