@@ -11,7 +11,6 @@ from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.transaction.transaction import Transaction
 from hiero_sdk_python.hapi.services import token_freeze_account_pb2, transaction_body_pb2
-from hiero_sdk_python.response_code import ResponseCode
 from hiero_sdk_python.channels import _Channel
 from hiero_sdk_python.executable import _Method
 
@@ -25,7 +24,11 @@ class TokenFreezeTransaction(Transaction):
     to build and execute a token freeze transaction.
     """
 
-    def __init__(self, token_id: Optional[TokenId] = None, account_id: Optional[AccountId]=None) -> None:
+    def __init__(
+            self,
+            token_id: Optional[TokenId] = None,
+            account_id: Optional[AccountId]=None
+        ) -> None:
         """
         Initializes a new TokenFreezeTransaction instance with optional token_id and account_id.
 
@@ -51,7 +54,7 @@ class TokenFreezeTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_account_id(self, account_id: AccountId) -> "TokenFreezeTransaction":
         """
         Sets the ID of the account to be frozen.
