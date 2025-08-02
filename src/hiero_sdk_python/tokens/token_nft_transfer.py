@@ -41,7 +41,7 @@ class TokenNftTransfer:
         self.receiver_id : AccountId = receiver_id
         self.serial_number : int = serial_number
         self.is_approved : bool = is_approved
-        
+
     def _to_proto(self) -> basic_types_pb2.NftTransfer:
         """
         Converts this TokenNftTransfer instance to its protobuf representation.
@@ -74,7 +74,7 @@ class TokenNftTransfer:
                     is_approved=nftTransfer.is_approval
                 )
             )
-            
+
         return nftTransfers
 
     def __str__(self):
