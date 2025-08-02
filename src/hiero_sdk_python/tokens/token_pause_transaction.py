@@ -34,7 +34,7 @@ class TokenPauseTransaction(Transaction):
         """
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
-        
+
     def set_token_id(self, token_id: TokenId) -> "TokenPauseTransaction":
         """
         Sets the ID of the token to be paused.
@@ -48,7 +48,7 @@ class TokenPauseTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds and returns the protobuf transaction body for token pause.
@@ -74,8 +74,11 @@ class TokenPauseTransaction(Transaction):
             transaction_func=channel.token.pauseToken,
             query_func=None
         )
-    
-    def _from_proto(self, proto: token_pause_pb2.TokenPauseTransactionBody) -> "TokenPauseTransaction":
+
+    def _from_proto(
+            self,
+            proto: token_pause_pb2.TokenPauseTransactionBody
+        ) -> "TokenPauseTransaction":
         """
         Deserializes a TokenPauseTransactionBody from a protobuf object.
 
