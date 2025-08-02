@@ -151,7 +151,7 @@ class TokenInfo(_DeprecatedAliasesMixin):
         """Set the metadata key."""
         self.metadata_key = metadata_key
 
-    def set_fee_schedule_key(self, fee_schedule_key: PublicKey):
+    def set_fee_schedule_key(self, fee_schedule_key: PublicKey) -> None:
         """Set the fee schedule key."""
         self.fee_schedule_key = fee_schedule_key
 
@@ -295,18 +295,18 @@ class TokenInfo(_DeprecatedAliasesMixin):
         :return: A token_get_info_pb2.TokenInfo object.
         """
         proto = token_get_info_pb2.TokenInfo(
-            tokenId=self.tokenId._to_proto(),
+            tokenId=self.token_id._to_proto() if self.token_id else None,
             name=self.name,
             symbol=self.symbol,
             decimals=self.decimals,
             totalSupply=self.total_supply,
-            treasury=self.treasury._to_proto(),
+            treasury=self.treasury._to_proto() if self.treasury else None,
             deleted=self.is_deleted,
             memo=self.memo,
             tokenType=self.token_type.value,
             supplyType=self.supply_type.value,
             maxSupply=self.max_supply,
-            expiry=self.expiry._to_protobuf(),
+            expiry=self.expiry._to_protobuf() if self.expiry is not None else None,
             ledger_id=self.ledger_id,
             metadata=self.metadata
         )
