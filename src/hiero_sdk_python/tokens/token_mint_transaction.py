@@ -23,9 +23,9 @@ class TokenMintTransaction(Transaction):
     """
 
     def __init__(
-        self, 
-        token_id: Optional[TokenId] = None, 
-        amount: Optional[int] = None, 
+        self,
+        token_id: Optional[TokenId] = None,
+        amount: Optional[int] = None,
         metadata: Optional[Union[bytes, List[bytes]]] = None
     ) -> None:
         """
@@ -41,7 +41,7 @@ class TokenMintTransaction(Transaction):
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
         self.amount: Optional[int] = amount
-        self.metadata: Optional[Union[bytes,List[bytes]]] = None  
+        self.metadata: Optional[Union[bytes,List[bytes]]] = None
         if metadata is not None:
             self.set_metadata(metadata)
 
@@ -58,7 +58,7 @@ class TokenMintTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_amount(self, amount: int) -> "TokenMintTransaction":
         """
         Sets the amount of fungible tokens to mint.
@@ -85,7 +85,7 @@ class TokenMintTransaction(Transaction):
             metadata = [metadata]
         self.metadata = metadata
         return self
-        
+
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds and returns the protobuf transaction body for token minting.
