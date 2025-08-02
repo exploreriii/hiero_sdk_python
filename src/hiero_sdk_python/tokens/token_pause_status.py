@@ -4,14 +4,12 @@ hiero_sdk_python.tokens.token_pause_status
 
 Defines TokenPauseStatus enum for representing token pause states:
 not applicable, paused, or unpaused.
+A Token's paused status shows whether or not a Token can be used or not in a transaction.
 """
 from enum import Enum
 from typing import Any
 from hiero_sdk_python.hapi.services import basic_types_pb2
 
-"""
-A Token's paused status shows whether or not a Token can be used or not in a transaction.
-"""
 class TokenPauseStatus(Enum):
     """
     Enumeration of token pause statuses:
@@ -37,9 +35,9 @@ class TokenPauseStatus(Enum):
         """
         if proto_obj == basic_types_pb2.TokenPauseStatus.PauseNotApplicable:
             return TokenPauseStatus.PAUSE_NOT_APPLICABLE
-        elif proto_obj == basic_types_pb2.TokenPauseStatus.Paused:
+        if proto_obj == basic_types_pb2.TokenPauseStatus.Paused:
             return TokenPauseStatus.PAUSED
-        elif proto_obj == basic_types_pb2.TokenPauseStatus.Unpaused:
+        if proto_obj == basic_types_pb2.TokenPauseStatus.Unpaused:
             return TokenPauseStatus.UNPAUSED
         raise ValueError(f"Unknown TokenPauseStatus proto value: {proto_obj}")
 
@@ -53,6 +51,6 @@ class TokenPauseStatus(Enum):
         """
         if isinstance(other, TokenPauseStatus):
             return self.value == other.value
-        elif isinstance(other, int):
+        if isinstance(other, int):
             return self.value == other
         return False
