@@ -10,10 +10,8 @@ statuses, supply details, and timing), with conversion to and from protobuf mess
 
 import warnings
 from dataclasses import dataclass, field, fields, MISSING
-from typing import Optional, ClassVar, Dict, Any, Callable
+from typing import Optional, ClassVar, Dict, Any
 
-from dataclasses import dataclass, field
-from typing import Optional
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.crypto.public_key import PublicKey
@@ -52,7 +50,7 @@ class TokenInfo(_DeprecatedAliasesMixin):
     fee_schedule_key: Optional[PublicKey]  = None
     default_freeze_status: TokenFreezeStatus = field(
         default_factory=lambda: TokenFreezeStatus.FREEZE_NOT_APPLICABLE
-    )    
+    )
     default_kyc_status: TokenKycStatus = field(
         default_factory=lambda: TokenKycStatus.KYC_NOT_APPLICABLE
     )
@@ -62,7 +60,7 @@ class TokenInfo(_DeprecatedAliasesMixin):
     pause_key: Optional[PublicKey]           = None
     pause_status: TokenPauseStatus = field(
         default_factory=lambda: TokenPauseStatus.PAUSE_NOT_APPLICABLE
-    )    
+    )
     supply_type: SupplyType = field(
         default_factory=lambda: SupplyType.FINITE
     )
@@ -85,7 +83,7 @@ class TokenInfo(_DeprecatedAliasesMixin):
         "autoRenewPeriod":     "auto_renew_period",
         "pauseStatus":         "pause_status",
         "supplyType":          "supply_type",
-    } 
+    }
 
     def __init__(self, **kwargs: Any) -> None:
         # 1) Translate deprecated camelCase names → snake_case, with warnings
@@ -102,7 +100,8 @@ class TokenInfo(_DeprecatedAliasesMixin):
                 else:
                     kwargs.pop(legacy)
 
-        # 2) for *every* field, pick either the passed‑in value or the field’s own default/default_factory
+        # 2) for *every* field, pick either:
+        #  the passed‑in value or the field’s own default/default_factory
         for f in fields(self):
             if f.name in kwargs:
                 value = kwargs[f.name]
@@ -356,4 +355,3 @@ class TokenInfo(_DeprecatedAliasesMixin):
             f"metadata={self.metadata!r}",
         ]
         return f"TokenInfo({', '.join(parts)})"
-
