@@ -72,7 +72,7 @@ class TokenNftInfo:
         """
         return token_get_nft_info_pb2.TokenNftInfo(
             nftID=self.nft_id._to_proto() if self.nft_id else None,
-            accountID=self.account_id._to_proto if self.account_id else None,
+            accountID=self.account_id._to_proto() if self.account_id else None,
             creationTime=timestamp_pb2.Timestamp(seconds=self.creation_time),
             metadata=self.metadata,
             spender_id=self.spender_id._to_proto() if self.spender_id else None
