@@ -23,7 +23,11 @@ class TokenRevokeKycTransaction(Transaction):
     Inherits from the base Transaction class and implements the required methods
     to build and execute a token revoke KYC transaction.
     """
-    def __init__(self, token_id: Optional[TokenId] = None, account_id: Optional[AccountId] = None) -> None:
+    def __init__(
+            self,
+            token_id: Optional[TokenId] = None,
+            account_id: Optional[AccountId] = None
+        ) -> None:
         """
         Initializes a new TokenRevokeKycTransaction instance with the token ID and account ID.
 
@@ -34,7 +38,7 @@ class TokenRevokeKycTransaction(Transaction):
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
         self.account_id: Optional[AccountId] = account_id
-    
+
     def set_token_id(self, token_id: TokenId) -> "TokenRevokeKycTransaction":
         """
         Sets the token ID for this revoke KYC transaction.
@@ -48,7 +52,7 @@ class TokenRevokeKycTransaction(Transaction):
         self._require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_account_id(self, account_id: AccountId) -> "TokenRevokeKycTransaction":
         """
         Sets the account ID for this revoke KYC transaction.
@@ -62,7 +66,7 @@ class TokenRevokeKycTransaction(Transaction):
         self._require_not_frozen()
         self.account_id = account_id
         return self
-    
+
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds the transaction body for this token revoke KYC transaction.
@@ -78,7 +82,7 @@ class TokenRevokeKycTransaction(Transaction):
 
         if self.account_id is None:
             raise ValueError("Missing account ID")
-        
+
         token_revoke_kyc_body = token_revoke_kyc_pb2.TokenRevokeKycTransactionBody(
             token=self.token_id._to_proto(),
             account=self.account_id._to_proto()
@@ -105,7 +109,10 @@ class TokenRevokeKycTransaction(Transaction):
             query_func=None
         )
 
-    def _from_proto(self, proto: token_revoke_kyc_pb2.TokenRevokeKycTransactionBody) -> "TokenRevokeKycTransaction":
+    def _from_proto(
+            self,
+            proto: token_revoke_kyc_pb2.TokenRevokeKycTransactionBody
+        ) -> "TokenRevokeKycTransaction":
         """
         Initializes a new TokenRevokeKycTransaction instance from a protobuf object.
 
