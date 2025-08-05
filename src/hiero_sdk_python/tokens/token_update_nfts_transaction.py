@@ -5,15 +5,14 @@ hiero_sdk_python.transaction.token_update_nfts_transaction
 Provides TokenUpdateNftsTransaction, a subclass of Transaction for updating
 metadata of non-fungible tokens (NFTs) on the Hedera network via HTS.
 """
-from operator import le
 from typing import List, Optional
+from google.protobuf.wrappers_pb2 import BytesValue
 
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.transaction.transaction import Transaction
 from hiero_sdk_python.channels import _Channel
 from hiero_sdk_python.executable import _Method
 from hiero_sdk_python.hapi.services import token_update_nfts_pb2,transaction_body_pb2
-from google.protobuf.wrappers_pb2 import BytesValue
 
 class TokenUpdateNftsTransaction(Transaction):
     """
@@ -25,9 +24,9 @@ class TokenUpdateNftsTransaction(Transaction):
     to build and execute a token update NFTs transaction.
     """
     def __init__(
-        self, 
-        token_id: Optional[TokenId] = None, 
-        serial_numbers: Optional[List[int]] = None, 
+        self,
+        token_id: Optional[TokenId] = None,
+        serial_numbers: Optional[List[int]] = None,
         metadata: Optional[bytes] = None
     ) -> None:
         """
@@ -99,7 +98,7 @@ class TokenUpdateNftsTransaction(Transaction):
 
         if self.metadata and len(self.metadata) > 100:
             raise ValueError("Metadata must be less than 100 bytes")
-        
+
         token_update_body = token_update_nfts_pb2.TokenUpdateNftsTransactionBody(
             token=self.token_id._to_proto(),
             serial_numbers=self.serial_numbers,
@@ -127,8 +126,11 @@ class TokenUpdateNftsTransaction(Transaction):
             transaction_func=channel.token.updateNfts,
             query_func=None
         )
-        
-    def _from_proto(self, proto: token_update_nfts_pb2.TokenUpdateNftsTransactionBody) -> "TokenUpdateNftsTransaction":
+
+    def _from_proto(
+            self,
+            proto: token_update_nfts_pb2.TokenUpdateNftsTransactionBody
+        ) -> "TokenUpdateNftsTransaction":
         """
         Deserializes a TokenUpdateNftsTransactionBody from a protobuf object.
 
