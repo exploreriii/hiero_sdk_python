@@ -1,5 +1,12 @@
+"""
+hiero_sdk_python.transaction.token_unfreeze_transaction
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Provides TokenUnfreezeTransaction, a subclass of Transaction for un-freezing a specified token
+for an account on the Hedera network using the Hedera Token Service (HTS) API.
+"""
 from typing import Optional
-from hiero_sdk_python.transaction.transaction import Transaction 
+from hiero_sdk_python.transaction.transaction import Transaction
 from hiero_sdk_python.hapi.services import token_unfreeze_account_pb2, transaction_body_pb2
 from hiero_sdk_python.channels import _Channel
 from hiero_sdk_python.executable import _Method
@@ -17,8 +24,8 @@ class TokenUnfreezeTransaction(Transaction):
     """
 
     def __init__(
-        self, 
-        account_id: Optional[AccountId] = None, 
+        self,
+        account_id: Optional[AccountId] = None,
         token_id: Optional[TokenId] = None
     ) -> None:
         """
@@ -31,8 +38,8 @@ class TokenUnfreezeTransaction(Transaction):
         self.token_id: Optional[TokenId] = token_id
         self.account_id: Optional[AccountId] = account_id
         self._default_transaction_fee: int = 3_000_000_000
-        self._is_frozen: bool = False 
-    
+        self._is_frozen: bool = False
+
     def set_token_id(self, token_id: TokenId) -> "TokenUnfreezeTransaction":
         """
         Sets the token ID for this unfreeze transaction.
@@ -44,7 +51,7 @@ class TokenUnfreezeTransaction(Transaction):
         self.__require_not_frozen()
         self.token_id = token_id
         return self
-    
+
     def set_account_id(self, account_id: AccountId) -> "TokenUnfreezeTransaction":
         """
         Sets the account ID for this unfreeze transaction.
@@ -56,13 +63,13 @@ class TokenUnfreezeTransaction(Transaction):
         self.__require_not_frozen()
         self.account_id = account_id
         return self
-    
+
     def __require_not_frozen(self) -> None:
         """
         Ensures that the transaction is not frozen before making modifications.
         Raises:
             ValueError: If the transaction is already frozen.
-        """ 
+        """
         if self._is_frozen:
             raise ValueError("Transaction is already frozen and cannot be modified.")
 
