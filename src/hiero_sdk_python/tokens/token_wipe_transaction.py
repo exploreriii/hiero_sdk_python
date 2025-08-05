@@ -122,8 +122,11 @@ class TokenWipeTransaction(Transaction):
             transaction_func=channel.token.wipeTokenAccount,
             query_func=None
         )
-    
-    def _from_proto(self, proto: token_wipe_account_pb2.TokenWipeAccountTransactionBody) -> "TokenWipeTransaction":
+
+    def _from_proto(
+            self,
+            proto: token_wipe_account_pb2.TokenWipeAccountTransactionBody
+        ) -> "TokenWipeTransaction":
         """
         Deserializes a TokenWipeAccountTransactionBody from a protobuf object.
 
