@@ -32,8 +32,8 @@ class TokenDissociateTransaction(Transaction):
     """
 
     def __init__(
-        self, 
-        account_id: Optional[AccountId] = None, 
+        self,
+        account_id: Optional[AccountId] = None,
         token_ids: Optional[List[TokenId]] = None
     ) -> None:
         """
@@ -65,7 +65,8 @@ class TokenDissociateTransaction(Transaction):
         Builds and returns the protobuf transaction body for token dissociation.
 
         Returns:
-            transaction_body_pb2.TransactionBody: The protobuf transaction body containing the token dissociation details.
+            transaction_body_pb2.TransactionBody: 
+                The protobuf transaction body containing the token dissociation details.
 
         Raises:
             ValueError: If account ID or token IDs are not set.
