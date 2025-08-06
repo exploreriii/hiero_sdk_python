@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_revoke_kyc_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_revoke_kyc_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenRevokeKycTransaction, a subclass of Transaction for revoking
 Know-Your-Customer (KYC) status from an account for a specific token on the

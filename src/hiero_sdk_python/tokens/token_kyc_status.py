@@ -1,5 +1,5 @@
 """
-hiero_sdk_python.tokens.token_kyc_status
+hiero_sdk_python.tokens.token_kyc_status.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenKycStatus enum to represent Know-Your-Customer (KYC) status:

@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_nft_info
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_nft_info.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenNftInfo, a class representing Non-Fungible Token details (ID, owner,
 creation time, metadata, spender) on the Hedera network, with protobuf conversion.

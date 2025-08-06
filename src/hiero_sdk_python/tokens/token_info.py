@@ -1,8 +1,8 @@
 # pylint: disable=C901
 # pylint: disable=too-many-arguments
 """
-hiero_sdk_python.tokens.token_info
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_info.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenInfo, a dataclass representing Hedera token metadata (IDs, keys,
 statuses, supply details, and timing), with conversion to and from protobuf messages.

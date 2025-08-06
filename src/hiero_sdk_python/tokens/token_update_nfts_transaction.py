@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_update_nfts_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_update_nfts_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenUpdateNftsTransaction, a subclass of Transaction for updating
 metadata of non-fungible tokens (NFTs) on the Hedera network via HTS.

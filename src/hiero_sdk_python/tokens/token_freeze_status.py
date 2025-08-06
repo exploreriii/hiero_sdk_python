@@ -1,11 +1,12 @@
-from enum import Enum
-from typing import Any
-from hiero_sdk_python.hapi.services.basic_types_pb2 import TokenFreezeStatus as proto_TokenFreezeStatus
-
 """
+hiero_sdk_python.tokens.token_freeze_status.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 TokenFreezeStatus shows whether or not an account can use a token in transactions.
 """
 from enum import Enum
+from typing import Any
+
 from hiero_sdk_python.hapi.services.basic_types_pb2 import (
     TokenFreezeStatus as proto_TokenFreezeStatus,
 )

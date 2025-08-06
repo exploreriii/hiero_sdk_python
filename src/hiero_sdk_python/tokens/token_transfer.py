@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_transfer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_transfer.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenTransfer for representing Token transfer details.
 """

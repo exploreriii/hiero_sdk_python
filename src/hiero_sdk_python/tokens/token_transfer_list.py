@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_transfer_list
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_transfer_list.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenTransferList for representing and converting Token transfer details.
 For fungible and non-fungible token transfers to and from protobuf messages.

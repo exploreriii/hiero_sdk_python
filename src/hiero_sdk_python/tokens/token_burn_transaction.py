@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_burn_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_burn_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenBurnTransaction, a subclass of Transaction for burning fungible and
 non-fungible tokens on the Hedera network using the Hedera Token Service (HTS) API.

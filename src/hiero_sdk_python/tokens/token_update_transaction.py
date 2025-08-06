@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_update_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_update_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenUpdateParams, TokenUpdateKeys, and TokenUpdateTransaction for updating
 token properties (settings and keys) on the Hedera network via the HTS API.

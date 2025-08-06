@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_associate_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_associate_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenAssociateTransaction, a subclass of Transaction for associating
 tokens with accounts on the Hedera network using the Hedera Token Service (HTS) API.

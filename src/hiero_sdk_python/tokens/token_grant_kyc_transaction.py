@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_grant_kyc_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_grant_kyc_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenGrantKycTransaction, a subclass of Transaction for granting KYC status
 to accounts for specific tokens on the Hedera network via the Hedera Token Service (HTS) API.

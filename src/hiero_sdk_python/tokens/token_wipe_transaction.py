@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_wipe_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_wipe_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenWipeTransaction, a subclass of Transaction for wiping fungible tokens and NFTs
 from accounts on the Hedera network via the Hedera Token Service (HTS) API.

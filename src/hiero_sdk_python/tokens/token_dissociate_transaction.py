@@ -1,5 +1,5 @@
 """
-hiero_sdk_python.transaction.transaction
+hiero_sdk_python.tokens.token_dissociate_transaction.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module provides the `TokenDissociateTransaction` class, which models
