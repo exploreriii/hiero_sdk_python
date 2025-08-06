@@ -23,7 +23,10 @@ class TokenDeleteTransaction(Transaction):
     to build and execute a token deletion transaction.
     """
 
-    def __init__(self, token_id: Optional[TokenId] = None) -> None:
+    def __init__(
+            self,
+            token_id: Optional[TokenId] = None
+        ) -> None:
         """
         Initializes a new TokenDeleteTransaction instance with optional token_id.
 
@@ -53,7 +56,8 @@ class TokenDeleteTransaction(Transaction):
         Builds and returns the protobuf transaction body for token deletion.
 
         Returns:
-            transaction_body_pb2.TransactionBody: The protobuf transaction body containing the token deletion details.
+            transaction_body_pb2.TransactionBody: 
+                The protobuf transaction body containing the token deletion details.
 
         Raises:
             ValueError: If the token ID is missing.
