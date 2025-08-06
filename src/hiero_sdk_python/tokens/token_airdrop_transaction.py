@@ -18,8 +18,7 @@ from hiero_sdk_python.tokens.token_transfer import TokenTransfer
 from hiero_sdk_python.tokens.abstract_token_transfer_transaction import (
     AbstractTokenTransferTransaction,
 )
-from hiero_sdk_python.hapi.services import token_airdrop_pb2
-from hiero_sdk_python.hapi.services import transaction_body_pb2
+from hiero_sdk_python.hapi.services import token_airdrop_pb2, transaction_body_pb2
 
 class TokenAirdropTransaction(AbstractTokenTransferTransaction):
     """
