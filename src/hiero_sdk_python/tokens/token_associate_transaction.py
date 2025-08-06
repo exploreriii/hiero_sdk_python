@@ -6,6 +6,7 @@ Provides TokenAssociateTransaction, a subclass of Transaction for associating
 tokens with accounts on the Hedera network using the Hedera Token Service (HTS) API.
 """
 from typing import Optional, List
+
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.channels import _Channel
 from hiero_sdk_python.executable import _Method
@@ -26,7 +27,11 @@ class TokenAssociateTransaction(Transaction):
     to build and execute a token association transaction.
     """
 
-    def __init__(self, account_id: Optional[AccountId] = None, token_ids:Optional[List[TokenId]] = None) -> None:
+    def __init__(
+            self,
+            account_id: Optional[AccountId] = None,
+            token_ids:Optional[List[TokenId]] = None
+        ) -> None:
         """
         Initializes a new TokenAssociateTransaction instance with optional keyword arguments.
 
@@ -35,9 +40,8 @@ class TokenAssociateTransaction(Transaction):
             token_ids (list of TokenId, optional): The tokens to associate with the account.
         """
         super().__init__()
-        self.account_id = account_id
-        self.token_ids = token_ids or []
-
+        self.account_id: Optional[AccountId] = account_id
+        self.token_ids: Optional[List[TokenId]] = token_ids or []
         self._default_transaction_fee: int = 500_000_000
 
     def set_account_id(self, account_id: AccountId) -> "TokenAssociateTransaction":
@@ -55,7 +59,7 @@ class TokenAssociateTransaction(Transaction):
     def add_token_id(self, token_id: TokenId) -> "TokenAssociateTransaction":
         """Add a token ID to the association list."""
         self._require_not_frozen()
-        self.token_ids.append(token_id)
+        self.token_ids.append(token_id) if self.token_ids else None
         return self
 
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
