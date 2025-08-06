@@ -6,6 +6,8 @@ Provides TokenAirdropTransaction, a concrete transaction class for distributing
 both fungible tokens and NFTs to multiple accounts on the Hedera network via
 Hedera Token Service (HTS) airdrop functionality.
 """
+from typing import Optional, List
+
 from hiero_sdk_python.channels import _Channel
 from hiero_sdk_python.executable import _Method
 from hiero_sdk_python.account.account_id import AccountId
@@ -17,6 +19,7 @@ from hiero_sdk_python.tokens.abstract_token_transfer_transaction import (
     AbstractTokenTransferTransaction,
 )
 from hiero_sdk_python.hapi.services import token_airdrop_pb2
+from hiero_sdk_python.hapi.services import transaction_body_pb2
 
 class TokenAirdropTransaction(AbstractTokenTransferTransaction):
     """
@@ -27,9 +30,9 @@ class TokenAirdropTransaction(AbstractTokenTransferTransaction):
     """
     def __init__(
             self,
-            token_transfers: list[TokenTransfer]|None=None,
-            nft_transfers: list[TokenNftTransfer]|None=None
-        ) ->None:
+            token_transfers: Optional[List[TokenTransfer]] = None,
+            nft_transfers: Optional[List[TokenNftTransfer]] = None
+        ) -> None:
         """
         Initializes a new TokenAirdropTransaction instance.
 
@@ -170,7 +173,7 @@ class TokenAirdropTransaction(AbstractTokenTransferTransaction):
         self._add_nft_transfer(nft_id.token_id, sender, receiver, nft_id.serial_number,True)
         return self
 
-    def build_transaction_body(self):
+    def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
         """
         Builds and returns the protobuf transaction body for token airdrop.
         """
