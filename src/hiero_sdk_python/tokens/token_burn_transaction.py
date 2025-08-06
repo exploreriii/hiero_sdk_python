@@ -41,7 +41,7 @@ class TokenBurnTransaction(Transaction):
         super().__init__()
         self.token_id: Optional[TokenId] = token_id
         self.amount: Optional[int] = amount
-        self.serials: list[int] = serials if serials else []
+        self.serials: List[int] = serials if serials is not None else []
 
     def set_token_id(self, token_id: TokenId) -> "TokenBurnTransaction":
         """
@@ -155,5 +155,5 @@ class TokenBurnTransaction(Transaction):
         """
         self.token_id = TokenId._from_proto(proto.token)
         self.amount = proto.amount
-        self.serials = proto.serialNumbers
+        self.serials = list(proto.serialNumbers)
         return self
