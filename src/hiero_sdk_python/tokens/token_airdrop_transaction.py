@@ -181,7 +181,7 @@ class TokenAirdropTransaction(AbstractTokenTransferTransaction):
 
         if (len(token_transfers) < 1 or len(token_transfers) > 10):
             raise ValueError(
-                "Airdrop transfer list must contain mininum 1 and maximum 10 transfers."
+                "Airdrop transfer list must contain minimum 1 and maximum 10 transfers."
                 )
 
         token_airdrop_body = token_airdrop_pb2.TokenAirdropTransactionBody(
