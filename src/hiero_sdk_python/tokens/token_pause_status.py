@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_pause_status
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_pause_status.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenPauseStatus enum for representing token pause states:
 not applicable, paused, or unpaused.

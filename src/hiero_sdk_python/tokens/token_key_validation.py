@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_key_validation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_key_validation.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenKeyValidation enum to control whether token key validation checks
 are performed during Hedera transaction processing.

@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_nft_transfer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_nft_transfer.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenNftTransfer for representing and converting NFT transfer details
 (sender, receiver, serial number, approval) to and from protobuf messages.

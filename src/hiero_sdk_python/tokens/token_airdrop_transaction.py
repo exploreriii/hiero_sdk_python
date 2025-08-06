@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_airdrop_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_airdrop_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenAirdropTransaction, a concrete transaction class for distributing
 both fungible tokens and NFTs to multiple accounts on the Hedera network via

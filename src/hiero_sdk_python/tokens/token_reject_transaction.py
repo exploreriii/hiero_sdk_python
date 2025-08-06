@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_reject_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_reject_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenRejectTransaction for rejecting fungible token and NFT transfers on
 the Hedera network via the Hedera Token Service (HTS) API.

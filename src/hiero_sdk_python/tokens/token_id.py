@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_id
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_id.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Defines TokenId, a frozen dataclass for representing Hedera token identifiers
 (shard, realm, num) with validation and protobuf conversion utilities.

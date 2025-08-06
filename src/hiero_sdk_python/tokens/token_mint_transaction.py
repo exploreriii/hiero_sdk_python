@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_mint_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_mint_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenMintTransaction, a subclass of Transaction for minting fungible and
 non-fungible tokens on the Hedera network via the Hedera Token Service (HTS) API.

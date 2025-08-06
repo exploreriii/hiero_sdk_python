@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.tokens.token_relationship
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_relationship.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenRelationship, a dataclass modeling an account’s relationship to a token,
 including ID, symbol, balance, KYC status, freeze status, decimals, and auto-association flag.

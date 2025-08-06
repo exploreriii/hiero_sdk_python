@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_pause_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_pause_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenPauseTransaction, a subclass of Transaction for pausing a specified token
 on the Hedera network via the Hedera Token Service (HTS) API.

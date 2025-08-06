@@ -1,6 +1,6 @@
 """
-hiero_sdk_python.transaction.token_unfreeze_transaction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hiero_sdk_python.tokens.token_unfreeze_transaction.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides TokenUnfreezeTransaction, a subclass of Transaction for un-freezing a specified token
 for an account on the Hedera network using the Hedera Token Service (HTS) API.
