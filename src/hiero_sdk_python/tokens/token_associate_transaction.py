@@ -41,7 +41,7 @@ class TokenAssociateTransaction(Transaction):
         """
         super().__init__()
         self.account_id: Optional[AccountId] = account_id
-        self.token_ids: Optional[List[TokenId]] = token_ids or []
+        self.token_ids: List[TokenId] = list(token_ids) if token_ids is not None else []
         self._default_transaction_fee: int = 500_000_000
 
     def set_account_id(self, account_id: AccountId) -> "TokenAssociateTransaction":
@@ -59,7 +59,7 @@ class TokenAssociateTransaction(Transaction):
     def add_token_id(self, token_id: TokenId) -> "TokenAssociateTransaction":
         """Add a token ID to the association list."""
         self._require_not_frozen()
-        self.token_ids.append(token_id) if self.token_ids else None
+        self.token_ids.append(token_id)
         return self
 
     def build_transaction_body(self) -> transaction_body_pb2.TransactionBody:
