@@ -25,6 +25,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Switched Mirror Node endpoints used by SDK to secure ones instead of deprecated insecure endpoints (shut down on Aug 20th, see [Hedera blogpost](https://hedera.com/blog/updated-deprecation-of-the-insecure-hedera-consensus-service-hcs-mirror-node-endpoints))
 - Calls in examples for PrivateKey.from_string_ed25519(os.getenv('OPERATOR_KEY')) to PrivateKey.from_string(os.getenv('OPERATOR_KEY')) to enable general key types
 - running_examples.md in /docs/sdk_users renamed to examples.md
+- deprecated CamelCase instances in /examples such as TokenId and totalSupply to snake_case
 
 ### Removed
 - Removed the old `/documentation` folder.
