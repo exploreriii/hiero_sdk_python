@@ -14,6 +14,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - AccountDeleteTransaction Class
 - generate_proto.py
 - Bumped Hedera proto version from v0.57.3 to v0.64.3
+- examples.md in docs/sdk_developers
 
 ### Changed
 - bump solo version to `v0.12`
@@ -23,7 +24,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Documentation structure updated: contents moved from `/documentation` to `/docs`.
 - Switched Mirror Node endpoints used by SDK to secure ones instead of deprecated insecure endpoints (shut down on Aug 20th, see [Hedera blogpost](https://hedera.com/blog/updated-deprecation-of-the-insecure-hedera-consensus-service-hcs-mirror-node-endpoints))
 - Calls in examples for PrivateKey.from_string_ed25519(os.getenv('OPERATOR_KEY')) to PrivateKey.from_string(os.getenv('OPERATOR_KEY')) to enable general key types
-
+- running_examples.md in /docs/sdk_users renamed to examples.md
 
 ### Removed
 - Removed the old `/documentation` folder.
