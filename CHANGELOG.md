@@ -16,6 +16,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Refactored `examples/transfer_hbar.py` to improve modularity by separating transfer and balance query operations into dedicated functions
 - Enhanced contributing section in README.md with resource links
 - Refactored examples/topic_message_submit.py to be more modular
+- Updated test.yml workflow with step security v2.13.1, checkout v5.0.0, set up python v6.0.0, set up uv v7.1.1, hiero solo action v0.14.0
 
 ### Fixed
 - Added explicit read and write permissions to test.yml
