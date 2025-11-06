@@ -86,18 +86,18 @@ jobs:
           echo "Integration tests completed with status: $INTEGRATION_FAILED"
           echo "integration_failed=$INTEGRATION_FAILED" >> $GITHUB_OUTPUT
 
-    - name: Run all unit tests
-      id: unit
-      run: |
-        # Run pytest on the entire module, verbose, log all output
-        if ! uv run pytest tests/unit -v --disable-warnings 2>&1 | tee result.log; then
-          echo "❌ Some unit tests failed"
-          echo "unit_failed=1" >> $GITHUB_OUTPUT
-          exit 1
-        else
-          echo "✅ All unit tests passed"
-          echo "unit_failed=0" >> $GITHUB_OUTPUT
-        fi
+      - name: Run all unit tests
+        id: unit
+        run: |
+          # Run pytest on the entire module, verbose, log all output
+          if ! uv run pytest tests/unit -v --disable-warnings 2>&1 | tee result.log; then
+            echo "❌ Some unit tests failed"
+            echo "unit_failed=1" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ All unit tests passed"
+            echo "unit_failed=0" >> $GITHUB_OUTPUT
+          fi
 
 
       - name: Fail workflow if tests failed
