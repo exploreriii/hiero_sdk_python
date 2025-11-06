@@ -73,9 +73,9 @@ jobs:
           NETWORK: solo
         run: |
           INTEGRATION_FAILED=0
-          for file in $(find tests/integration -name "*.py" | sort); do
+          for file in $(find tests/integration -type f -name "*_test.py" | sort); do
             echo -e "\n************ Running $file ************"
-            if ! output=$(uv run pytest "$file" --maxfail=1 --disable-warnings -q 2>&1); then
+            if ! output=$(uv run pytest "$file" 2>&1); then
               echo "❌ $file failed:"
               echo "$output"
               INTEGRATION_FAILED=1
@@ -90,7 +90,7 @@ jobs:
         id: unit
         run: |
           UNIT_FAILED=0
-          for file in $(find tests/unit -name "*.py" | sort); do
+          for file in $(find tests/unit -type f -name "*_test.py" | sort); do
             echo -e "\n************ Running $file ************"
             if ! output=$(uv run pytest "$file" 2>&1); then
               echo "❌ $file failed:"
