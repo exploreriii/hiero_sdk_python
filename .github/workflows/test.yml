@@ -86,22 +86,19 @@ jobs:
           echo "Integration tests completed with status: $INTEGRATION_FAILED"
           echo "integration_failed=$INTEGRATION_FAILED" >> $GITHUB_OUTPUT
 
-      - name: Run unit tests per file
-        id: unit
-        run: |
-          UNIT_FAILED=0
-          for file in $(find tests/unit -type f -name "*_test.py" | sort); do
-            echo -e "\n************ Running $file ************"
-            if ! output=$(uv run pytest "$file" 2>&1); then
-              echo "❌ $file failed:"
-              echo "$output"
-              UNIT_FAILED=1
-            else
-              echo "✅ $file succeeded"
-            fi
-          done
-          echo "Unit tests completed with status: $UNIT_FAILED"
-          echo "unit_failed=$UNIT_FAILED" >> $GITHUB_OUTPUT
+    - name: Run all unit tests
+      id: unit
+      run: |
+        # Run pytest on the entire module, verbose, log all output
+        if ! uv run pytest tests/unit -v --disable-warnings 2>&1 | tee result.log; then
+          echo "❌ Some unit tests failed"
+          echo "unit_failed=1" >> $GITHUB_OUTPUT
+          exit 1
+        else
+          echo "✅ All unit tests passed"
+          echo "unit_failed=0" >> $GITHUB_OUTPUT
+        fi
+
 
       - name: Fail workflow if tests failed
         run: |
