@@ -61,8 +61,8 @@ jobs:
 
       - name: Install your package
         run: pip install -e .
-
       - name: Run integration tests per file
+        id: integration
         env:
           OPERATOR_ID: ${{ steps.solo.outputs.accountId }}
           OPERATOR_KEY: ${{ steps.solo.outputs.privateKey }}
@@ -70,29 +70,43 @@ jobs:
           PUBLIC_KEY: ${{ steps.solo.outputs.publicKey }}
           NETWORK: solo
         run: |
-          for file in $(find tests/integration -name "*.py");
-          do
+          INTEGRATION_FAILED=0
+          for file in $(find tests/integration -name "*.py"); do
             echo -e "\n************ Running $file ************"
             if ! output=$(uv run pytest "$file" 2>&1); then
               echo "❌ $file failed:"
               echo "$output"
-              exit 1
+              INTEGRATION_FAILED=1
+              break   # stop remaining integration tests on first failure
             else
               echo "✅ $file succeeded"
             fi
           done
+          echo "Integration tests completed with status: $INTEGRATION_FAILED"
+          echo "integration_failed=$INTEGRATION_FAILED" >> $GITHUB_OUTPUT
 
       - name: Run unit tests per file
+        id: unit
         run: |
-          for file in $(find tests/unit -name "*.py"); 
-          do
+          UNIT_FAILED=0
+          for file in $(find tests/unit -name "*.py"); do
             echo -e "\n************ Running $file ************"
             if ! output=$(uv run pytest "$file" 2>&1); then
               echo "❌ $file failed:"
               echo "$output"
-              exit 1
+              UNIT_FAILED=1
+              break   # stop remaining unit tests on first failure
             else
               echo "✅ $file succeeded"
             fi
           done
+          echo "Unit tests completed with status: $UNIT_FAILED"
 
+      - name: Fail workflow if tests failed
+        run: |
+          if [ "${{ steps.integration.outputs.integration_failed }}" -eq 1 ] || [ "$UNIT_FAILED" -eq 1 ]; then
+            echo "❌ Some tests failed. Failing workflow."
+            exit 1
+          else
+            echo "✅ All tests passed!"
+          fi
