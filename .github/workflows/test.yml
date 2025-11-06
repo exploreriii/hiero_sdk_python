@@ -70,7 +70,6 @@ jobs:
           PUBLIC_KEY: ${{ steps.solo.outputs.publicKey }}
           NETWORK: solo
         run: |
-          set -e
           for file in $(find tests/integration -name "*.py");
           do
             echo -e "\n************ Running $file ************"
@@ -85,8 +84,7 @@ jobs:
 
       - name: Run unit tests per file
         run: |
-          set -e
-          for file in $(find tests/unit -name "*.py");
+          for file in $(find tests/unit -name "*.py"); 
           do
             echo -e "\n************ Running $file ************"
             if ! output=$(uv run pytest "$file" 2>&1); then
@@ -97,3 +95,4 @@ jobs:
               echo "✅ $file succeeded"
             fi
           done
+
