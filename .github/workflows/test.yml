@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - '**'
-  workflow_dispatch:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,7 +14,6 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -63,7 +62,7 @@ jobs:
       - name: Install your package
         run: pip install -e .
 
-      - name: Run integration tests
+      - name: Run integration tests per file
         env:
           OPERATOR_ID: ${{ steps.solo.outputs.accountId }}
           OPERATOR_KEY: ${{ steps.solo.outputs.privateKey }}
@@ -71,8 +70,30 @@ jobs:
           PUBLIC_KEY: ${{ steps.solo.outputs.publicKey }}
           NETWORK: solo
         run: |
-          uv run pytest -m integration
+          set -e
+          for file in $(find tests/integration -name "*.py");
+          do
+            echo -e "\n************ Running $file ************"
+            if ! output=$(uv run pytest "$file" 2>&1); then
+              echo "❌ $file failed:"
+              echo "$output"
+              exit 1
+            else
+              echo "✅ $file succeeded"
+            fi
+          done
 
-      - name: Run unit tests
+      - name: Run unit tests per file
         run: |
-          uv run pytest -m unit
+          set -e
+          for file in $(find tests/unit -name "*.py");
+          do
+            echo -e "\n************ Running $file ************"
+            if ! output=$(uv run pytest "$file" 2>&1); then
+              echo "❌ $file failed:"
+              echo "$output"
+              exit 1
+            else
+              echo "✅ $file succeeded"
+            fi
+          done
