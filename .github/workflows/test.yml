@@ -71,8 +71,8 @@ jobs:
           NETWORK: solo
         run: |
           INTEGRATION_FAILED=0
-          for file in $(find tests/integration -name "*.py" | sort);            
-          echo -e "\n************ Running $file ************"
+          for file in $(find tests/integration -name "*.py" | sort); do
+            echo -e "\n************ Running $file ************"
             if ! output=$(uv run pytest "$file" 2>&1); then
               echo "❌ $file failed:"
               echo "$output"
