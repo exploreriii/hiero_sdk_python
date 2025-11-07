@@ -72,19 +72,18 @@ jobs:
           PUBLIC_KEY: ${{ steps.solo.outputs.publicKey }}
           NETWORK: solo
         run: |
-          INTEGRATION_FAILED=0
-          for file in $(find tests/integration -type f -name "*_test.py" | sort | grep -v "utils_for_test.py"); do
-            echo -e "\n************ Running $file ************"
-            if ! output=$(uv run pytest "$file" 2>&1); then
-              echo "❌ $file failed:"
-              echo "$output"
-              INTEGRATION_FAILED=1
-            else
-              echo "✅ $file succeeded"
-            fi
-          done
-          echo "Integration tests completed with status: $INTEGRATION_FAILED"
-          echo "integration_failed=$INTEGRATION_FAILED" >> $GITHUB_OUTPUT
+          echo "🚀 Running integration tests..."
+          uv run pytest tests/integration -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_integration.log
+          pytest_exit=${PIPESTATUS[0]}
+          if [ $pytest_exit -ne 0 ]; then
+            echo "❌ Some integration tests failed"
+            echo "integration_failed=1" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ All integration tests passed"
+            echo "integration_failed=0" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run all unit tests
         id: unit
         run: |
