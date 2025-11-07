@@ -52,7 +52,9 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Fixes a type conflict in `token_id.py` where `from_string` could receive `None`, preventing a runtime error by raising a `ValueError` if the input is missing. #630
 - Dependabot alerts (version bumps)
 - Fixed incorrect `TokenType` import (protobuf vs. SDK enum) in 18 example files.
-  
+- chore: fix the examples workflow to log error messages and run on import failure (#738)
+- chore: fix test.yml workflow to log import errors (#740)
+
 ### Breaking Changes
 - chore: changed the file names airdrop classes (#631)
 {pending_airdrop_id.py -> token_airdrop_pending_id.py}
@@ -170,7 +172,6 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Add strict type hints to `TransactionGetReceiptQuery` (#420)
 - Fixed broken documentation links in CONTRIBUTING.md by converting absolute GitHub URLs to relative paths
 - Updated all documentation references to use local paths instead of pointing to hiero-sdk project hub
-- chore: fix the examples workflow to log error messages and run on import failure (#738)
 
 ## [0.1.5] - 2025-09-25
 
