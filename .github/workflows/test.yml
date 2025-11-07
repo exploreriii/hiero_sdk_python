@@ -74,6 +74,7 @@ jobs:
           PUBLIC_KEY: ${{ steps.solo.outputs.publicKey }}
           NETWORK: solo
         run: |
+          set -o pipefail
           echo "🚀 Running integration tests..."
           uv run pytest tests/integration -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_integration.log
           pytest_exit=${PIPESTATUS[0]}
@@ -89,6 +90,7 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+          set -o pipefail
           echo "🚀 Running unit tests..."
           uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_unit.log
           pytest_exit=${PIPESTATUS[0]}
