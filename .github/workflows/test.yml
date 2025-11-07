@@ -55,16 +55,18 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "OPERATOR_ID=${{ steps.solo.outputs.accountId }}"
-          echo "OPERATOR_KEY=${{ steps.solo.outputs.privateKey }}"
-          echo "ADMIN_KEY=${{ steps.solo.outputs.privateKey }}"
-          echo "PUBLIC_KEY=${{ steps.solo.outputs.publicKey }}"
+          echo "OPERATOR_ID=${{ steps.solo.outputs.accountId }}" >> $GITHUB_ENV
+          echo "OPERATOR_KEY=${{ steps.solo.outputs.privateKey }}" >> $GITHUB_ENV
+          echo "ADMIN_KEY=${{ steps.solo.outputs.privateKey }}" >> $GITHUB_ENV
+          echo "PUBLIC_KEY=${{ steps.solo.outputs.publicKey }}" >> $GITHUB_ENV
 
       - name: Install your package
         run: pip install -e .
 
       - name: Run all integration tests
         id: integration
+        continue-on-error: true
+        shell: bash
         env:
           OPERATOR_ID: ${{ steps.solo.outputs.accountId }}
           OPERATOR_KEY: ${{ steps.solo.outputs.privateKey }}
@@ -75,7 +77,7 @@ jobs:
           echo "🚀 Running integration tests..."
           uv run pytest tests/integration -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_integration.log
           pytest_exit=${PIPESTATUS[0]}
-          echo "integration_failed=$pytest_exit" >> $GITHUB_OUTPUT
+          echo "integration_failed=$pytest_exit" >> "$GITHUB_OUTPUT"
           if [ $pytest_exit -ne 0 ]; then
             echo "❌ Some integration tests failed"
           else
@@ -84,11 +86,13 @@ jobs:
 
       - name: Run all unit tests
         id: unit
+        continue-on-error: true
+        shell: bash
         run: |
           echo "🚀 Running unit tests..."
           uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_unit.log
           pytest_exit=${PIPESTATUS[0]}
-          echo "unit_failed=$pytest_exit" >> $GITHUB_OUTPUT
+          echo "unit_failed=$pytest_exit" >> "$GITHUB_OUTPUT"
           if [ $pytest_exit -ne 0 ]; then
             echo "❌ Some unit tests failed"
           else
@@ -96,8 +100,9 @@ jobs:
           fi
 
       - name: Fail workflow if any tests failed
+        shell: bash
         run: |
-          if [ "${{ steps.integration.outputs.integration_failed }}" -ne 0 ] || [ "${{ steps.unit.outputs.unit_failed }}" -ne 0 ]; then
+          if [ "${{ steps.integration.outputs.integration_failed }}" != "0" ] || [ "${{ steps.unit.outputs.unit_failed }}" != "0" ]; then
             echo "❌ Some tests failed. Failing workflow."
             exit 1
           else
