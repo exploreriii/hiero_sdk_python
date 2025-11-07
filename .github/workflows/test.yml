@@ -85,12 +85,14 @@ jobs:
           done
           echo "Integration tests completed with status: $INTEGRATION_FAILED"
           echo "integration_failed=$INTEGRATION_FAILED" >> $GITHUB_OUTPUT
-
       - name: Run all unit tests
         id: unit
         run: |
-          # Run pytest on the entire module, verbose, log all output
-          if ! uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result.log; then
+          # Run pytest and capture output
+          uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result.log
+          pytest_exit=${PIPESTATUS[0]}  # get pytest exit code
+
+          if [ $pytest_exit -ne 0 ]; then
             echo "❌ Some unit tests failed"
             echo "unit_failed=1" >> $GITHUB_OUTPUT
             exit 1
