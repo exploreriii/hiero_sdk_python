@@ -1,4 +1,4 @@
-name: Hiero Solo Integration Tests
+name: Hiero Solo Integration & Unit Tests
 
 on:
   push:
@@ -63,7 +63,7 @@ jobs:
       - name: Install your package
         run: pip install -e .
 
-      - name: Run integration tests per file
+      - name: Run all integration tests
         id: integration
         env:
           OPERATOR_ID: ${{ steps.solo.outputs.accountId }}
@@ -75,34 +75,29 @@ jobs:
           echo "🚀 Running integration tests..."
           uv run pytest tests/integration -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_integration.log
           pytest_exit=${PIPESTATUS[0]}
+          echo "integration_failed=$pytest_exit" >> $GITHUB_OUTPUT
           if [ $pytest_exit -ne 0 ]; then
             echo "❌ Some integration tests failed"
-            echo "integration_failed=1" >> $GITHUB_OUTPUT
-            exit 1
           else
             echo "✅ All integration tests passed"
-            echo "integration_failed=0" >> $GITHUB_OUTPUT
           fi
 
       - name: Run all unit tests
         id: unit
         run: |
-          # Run pytest and capture output
-          uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result.log
-          pytest_exit=${PIPESTATUS[0]}  # get pytest exit code
-
+          echo "🚀 Running unit tests..."
+          uv run pytest tests/unit -v --disable-warnings --continue-on-collection-errors 2>&1 | tee result_unit.log
+          pytest_exit=${PIPESTATUS[0]}
+          echo "unit_failed=$pytest_exit" >> $GITHUB_OUTPUT
           if [ $pytest_exit -ne 0 ]; then
             echo "❌ Some unit tests failed"
-            echo "unit_failed=1" >> $GITHUB_OUTPUT
-            exit 1
           else
             echo "✅ All unit tests passed"
-            echo "unit_failed=0" >> $GITHUB_OUTPUT
           fi
 
-      - name: Fail workflow if tests failed
+      - name: Fail workflow if any tests failed
         run: |
-          if [ "${{ steps.integration.outputs.integration_failed }}" -eq 1 ] || [ "${{ steps.unit.outputs.unit_failed }}" -eq 1 ]; then
+          if [ "${{ steps.integration.outputs.integration_failed }}" -ne 0 ] || [ "${{ steps.unit.outputs.unit_failed }}" -ne 0 ]; then
             echo "❌ Some tests failed. Failing workflow."
             exit 1
           else
