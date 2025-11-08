@@ -1,5 +1,4 @@
 name: PythonBot - Workflow Failure Notifier
-
 on:  
   workflow_dispatch:
   workflow_run:
@@ -9,7 +8,7 @@ on:
       - "Run Examples"
     types:
       - completed
-
+ 
 permissions:
   contents: read
   pull-requests: write
