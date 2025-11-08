@@ -51,8 +51,8 @@ def proto_account_info():
 def test_account_info_initialization(account_info):
     """Test the initialization of the AccountInfo class"""
     assert account_info.account_id == AccountId(0, 0, 100)
-    assert account_info.contract_account_id == "0.0.100"
-    assert account_info.is_deleted is False
+    assert account_info.contract_account_id == "0.0.500"
+    assert account_info.is_deleted is True
     assert account_info.proxy_received.to_tinybars() == 1000
     assert account_info.key is not None
     assert account_info.balance.to_tinybars() == 5000000

@@ -18,7 +18,7 @@ def test_build_account_balance_query(mock_account_ids):
     """Test building a CryptoGetAccountBalanceQuery with a valid account ID."""
     account_id_sender, *_ = mock_account_ids
     query = CryptoGetAccountBalanceQuery(account_id=account_id_sender)
-    assert query.account_id == account_id_sender
+    assert query.account_id == 123
 
 
 def test_execute_account_balance_query():
