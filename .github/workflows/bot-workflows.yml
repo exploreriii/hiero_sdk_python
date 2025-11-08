@@ -54,9 +54,7 @@ jobs:
             - [Community Calls](https://zoom-lfx.platform.linuxfoundation.org/meetings/hiero?view=week)
 
             Thank you for contributing!
-
             From the Hiero Python SDK Team
-            EOF
+          EOF
             )
-
             gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
