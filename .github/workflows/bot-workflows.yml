@@ -1,0 +1,45 @@
+name: PythonBot - Workflow Failure Notifier
+
+on:
+  workflow_run:
+    workflows: 
+      - "Run Examples"
+      - "PR Formatting"
+      - "Hiero Solo Integration Tests"
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  notify-pr:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PRs associated with the workflow run
+        id: pr
+        run: |
+          PR_NUMBER=$(gh run view ${{ github.event.workflow_run.id }} --repo ${{ github.repository }} --json pullRequests --jq '.pullRequests[0].number')
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
+      - name: Comment on PR
+        if: env.PR_NUMBER != ''
+        run: |
+          REPO="${{ github.repository }}"
+          COMMENT=$(cat <<EOF
+          Hi, this is WorkflowBot.
+          The checks we ran on your PR have failed. These must pass to be merge-ready. 
+          Please check the logs to resolve issues and get in touch if you need help.
+          
+          Helpful resources:
+          - [CONTRIBUTING.md](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/CONTRIBUTING.md)
+          - [CHANGELOG guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/changelog_entry.md)
+          - [Discord](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/discord.md)
+          
+          Thank you!
+          EOF
+          )
+
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
