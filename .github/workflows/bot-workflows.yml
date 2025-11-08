@@ -19,11 +19,16 @@ jobs:
       - name: Get associated PR number
         id: get-pr
         run: |
-          # Pull the first PR linked to this workflow run
-          PR_NUMBER=$(gh run view ${{ github.event.workflow_run.id }} \
+          # Get "id" from the workflow run
+          HEAD_BRANCH=$(gh run view ${{ github.event.workflow_run.id }} \
             --repo ${{ github.repository }} \
-            --json pullRequests --jq '.pullRequests[0].number')
+            --json headBranch --jq '.headBranch')
+
+          # Find the PR number for this branch
+          PR_NUMBER=$(gh pr list --repo ${{ github.repository }} --state all --head "$HEAD_BRANCH" --json number --jq '.[0].number')
+
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
 
       - name: Comment on PR
         if: env.PR_NUMBER != ''
