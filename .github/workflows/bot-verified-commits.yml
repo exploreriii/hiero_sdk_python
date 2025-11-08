@@ -34,7 +34,7 @@ jobs:
             COMMENT=$(cat <<EOF
             Hi, this is VerificationBot. 
             Your pull request cannot be merged as it has **unverified commits**. 
-            View your commit verification status here: [Commits Tab]($COMMITS_URL).
+            View your commit verification status: [Commits Tab]($COMMITS_URL).
             
             To achieve verified status, please read:
             - [Signing guide](https://github.com/hiero_sdk_python/hiero_sdk_python/blob/main/docs/sdk_developers/signing.md)
