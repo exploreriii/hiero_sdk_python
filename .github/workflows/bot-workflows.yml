@@ -2,7 +2,7 @@ name: PythonBot - Workflow Failure Notifier
 
 on:
   workflow_run:
-    workflows: 
+    workflows:
       - "PR Formatting"
     types:
       - completed
@@ -16,19 +16,21 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Get PRs associated with the workflow run
-        id: pr
+      - name: Get associated PR number
+        id: get-pr
         run: |
-          PR_NUMBER=$(gh run view ${{ github.event.workflow_run.id }} --repo ${{ github.repository }} --json pullRequests --jq '.pullRequests[0].number')
+          # Pull the first PR linked to this workflow run
+          PR_NUMBER=$(gh run view ${{ github.event.workflow_run.id }} \
+            --repo ${{ github.repository }} \
+            --json pullRequests --jq '.pullRequests[0].number')
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
       - name: Comment on PR
         if: env.PR_NUMBER != ''
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           REPO="${{ github.repository }}"
-          COMMENT="Hi, this is WorkflowBot.
-          The checks we ran on your PR have failed. These must pass to be merge-ready. 
-          Please check the logs to resolve issues and get in touch if you need help."
+          COMMENT="Hi, this is WorkflowBot. The PR Formatting workflow has failed for this pull request. Please review the logs to resolve issues and ensure all checks pass before merging."
 
           gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
