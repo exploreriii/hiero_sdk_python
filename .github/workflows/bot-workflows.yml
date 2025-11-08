@@ -1,6 +1,9 @@
 name: PythonBot - Workflow Failure Notifier
 
 on:
+  pull_request:
+    types:
+      - opened
   workflow_dispatch:
   workflow_run:
     workflows:
