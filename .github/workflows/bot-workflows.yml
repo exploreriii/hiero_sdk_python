@@ -1,10 +1,11 @@
 name: PythonBot - Workflow Failure Notifier
- 
 on:  
   workflow_dispatch:
   workflow_run:
     workflows:
       - "PR Formatting"
+      - "Hiero Solo Integration Tests"
+      - "Run Examples"
     types:
       - completed
  
