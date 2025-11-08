@@ -37,13 +37,13 @@ jobs:
             View your commit verification status: [Commits Tab]($COMMITS_URL).
             
             To achieve verified status, please read:
-            - [Signing guide](https://github.com/hiero_sdk_python/hiero_sdk_python/blob/main/docs/sdk_developers/signing.md)
-            - [README](https://github.com/hiero_sdk_python/hiero_sdk_python/blob/main/README.md)
-            - [Discord](https://github.com/hiero_sdk_python/hiero_sdk_python/blob/main/docs/discord.md)
+            - [Signing guide](https://github.com/hiero_sdk_python/blob/main/docs/sdk_developers/signing.md)
+            - [README](https://github.com/hiero_sdk_python/blob/main/README.md)
+            - [Discord](https://github.com/hiero_sdk_python/blob/main/docs/discord.md)
 
             Remember, you require a GPG key and each commit must be signed with:
             \`git commit -S -s -m "Your message here"\`
-            
+
             Thank you for contributing!
 
             From the Hiero Python SDK Team
