@@ -29,18 +29,8 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           REPO="${{ github.repository }}"
-          COMMENT=$(cat <<EOF
-          Hi, this is WorkflowBot.
+          COMMENT="Hi, this is WorkflowBot.
           The checks we ran on your PR have failed. These must pass to be merge-ready. 
-          Please check the logs to resolve issues and get in touch if you need help.
-          
-          Helpful resources:
-          - [CONTRIBUTING.md](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/CONTRIBUTING.md)
-          - [CHANGELOG guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/changelog_entry.md)
-          - [Discord](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/discord.md)
-          
-          Thank you!
-          EOF
-          )
+          Please check the logs to resolve issues and get in touch if you need help."
 
           gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
