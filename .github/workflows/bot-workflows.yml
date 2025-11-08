@@ -7,7 +7,7 @@ on:
       - "PR Formatting"
     types:
       - completed
-
+ 
 permissions:
   contents: read
   pull-requests: write
