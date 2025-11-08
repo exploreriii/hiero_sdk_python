@@ -1,10 +1,12 @@
 name: PythonBot - Workflow Failure Notifier
 
-on:
+on:  
   workflow_dispatch:
   workflow_run:
     workflows:
       - "PR Formatting"
+      - "Hiero Solo Integration Tests"
+      - "Run Examples"
     types:
       - completed
 
@@ -18,8 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get associated PR number
-        env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         id: get-pr
         run: |
           # Get "id" from the workflow run
