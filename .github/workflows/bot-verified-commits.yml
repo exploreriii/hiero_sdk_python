@@ -18,7 +18,7 @@ jobs:
 
       - name: Check for unverified commits
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           REPO="${{ github.repository }}"
