@@ -39,23 +39,24 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           REPO="${{ github.repository }}"
-COMMENT=$(cat <<EOF
-Hi, this is WorkflowBot. 
-Your pull request cannot be merged as it is not passing all our workflow checks. 
-Please click on each check to review the logs and resolve issues so all checks pass.
+            COMMENT=$(cat <<EOF
+            Hi, this is WorkflowBot. 
+            Your pull request cannot be merged as it is not passing all our workflow checks. 
+            Please click on each check to review the logs and resolve issues so all checks pass.
 
-To help you:
-- [DCO signing guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/signing.md)
-- [Changelog guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/changelog_entry.md)
-- [Merge conflicts guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/merge_conflicts.md)
-- [Rebase guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/rebasing.md)
-- [Testing guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/testing.md)
-- [Discord](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/discord.md)
-- [Community Calls](https://zoom-lfx.platform.linuxfoundation.org/meetings/hiero?view=week)
+            To help you:
+            - [DCO signing guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/signing.md)
+            - [Changelog guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/changelog_entry.md)
+            - [Merge conflicts guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/merge_conflicts.md)
+            - [Rebase guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/rebasing.md)
+            - [Testing guide](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/sdk_developers/testing.md)
+            - [Discord](https://github.com/hiero-ledger/hiero-sdk-python/blob/main/docs/discord.md)
+            - [Community Calls](https://zoom-lfx.platform.linuxfoundation.org/meetings/hiero?view=week)
 
-Thank you for contributing!
+            Thank you for contributing!
 
-From the Hiero Python SDK Team
-EOF
-)
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
+            From the Hiero Python SDK Team
+            EOF
+            )
+
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
