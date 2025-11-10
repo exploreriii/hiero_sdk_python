@@ -68,7 +68,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [0.1.7] - 2025-10-28
 
 ### Added
-
+- New workflow pr-checks-naming-tests that responds with an error if incorrectly named test files are added
 - Expanded `README.md` with a new "Follow Us" section detailing how to watch, star, and fork the repository (#472).
 - Refactored `examples/topic_create.py` into modular functions for better readability and reuse.
 - Add Rebasing and Signing section to signing.md with instructions for maintaining commit verification during rebase operations (#556)
