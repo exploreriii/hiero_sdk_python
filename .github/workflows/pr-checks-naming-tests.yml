@@ -24,7 +24,7 @@ jobs:
 
       # Using the specific commit SHA for actions/checkout@v5.0.0, as requested
       - name: Checkout repository
-        uses: actions/checkout@8ade135a368bb9860e15bcafd2cf940ba6f36c4c
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: Validate test file naming convention
         run: |
