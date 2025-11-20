@@ -6,7 +6,7 @@ from hiero_sdk_python.timestamp import Timestamp
 from hiero_sdk_python.Duration import Duration
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.tokens.token_relationship import TokenRelationship
-from hiero_sdk_python.account.account_info import AccountInfo
+from hedera.account.account_info import AccountInfo
 
 def create_mock_account_id() -> AccountId:
     """Create a mock AccountId."""
