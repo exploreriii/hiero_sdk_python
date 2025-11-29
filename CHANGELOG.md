@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+- bad new entry
 
 ### Added
 
@@ -21,7 +22,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [0.1.9] - 2025-11-26
 
 ### Added
-
+- Add new entry that is good
 - Add a limit of one comment for PR to the commit verification bot. [#892]
 - Removed `actions/checkout@v4` from `bot-verified-commits.yml`
 - Add comprehensive documentation for `ReceiptStatusError` in `docs/sdk_developers/training/receipt_status_error.md`
@@ -44,7 +45,6 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Add `examples/topic_info.py` to demonstrate `TopicInfo` operations.
 - feat: Allow `PrivateKey` to be used for keys in `TopicCreateTransaction` for consistency.
 - EvmAddress class
-- `alias`, `staked_account_id`, `staked_node_id` and `decline_staking_reward` fields to AccountCreateTransaction
 - `staked_account_id`, `staked_node_id` and `decline_staking_reward` fields to AccountInfo
 - Added `examples/token_create_transaction_supply_key.py` to demonstrate token creation with and without a supply key.
 - Added `examples/token_create_transaction_kyc_key.py` to demonstrate KYC key functionality, including creating tokens with/without KYC keys, granting/revoking KYC status, and understanding KYC requirements for token transfers.
@@ -93,7 +93,6 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - added FreezeTransaction class
 - added FreezeType class
 - Added `docs/sdk_developers/pylance.md`, a new guide explaining how to set up and use **Pylance** in VS Code for validating imports, file references, and methods before review. (#713)
-- feat: TokenAirdropClaim Transaction, examples (with signing required and not), unit and integration tests (#201)
 - docs: Add Google-style docstrings to `TokenId` class and its methods in `token_id.py`.
 - added Google-style docstrings to the `TransactionRecord` class including all dataclass fields, `__repr__`, `_from_proto()` & `_to_proto()` methods.
 - Standardized docstrings, improved error handling, and updated type hinting (`str | None` to `Optional[str]`) for the `FileId` class (#652).
