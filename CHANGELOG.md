@@ -2,14 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org).
-This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). 
 
 ## [Unreleased]
 
 ### Added
 - Added a github template for good first issues
 - Added `.github/workflows/bot-assignment-check.yml` to limit non-maintainers to 2 concurrent issue assignments.
-- Add examples/tokens/token_create_transaction_pause_key.py example demonstrating token pause/unpause behavior and pause key usage (#833)
+- Add examples/tokens/token_create_transaction_pause_key.py example demonstrating token pause/unpause behavior and pause key usage (#833) 
 - Added `docs/sdk_developers/training/transaction_lifecycle.md` to explain the typical lifecycle of executing a transaction using the Hedera Python SDK.
 - Add inactivity bot workflow to unassign stale issue assignees (#952)
 - Made custom fraction fee end to end
