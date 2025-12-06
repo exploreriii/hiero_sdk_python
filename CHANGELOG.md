@@ -21,7 +21,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Fixed
 - Fixed inactivity bot workflow not checking out repository before running (#964)
 - Fixed good first issue template to use yaml
-- lack of plural in issue template config.yml  
+- lack of plural in issue template config.yml   
 
 ### Breaking Change
 
