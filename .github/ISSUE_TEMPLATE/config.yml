@@ -6,6 +6,8 @@ issue_templates:
     filename: 01-good_first_issue.yml
   - name: Test
     filename: 02-test.yml
+  - name: Live Version
+    filename: 03-current-live-version.yml
 # Test contact links
 contact_links:
   - name: Hiero Discord
