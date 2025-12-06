@@ -14,7 +14,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Add inactivity bot workflow to unassign stale issue assignees (#952)
 - Made custom fraction fee end to end
 - Added config file
-
+ 
 ### Changed
 - Allow `PublicKey` for `TokenUpdateKeys` in `TokenUpdateTransaction`, enabling non-custodial workflows where operators can build transactions using only public keys (#934).
    
