@@ -4,7 +4,8 @@ blank_issues_enabled: true
 issue_templates:
   - name: Good First Issue
     filename: 01-good_first_issue.yml
-
+  - name: Test
+    filename: 02-test.yml
 # Test contact links
 contact_links:
   - name: Hiero Discord
