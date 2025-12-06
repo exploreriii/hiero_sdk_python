@@ -1,8 +1,7 @@
-name: Good First Issue Template
-description: Create a Good First Issue.
+name: Good First Issue Template Duplicate
+description: Create a Good First Issue Duplicate.
 title: "[Good First Issue]: "
 labels: ["Good First Issue"]
-type: Feature
 assignees: []
 body:
   - type: markdown
