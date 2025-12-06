@@ -8,6 +8,8 @@ issue_templates:
     filename: 02-test.yml
   - name: Live Version
     filename: 03-current-live-version.yml
+  - name: Live Version With Fix
+    filename: 04-fixed-live-version.yml
 # Test contact links
 contact_links:
   - name: Hiero Discord
