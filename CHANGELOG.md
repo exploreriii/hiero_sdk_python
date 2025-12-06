@@ -17,7 +17,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Changed
 - Allow `PublicKey` for `TokenUpdateKeys` in `TokenUpdateTransaction`, enabling non-custodial workflows where operators can build transactions using only public keys (#934).
- 
+  
 ### Fixed
 - Fixed inactivity bot workflow not checking out repository before running (#964)
 - Fixed good first issue template to use yaml

@@ -2,7 +2,6 @@ name: Good First Issue Template
 description: Create a Good First Issue.
 title: "[Good First Issue]: "
 labels: ["Good First Issue"]
-type: Feature
 assignees: []
 body:
   - type: markdown
