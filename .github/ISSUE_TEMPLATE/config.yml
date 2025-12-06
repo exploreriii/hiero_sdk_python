@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 
 # Only show specific issue templates
-issue_template:
+issue_templates:
   - name: Good First Issue
     filename: 01-good_first_issue.yml
 
