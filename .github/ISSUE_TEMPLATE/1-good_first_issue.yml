@@ -2,6 +2,7 @@ name: Good First Issue Template
 description: Create a Good First Issue.
 title: "[Good First Issue]: "
 labels: ["Good First Issue"]
+type: Feature
 assignees: []
 body:
   - type: markdown
@@ -20,7 +21,7 @@ body:
     attributes:
       label: Problem
       description: What is the problem you are trying to solve?
-      value: |
+      value:
         ## 👾 Description of the issue
 
         EDIT THIS SECTION
@@ -107,7 +108,7 @@ body:
     attributes:
       label: Proposed Solution
       description: Suggest steps to resolve the issue. Include relevant links or references.
-      value: |
+      value:
         ## 💡 Solution
 
         EDIT THIS SECTION
@@ -138,7 +139,7 @@ body:
     attributes:
       label: Implementation Steps
       description: Break down technical steps needed to solve the issue. Be clear and easy to follow.
-      value: |
+      value:
         ### 👩‍💻 Implementation
 
         EDIT THIS SECTION
