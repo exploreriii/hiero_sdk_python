@@ -2,11 +2,16 @@
 
 // dryRun env var: any case-insensitive 'true' value will enable dry-run
 const dryRun = (process.env.DRY_RUN || 'false').toString().toLowerCase() === 'true';
-const daysBeforeClose = parseInt(process.env.DAYS_BEFORE_CLOSE || '3', 10);
+// const daysBeforeClose = parseInt(process.env.DAYS_BEFORE_CLOSE || '3', 10);
+const daysBeforeClose = Number(process.env.DAYS_BEFORE_CLOSE || '0.0035');
+
 const requireAuthorAssigned = (process.env.REQUIRE_AUTHOR_ASSIGNED || 'true').toLowerCase() === 'true';
 
+// const getDaysOpen = (pr) =>
+//   Math.floor((Date.now() - new Date(pr.created_at)) / (24 * 60 * 60 * 1000));
+
 const getDaysOpen = (pr) =>
-  Math.floor((Date.now() - new Date(pr.created_at)) / (24 * 60 * 60 * 1000));
+  (Date.now() - new Date(pr.created_at)) / (24 * 60 * 60 * 1000);
 
 // Check if the PR author is assigned to the issue
 const isAuthorAssigned = (issue, login) => {
@@ -97,27 +102,26 @@ async function closePR(github, pr, owner, repo, reason) {
 module.exports = async ({ github, context }) => {
   try {
     const { owner, repo } = context.repo;
-  const prs = await github.paginate(github.rest.pulls.list, {
-    owner, repo, state: 'open', per_page: 100
-  });
+    const prs = await github.paginate(github.rest.pulls.list, {
+      owner, repo, state: 'open', per_page: 100
+    });
 
-  console.log(`Evaluating ${prs.length} open PRs\n`);
+    console.log(`Evaluating ${prs.length} open PRs\n`);
 
-  for (const pr of prs) {
-    const days = getDaysOpen(pr);
-    if (days < daysBeforeClose)
-    {
-      console.log(`PR #${pr.number} link: ${pr.html_url} is only ${days} days old. Skipping.`);
-      continue;
+    for (const pr of prs) {
+      const days = getDaysOpen(pr);
+      if (days < daysBeforeClose) {
+        console.log(`PR #${pr.number} link: ${pr.html_url} is only ${days} days old. Skipping.`);
+        continue;
+      }
+
+      const { valid, reason } = await validatePR(github, pr, owner, repo);
+      if (valid) {
+        console.log(`PR #${pr.number} link: ${pr.html_url} is Valid ✓.`);
+      } else {
+        await closePR(github, pr, owner, repo, reason);
+      }
     }
-
-    const { valid, reason } = await validatePR(github, pr, owner, repo);
-    if (valid) {
-      console.log(`PR #${pr.number} link: ${pr.html_url} is Valid ✓.`);
-    } else {
-      await closePR(github, pr, owner, repo, reason);
-    }
-  }
   } catch (err) {
     console.error('Unexpected error:', err.message);
   }
