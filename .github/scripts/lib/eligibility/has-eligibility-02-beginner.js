@@ -29,9 +29,9 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned a Beginner issue
  */
-const { isTeam } = require('./is-team');
+const { isTeam } = require('../team/has-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
-const { hasCompletedGfi } = require('..counts/has-completed-n-01-gfi');
+const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
 const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 /**

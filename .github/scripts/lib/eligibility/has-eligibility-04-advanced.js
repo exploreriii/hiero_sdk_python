@@ -30,7 +30,7 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned an Advanced issue
  */
-const { isCommitter } = require('..team/has-team-committer-maintainer');
+const { isCommitter } = require('../team/has-team-committer-maintainer');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { hasCompletedIntermediate } = require('../counts/has-completed-n-03-intermediate');
 const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');

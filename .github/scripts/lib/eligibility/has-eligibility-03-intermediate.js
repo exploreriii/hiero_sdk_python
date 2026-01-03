@@ -30,7 +30,7 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned an Intermediate issue
  */
-const { isTeam } = require('./is-team');
+const { isTeam } = require('../team/has-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
 const { hasCompletedBeginner } = require('../counts/has-completed-n-02-beginner');
