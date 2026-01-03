@@ -9,8 +9,15 @@
  * (for example, whether 1 or more Advanced issues are required) should be
  * expressed at the call site.
  *
+ * IMPORTANT CONTEXT:
+ * - The `advanced` label was introduced at a known point in time.
+ * - Pull requests merged before the label introduction date cannot qualify.
+ * - This helper stops scanning once PRs predate the label introduction
+ *   to avoid unnecessary API calls.
+ *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Stops scanning once PRs predate the Advanced label introduction date.
  * - Inspects PR timelines to identify issues closed by each PR.
  * - Counts issues labeled `advanced`.
  * - Returns early once the required count is reached.
@@ -24,6 +31,16 @@
  * @returns {Promise<boolean>} Whether the contributor meets the requirement
  */
 const ADVANCED_ISSUE_LABEL = 'advanced';
+
+/**
+ * Date when the Advanced label began being used in this repository.
+ * Used as a hard cutoff to avoid scanning PRs that cannot qualify.
+ *
+ * NOTE:
+ * If this date changes, update it alongside any documentation
+ * describing Advanced issue eligibility.
+ */
+const ADVANCED_LABEL_INTRODUCED_AT = new Date('2025-12-05');
 
 const hasCompletedAdvanced = async ({
     github,
@@ -42,7 +59,7 @@ const hasCompletedAdvanced = async ({
 
     // Fetch merged pull requests authored by the contributor.
     // Results are ordered newest → oldest to allow early exits
-    // once the required number of Advanced issues is found.
+    // both on success and on label cutoff.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -62,11 +79,21 @@ const hasCompletedAdvanced = async ({
 
     let completedCount = 0;
 
-    // Inspect each merged PR to determine whether it closed
-    // one or more Advanced-labeled issues.
     for (const pr of prs) {
-        // Fetch the PR timeline to identify issues that were closed
-        // as a result of this PR being merged.
+        // Prefer `closed_at` when available, as it best represents
+        // when the PR was actually merged.
+        const mergedAt = new Date(pr.closed_at ?? pr.updated_at);
+
+        // Stop scanning once PRs predate the Advanced label introduction.
+        if (mergedAt < ADVANCED_LABEL_INTRODUCED_AT) {
+            console.log('[has-advanced] Stop: PR predates Advanced label', {
+                prNumber: pr.number,
+                mergedAt: mergedAt.toISOString(),
+            });
+            break;
+        }
+
+        // Inspect the PR timeline to identify issues closed by this PR
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -85,9 +112,7 @@ const hasCompletedAdvanced = async ({
             ) {
                 const issueNumber = event.source.issue.number;
 
-                // Fetch the linked issue so we can inspect its labels.
-                // If the issue is labeled `advanced`, it counts toward
-                // the contributor's Advanced requirement.
+                // Fetch the linked issue so we can inspect its labels
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,

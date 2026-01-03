@@ -9,8 +9,15 @@
  * (for example, whether 2 or 3 Intermediate issues are required) should be
  * expressed at the call site, not hard-coded here.
  *
+ * IMPORTANT CONTEXT:
+ * - The `intermediate` label was introduced recently.
+ * - Pull requests merged before the label introduction date cannot qualify.
+ * - This helper stops scanning once PRs predate the label introduction
+ *   to avoid unnecessary API calls.
+ *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Stops scanning once PRs predate the Intermediate label introduction date.
  * - Inspects PR timelines to identify issues closed by each PR.
  * - Counts issues labeled `intermediate`.
  * - Returns early once the required count is reached.
@@ -24,6 +31,12 @@
  * @returns {Promise<boolean>} Whether the contributor meets the requirement
  */
 const INTERMEDIATE_ISSUE_LABEL = 'intermediate';
+
+/**
+ * Date when the Intermediate label began being used in this repository.
+ * Used as a hard cutoff to avoid scanning PRs that cannot qualify.
+*/
+const INTERMEDIATE_LABEL_INTRODUCED_AT = new Date('2025-12-05');
 
 const hasCompletedIntermediate = async ({
     github,
@@ -42,7 +55,7 @@ const hasCompletedIntermediate = async ({
 
     // Fetch merged pull requests authored by the contributor.
     // Results are ordered newest → oldest to allow early exits
-    // once the required number of Intermediate issues is found.
+    // both on success and on label cutoff.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -62,11 +75,21 @@ const hasCompletedIntermediate = async ({
 
     let completedCount = 0;
 
-    // Inspect each merged PR to determine whether it closed
-    // one or more Intermediate-labeled issues.
     for (const pr of prs) {
-        // Fetch the PR timeline to identify issues that were closed
-        // as a result of this PR being merged.
+        // Prefer `closed_at` when available, as it best represents
+        // when the PR was actually merged.
+        const mergedAt = new Date(pr.closed_at ?? pr.updated_at);
+
+        // Stop scanning once PRs predate the Intermediate label introduction.
+        if (mergedAt < INTERMEDIATE_LABEL_INTRODUCED_AT) {
+            console.log('[has-intermediate] Stop: PR predates Intermediate label', {
+                prNumber: pr.number,
+                mergedAt: mergedAt.toISOString(),
+            });
+            break;
+        }
+
+        // Inspect the PR timeline to identify issues closed by this PR
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -85,9 +108,7 @@ const hasCompletedIntermediate = async ({
             ) {
                 const issueNumber = event.source.issue.number;
 
-                // Fetch the linked issue so we can inspect its labels.
-                // If the issue is labeled `intermediate`, it counts
-                // toward the contributor's Intermediate requirement.
+                // Fetch the linked issue so we can inspect its labels
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
