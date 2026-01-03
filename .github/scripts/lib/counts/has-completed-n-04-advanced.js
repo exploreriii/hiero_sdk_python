@@ -2,18 +2,6 @@
  * Determines whether a contributor has completed at least `requiredCount`
  * Advanced issues in the given repository.
  *
- * An Advanced issue is counted when a merged pull request authored by
- * the contributor closes an issue labeled `advanced`.
- *
- * This helper is intentionally generic and parameterized. Policy decisions
- * (for example, whether 1 or more Advanced issues are required) should be
- * expressed at the call site.
- *
- * IMPORTANT CONTEXT:
- * - The `advanced` label was introduced at a known point in time.
- * - Pull requests merged before the label introduction date cannot qualify.
- * - This helper stops scanning once PRs predate the label introduction
- *   to avoid unnecessary API calls.
  *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
@@ -36,9 +24,6 @@ const ADVANCED_ISSUE_LABEL = 'advanced';
  * Date when the Advanced label began being used in this repository.
  * Used as a hard cutoff to avoid scanning PRs that cannot qualify.
  *
- * NOTE:
- * If this date changes, update it alongside any documentation
- * describing Advanced issue eligibility.
  */
 const ADVANCED_LABEL_INTRODUCED_AT = new Date('2025-12-05');
 

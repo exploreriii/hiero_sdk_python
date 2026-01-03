@@ -5,16 +5,6 @@
  * An Intermediate issue is counted when a merged pull request authored
  * by the contributor closes an issue labeled `intermediate`.
  *
- * This helper is intentionally generic and parameterized. Policy decisions
- * (for example, whether 2 or 3 Intermediate issues are required) should be
- * expressed at the call site, not hard-coded here.
- *
- * IMPORTANT CONTEXT:
- * - The `intermediate` label was introduced recently.
- * - Pull requests merged before the label introduction date cannot qualify.
- * - This helper stops scanning once PRs predate the label introduction
- *   to avoid unnecessary API calls.
- *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
  * - Stops scanning once PRs predate the Intermediate label introduction date.
