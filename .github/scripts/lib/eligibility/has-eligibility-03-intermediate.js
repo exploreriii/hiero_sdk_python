@@ -32,8 +32,8 @@
  */
 const { isTeam } = require('./is-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
-const { hasCompletedGfi } = require('./has-gfi');
-const { hasCompletedBeginner } = require('./has-beginner');
+const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
+const { hasCompletedBeginner } = require('../counts/has-completed-n-02-beginner');
 const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 /**

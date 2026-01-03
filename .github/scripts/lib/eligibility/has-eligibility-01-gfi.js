@@ -25,7 +25,7 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned a GFI
  */
-const { isTeam } = require('./is-team');
+const { isTeam } = require('..team/is-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
