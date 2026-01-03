@@ -1,13 +1,26 @@
-// Helper to count how many open issues a user is currently assigned to
-// in this repository.
-//
-// Notes:
-// - Counts ISSUES only (not PRs)
-// - Counts OPEN issues only
-// - Repo-scoped by design
-// - Intended for policy enforcement (e.g. max concurrent issues)
-
-async function countOpenAssignedIssues({ github, owner, repo, username }) {
+/**
+ * Counts the number of open GitHub issues currently assigned to a user
+ * within a specific repository.
+ *
+ *
+ * FAILURE BEHAVIOR:
+ * - Fails open by returning a very large number if the GitHub API call
+ *   fails, allowing callers to conservatively block new assignments.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
+ * @param {string} params.owner - Repository owner
+ * @param {string} params.repo - Repository name
+ * @param {string} params.username - GitHub username to check assignments for
+ * @returns {Promise<number>} Number of open issues currently assigned
+ */
+MAX_SAFE_INTEGER = 2
+const countOpenAssignedIssues = async ({
+    github,
+    owner,
+    repo,
+    username,
+}) => {
     console.log('[count-open-assigned-issues] Start check:', {
         owner,
         repo,
@@ -38,11 +51,10 @@ async function countOpenAssignedIssues({ github, owner, repo, username }) {
             message: error.message,
         });
 
-        // Fail closed or open?
-        // We FAIL OPEN here: return a high number so bots can conservatively block.
+        // Fail open: return a large number so callers can conservatively block
         return Number.MAX_SAFE_INTEGER;
     }
-}
+};
 
 module.exports = {
     countOpenAssignedIssues,

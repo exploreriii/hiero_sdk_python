@@ -1,27 +1,57 @@
-// Reusable function to check if a user has completed a Beginner Issue
-//
-// IMPORTANT CONTEXT FOR MAINTAINERS:
-// - The "beginner" label predates Intermediate issues and represents
-//   a contributor’s second onboarding step after Good First Issues.
-// - This function mirrors has-gfi.js closely on purpose so that
-//   onboarding policy remains consistent and easy to reason about.
-// - If you change logic here, you should very likely review has-gfi.js too.
-//
-
+/**
+ * Determines whether a contributor has completed a Beginner issue
+ * in the given repository.
+ *
+ * A Beginner issue represents the second onboarding step after
+ * Good First Issues. This helper checks for merged pull requests
+ * authored by the contributor that closed an issue labeled
+ * `beginner`.
+ *
+ * IMPORTANT CONTEXT FOR MAINTAINERS:
+ * - The `beginner` label predates Intermediate issues.
+ * - Older Beginner issue completions are intentionally counted.
+ * - This helper intentionally mirrors `has-gfi.js` to keep onboarding
+ *   policy consistent and easy to reason about.
+ * - If logic here changes, `has-gfi.js` should likely be reviewed.
+ *
+ * IMPLEMENTATION NOTES:
+ * - Searches merged PRs authored by the contributor.
+ * - Inspects PR timelines to find linked closed issues.
+ * - Checks linked issues for the `beginner` label.
+ * - Returns early on the first qualifying match.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
+ * @param {string} params.owner - Repository owner
+ * @param {string} params.repo - Repository name
+ * @param {string} params.username - GitHub username to check
+ * @returns {Promise<boolean>} Whether the contributor has completed a Beginner issue
+ */
 const BEGINNER_ISSUE_LABEL = 'beginner';
 
-// NOTE:
-// We intentionally do NOT apply a hard cutoff date here.
-// Beginner issues existed before Intermediate issues were introduced,
-// and older Beginner completions should still count.
-async function hasCompletedBeginner({ github, owner, repo, username }) {
+/**
+ * Checks whether a contributor has completed at least one Beginner issue.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github
+ * @param {string} params.owner
+ * @param {string} params.repo
+ * @param {string} params.username
+ * @returns {Promise<boolean>}
+ */
+const hasCompletedBeginner = async ({
+    github,
+    owner,
+    repo,
+    username,
+}) => {
     console.log('[has-beginner] Start check:', {
         owner,
         repo,
         username,
     });
 
-    // Fetch merged PRs authored by the user, sorted newest → oldest.
+    // Fetch merged PRs authored by the contributor, newest first.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -43,7 +73,7 @@ async function hasCompletedBeginner({ github, owner, repo, username }) {
             prTitle: pr.title,
         });
 
-        // Inspect the PR timeline to find issues closed by this PR.
+        // Inspect PR timeline events to find issues closed by this PR.
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -62,8 +92,6 @@ async function hasCompletedBeginner({ github, owner, repo, username }) {
                 const issueNumber = event.source.issue.number;
 
                 // Fetch the linked issue to inspect its labels.
-                // If the issue has the Beginner label, the user qualifies
-                // and we can immediately return true.
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
@@ -72,14 +100,17 @@ async function hasCompletedBeginner({ github, owner, repo, username }) {
                     });
 
                 const labels =
-                    issue.labels?.map(l => l.name) ?? [];
+                    issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(BEGINNER_ISSUE_LABEL)) {
-                    console.log('[has-beginner] Success: completed Beginner issue found', {
-                        username,
-                        prNumber: pr.number,
-                        issueNumber,
-                    });
+                    console.log(
+                        '[has-beginner] Success: completed Beginner issue found',
+                        {
+                            username,
+                            prNumber: pr.number,
+                            issueNumber,
+                        }
+                    );
 
                     // Early exit on first qualifying Beginner issue.
                     return true;
@@ -88,12 +119,13 @@ async function hasCompletedBeginner({ github, owner, repo, username }) {
         }
     }
 
-    console.log('[has-beginner] Exit: no completed Beginner issue found', {
-        username,
-    });
+    console.log(
+        '[has-beginner] Exit: no completed Beginner issue found',
+        { username }
+    );
 
     return false;
-}
+};
 
 module.exports = {
     BEGINNER_ISSUE_LABEL,

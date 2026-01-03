@@ -1,10 +1,39 @@
-// Reusable function to check if a user has completed at least
-// TWO Intermediate issues
-
+/**
+ * Determines whether a contributor has completed the required number
+ * of Intermediate issues in the given repository.
+ *
+ * An Intermediate issue is counted when a merged pull request authored
+ * by the contributor closes an issue labeled `intermediate`.
+ *
+ * This helper is used for eligibility checks (for example, gating
+ * access to advanced issues).
+ *
+ * IMPLEMENTATION NOTES:
+ * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Inspects PR timelines to identify issues closed by each PR.
+ * - Counts issues labeled `intermediate`.
+ * - Returns early once the required count is reached.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
+ * @param {string} params.owner - Repository owner
+ * @param {string} params.repo - Repository name
+ * @param {string} params.username - GitHub username to check
+ * @returns {Promise<boolean>} Whether the contributor meets the Intermediate requirement
+ */
 const INTERMEDIATE_ISSUE_LABEL = 'intermediate';
+
+/**
+ * Number of completed Intermediate issues required to qualify.
+ */
 const REQUIRED_INTERMEDIATE_COUNT = 3;
 
-async function hasCompletedIntermediate({ github, owner, repo, username }) {
+const hasCompletedIntermediate = async ({
+    github,
+    owner,
+    repo,
+    username,
+}) => {
     console.log('[has-intermediate] Start check:', {
         owner,
         repo,
@@ -60,43 +89,49 @@ async function hasCompletedIntermediate({ github, owner, repo, username }) {
                     });
 
                 const labels =
-                    issue.labels?.map(l => l.name) ?? [];
+                    issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(INTERMEDIATE_ISSUE_LABEL)) {
                     completedCount += 1;
 
-                    console.log('[has-intermediate] Found completed Intermediate issue', {
-                        username,
-                        prNumber: pr.number,
-                        issueNumber,
-                        completedCount,
-                    });
-
-                    // Early exit once requirement is met
-                    if (completedCount >= REQUIRED_INTERMEDIATE_COUNT) {
-                        console.log('[has-intermediate] Success: Intermediate requirement satisfied', {
+                    console.log(
+                        '[has-intermediate] Found completed Intermediate issue',
+                        {
                             username,
+                            prNumber: pr.number,
+                            issueNumber,
                             completedCount,
-                        });
+                        }
+                    );
+
+                    // Early exit once the requirement is met.
+                    if (completedCount >= REQUIRED_INTERMEDIATE_COUNT) {
+                        console.log(
+                            '[has-intermediate] Success: Intermediate requirement satisfied',
+                            {
+                                username,
+                                completedCount,
+                            }
+                        );
 
                         return true;
                     }
-
-                    // Important: continue scanning in case the user has
-                    // completed another Intermediate issue in a different PR
                 }
             }
         }
     }
 
-    console.log('[has-intermediate] Exit: insufficient completed Intermediate issues', {
-        username,
-        completedCount,
-        required: REQUIRED_INTERMEDIATE_COUNT,
-    });
+    console.log(
+        '[has-intermediate] Exit: insufficient completed Intermediate issues',
+        {
+            username,
+            completedCount,
+            required: REQUIRED_INTERMEDIATE_COUNT,
+        }
+    );
 
     return false;
-}
+};
 
 module.exports = {
     INTERMEDIATE_ISSUE_LABEL,

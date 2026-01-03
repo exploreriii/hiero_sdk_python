@@ -1,8 +1,34 @@
-// Reusable function to check if a user has completed an Intermediate issue
-
+/**
+ * Determines whether a contributor has completed at least one
+ * Intermediate issue in the given repository.
+ *
+ * An Intermediate issue is counted when a merged pull request authored
+ * by the contributor closes an issue labeled `intermediate`.
+ *
+ * This helper is used for eligibility checks that require prior
+ * Intermediate-level experience.
+ *
+ * IMPLEMENTATION NOTES:
+ * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Inspects PR timelines to identify issues closed by each PR.
+ * - Checks linked issues for the `intermediate` label.
+ * - Returns early on the first qualifying match.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
+ * @param {string} params.owner - Repository owner
+ * @param {string} params.repo - Repository name
+ * @param {string} params.username - GitHub username to check
+ * @returns {Promise<boolean>} Whether the contributor has completed an Intermediate issue
+ */
 const INTERMEDIATE_ISSUE_LABEL = 'intermediate';
 
-async function hasCompletedIntermediate({ github, owner, repo, username }) {
+const hasCompletedIntermediate = async ({
+    github,
+    owner,
+    repo,
+    username,
+}) => {
     console.log('[has-intermediate] Start check:', {
         owner,
         repo,
@@ -55,14 +81,17 @@ async function hasCompletedIntermediate({ github, owner, repo, username }) {
                     });
 
                 const labels =
-                    issue.labels?.map(l => l.name) ?? [];
+                    issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(INTERMEDIATE_ISSUE_LABEL)) {
-                    console.log('[has-intermediate] Success: completed Intermediate issue found', {
-                        username,
-                        prNumber: pr.number,
-                        issueNumber,
-                    });
+                    console.log(
+                        '[has-intermediate] Success: completed Intermediate issue found',
+                        {
+                            username,
+                            prNumber: pr.number,
+                            issueNumber,
+                        }
+                    );
 
                     return true;
                 }
@@ -70,12 +99,13 @@ async function hasCompletedIntermediate({ github, owner, repo, username }) {
         }
     }
 
-    console.log('[has-intermediate] Exit: no completed Intermediate issue found', {
-        username,
-    });
+    console.log(
+        '[has-intermediate] Exit: no completed Intermediate issue found',
+        { username }
+    );
 
     return false;
-}
+};
 
 module.exports = {
     INTERMEDIATE_ISSUE_LABEL,

@@ -1,27 +1,53 @@
-// Reusable function to check if a user has completed a Good First Issue (GFI)
-//
-// IMPORTANT CONTEXT FOR MAINTAINERS:
-// - The "Good First Issue" label was introduced in October 2025.
-// - Any PR merged before that date cannot possibly close a GFI.
-// - This function is intentionally optimized to stop scanning once PRs
-//   predate the label introduction to avoid unnecessary API calls.
-//
-
+/**
+ * Determines whether a contributor has completed a Good First Issue (GFI)
+ * in the given repository.
+ *
+ * A GFI is identified by a merged pull request authored by the contributor
+ * that closed an issue labeled `Good First Issue`.
+ *
+ * IMPORTANT CONTEXT FOR MAINTAINERS:
+ * - The `Good First Issue` label was introduced on 2025-07-14.
+ * - Pull requests merged before that date cannot qualify.
+ * - This helper intentionally stops scanning once PRs predate the label
+ *   introduction to avoid unnecessary API calls.
+ * - This function mirrors `hasCompletedBeginner` closely to keep onboarding
+ *   policy consistent and easy to reason about.
+ *
+ * IMPLEMENTATION NOTES:
+ * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Stops scanning once PRs predate the GFI label introduction date.
+ * - Inspects PR timelines to identify issues closed by each PR.
+ * - Checks linked issues for the `Good First Issue` label.
+ * - Returns early on the first qualifying match.
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
+ * @param {string} params.owner - Repository owner
+ * @param {string} params.repo - Repository name
+ * @param {string} params.username - GitHub username to check
+ * @returns {Promise<boolean>} Whether the contributor has completed a GFI
+ */
 const GOOD_FIRST_ISSUE_LABEL = 'Good First Issue';
 
-// Date when the GFI label started being used in this repository.
-// Used as a hard cutoff to avoid scanning older PRs that cannot qualify.
+/**
+ * Date when the Good First Issue label began being used in this repository.
+ * Used as a hard cutoff to avoid scanning PRs that cannot qualify.
+ */
 const GFI_LABEL_INTRODUCED_AT = new Date('2025-07-14');
 
-async function hasCompletedGfi({ github, owner, repo, username }) {
+const hasCompletedGfi = async ({
+    github,
+    owner,
+    repo,
+    username,
+}) => {
     console.log('[has-gfi] Start check:', {
         owner,
         repo,
         username,
     });
 
-    // Fetch merged PRs authored by the user, sorted newest → oldest.
-    // Stop as soon as we reach PRs older than the GFI label.
+    // Fetch merged PRs authored by the contributor, newest first.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -38,12 +64,10 @@ async function hasCompletedGfi({ github, owner, repo, username }) {
     }
 
     for (const pr of prs) {
-        // Prefer closed_at when available, as it better represents
-        // when the PR was actually merged.
+        // Prefer closed_at when available, as it best represents merge time.
         const mergedAt = new Date(pr.closed_at ?? pr.updated_at);
 
-        // Once we reach PRs older than the GFI label introduction,
-        // we can safely stop. 
+        // Stop once PRs predate the GFI label introduction.
         if (mergedAt < GFI_LABEL_INTRODUCED_AT) {
             console.log('[has-gfi] Stop: PR predates GFI label', {
                 prNumber: pr.number,
@@ -57,7 +81,7 @@ async function hasCompletedGfi({ github, owner, repo, username }) {
             prTitle: pr.title,
         });
 
-        // Inspect the PR timeline to find issues closed by this PR.
+        // Inspect PR timeline events to find issues closed by this PR.
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -76,8 +100,6 @@ async function hasCompletedGfi({ github, owner, repo, username }) {
                 const issueNumber = event.source.issue.number;
 
                 // Fetch the linked issue to inspect its labels.
-                // If the issue has the GFI label, the user qualifies
-                // and we can immediately return true.
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
@@ -86,7 +108,7 @@ async function hasCompletedGfi({ github, owner, repo, username }) {
                     });
 
                 const labels =
-                    issue.labels?.map(l => l.name) ?? [];
+                    issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(GOOD_FIRST_ISSUE_LABEL)) {
                     console.log('[has-gfi] Success: completed GFI found', {
@@ -107,7 +129,7 @@ async function hasCompletedGfi({ github, owner, repo, username }) {
     });
 
     return false;
-}
+};
 
 module.exports = {
     GOOD_FIRST_ISSUE_LABEL,
