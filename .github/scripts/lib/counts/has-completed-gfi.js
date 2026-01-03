@@ -1,31 +1,34 @@
 /**
- * Determines whether a contributor has completed a Good First Issue (GFI)
- * in the given repository.
+ * Determines whether a contributor has completed at least `requiredCount`
+ * Good First Issues (GFIs) in the given repository.
  *
- * A GFI is identified by a merged pull request authored by the contributor
- * that closed an issue labeled `Good First Issue`.
+ * A GFI is counted when a merged pull request authored by the contributor
+ * closes an issue labeled `Good First Issue`.
  *
- * IMPORTANT CONTEXT FOR MAINTAINERS:
+ * IMPORTANT CONTEXT:
  * - The `Good First Issue` label was introduced on 2025-07-14.
  * - Pull requests merged before that date cannot qualify.
- * - This helper intentionally stops scanning once PRs predate the label
- *   introduction to avoid unnecessary API calls.
- * - This function mirrors `hasCompletedBeginner` closely to keep onboarding
- *   policy consistent and easy to reason about.
+ * - This helper stops scanning once PRs predate the label introduction
+ *   to avoid unnecessary API calls.
+ *
+ * This helper is intentionally generic and parameterized. Policy decisions
+ * (for example, whether 1 or more GFIs are required) should be expressed
+ * at the call site.
  *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
  * - Stops scanning once PRs predate the GFI label introduction date.
  * - Inspects PR timelines to identify issues closed by each PR.
- * - Checks linked issues for the `Good First Issue` label.
- * - Returns early on the first qualifying match.
+ * - Counts issues labeled `Good First Issue`.
+ * - Returns early once the required count is reached.
  *
  * @param {Object} params
  * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
  * @param {string} params.owner - Repository owner
  * @param {string} params.repo - Repository name
  * @param {string} params.username - GitHub username to check
- * @returns {Promise<boolean>} Whether the contributor has completed a GFI
+ * @param {number} params.requiredCount - Number of Good First Issues required
+ * @returns {Promise<boolean>} Whether the contributor meets the requirement
  */
 const GOOD_FIRST_ISSUE_LABEL = 'Good First Issue';
 
@@ -40,14 +43,19 @@ const hasCompletedGfi = async ({
     owner,
     repo,
     username,
+    requiredCount,
 }) => {
+    // Log the start of the eligibility check for traceability
     console.log('[has-gfi] Start check:', {
         owner,
         repo,
         username,
+        requiredCount,
     });
 
-    // Fetch merged PRs authored by the contributor, newest first.
+    // Fetch merged pull requests authored by the contributor.
+    // Results are ordered newest → oldest to allow early exits
+    // both on success and on label cutoff.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -58,16 +66,22 @@ const hasCompletedGfi = async ({
         }
     );
 
+    // If the contributor has never merged a PR, they cannot
+    // have completed any Good First Issues.
     if (!prs.length) {
         console.log('[has-gfi] Exit: no merged PRs found');
         return false;
     }
 
+    let completedCount = 0;
+
     for (const pr of prs) {
-        // Prefer closed_at when available, as it best represents merge time.
+        // Prefer `closed_at` when available, as it most accurately
+        // represents when the PR was merged.
         const mergedAt = new Date(pr.closed_at ?? pr.updated_at);
 
-        // Stop once PRs predate the GFI label introduction.
+        // Stop scanning once PRs predate the GFI label introduction.
+        // Older PRs cannot possibly qualify.
         if (mergedAt < GFI_LABEL_INTRODUCED_AT) {
             console.log('[has-gfi] Stop: PR predates GFI label', {
                 prNumber: pr.number,
@@ -81,7 +95,8 @@ const hasCompletedGfi = async ({
             prTitle: pr.title,
         });
 
-        // Inspect PR timeline events to find issues closed by this PR.
+        // Inspect the PR timeline to find issues that were closed
+        // as a result of this PR being merged.
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -93,13 +108,14 @@ const hasCompletedGfi = async ({
         );
 
         for (const event of timeline) {
+            // We only care about "closed" events that reference an issue.
             if (
                 event.event === 'closed' &&
                 event?.source?.issue?.number
             ) {
                 const issueNumber = event.source.issue.number;
 
-                // Fetch the linked issue to inspect its labels.
+                // Fetch the linked issue so we can inspect its labels.
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
@@ -111,21 +127,43 @@ const hasCompletedGfi = async ({
                     issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(GOOD_FIRST_ISSUE_LABEL)) {
-                    console.log('[has-gfi] Success: completed GFI found', {
-                        username,
-                        prNumber: pr.number,
-                        issueNumber,
-                    });
+                    completedCount += 1;
 
-                    // Early exit on first qualifying GFI.
-                    return true;
+                    console.log(
+                        '[has-gfi] Found completed Good First Issue',
+                        {
+                            username,
+                            prNumber: pr.number,
+                            issueNumber,
+                            completedCount,
+                        }
+                    );
+
+                    // Early exit once the required number of
+                    // Good First Issues has been reached.
+                    if (completedCount >= requiredCount) {
+                        console.log(
+                            '[has-gfi] Success: GFI requirement satisfied',
+                            {
+                                username,
+                                completedCount,
+                                requiredCount,
+                            }
+                        );
+
+                        return true;
+                    }
                 }
             }
         }
     }
 
-    console.log('[has-gfi] Exit: no completed GFI found', {
+    // Contributor has merged PRs, but not enough that close
+    // Good First Issue–labeled issues to meet the requirement.
+    console.log('[has-gfi] Exit: insufficient completed Good First Issues', {
         username,
+        completedCount,
+        requiredCount,
     });
 
     return false;

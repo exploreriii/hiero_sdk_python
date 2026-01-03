@@ -1,57 +1,61 @@
 /**
- * Determines whether a contributor has completed a Beginner issue
- * in the given repository.
+ * Determines whether a contributor has completed at least `requiredCount`
+ * Beginner issues in the given repository.
  *
- * A Beginner issue represents the second onboarding step after
- * Good First Issues. This helper checks for merged pull requests
- * authored by the contributor that closed an issue labeled
- * `beginner`.
+ * A Beginner issue is counted when a merged pull request authored by
+ * the contributor closes an issue labeled `beginner`.
  *
- * IMPORTANT CONTEXT FOR MAINTAINERS:
- * - The `beginner` label predates Intermediate issues.
- * - Older Beginner issue completions are intentionally counted.
- * - This helper intentionally mirrors `has-gfi.js` to keep onboarding
- *   policy consistent and easy to reason about.
- * - If logic here changes, `has-gfi.js` should likely be reviewed.
+ * IMPORTANT CONTEXT:
+ * - The `beginner` label was introduced on 2026-01-01.
+ * - Pull requests merged before that date cannot qualify.
+ * - This helper stops scanning once PRs predate the label introduction
+ *   to avoid unnecessary API calls.
+ *
+ * This helper is intentionally generic and parameterized. Policy decisions
+ * (for example, whether 1 or more Beginner issues are required) should be
+ * expressed at the call site.
  *
  * IMPLEMENTATION NOTES:
- * - Searches merged PRs authored by the contributor.
- * - Inspects PR timelines to find linked closed issues.
- * - Checks linked issues for the `beginner` label.
- * - Returns early on the first qualifying match.
+ * - Searches merged PRs authored by the contributor (newest → oldest).
+ * - Stops scanning once PRs predate the Beginner label introduction date.
+ * - Inspects PR timelines to identify issues closed by each PR.
+ * - Counts issues labeled `beginner`.
+ * - Returns early once the required count is reached.
  *
  * @param {Object} params
  * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
  * @param {string} params.owner - Repository owner
  * @param {string} params.repo - Repository name
  * @param {string} params.username - GitHub username to check
- * @returns {Promise<boolean>} Whether the contributor has completed a Beginner issue
+ * @param {number} params.requiredCount - Number of Beginner issues required
+ * @returns {Promise<boolean>} Whether the contributor meets the requirement
  */
 const BEGINNER_ISSUE_LABEL = 'beginner';
 
 /**
- * Checks whether a contributor has completed at least one Beginner issue.
- *
- * @param {Object} params
- * @param {import('@actions/github').GitHub} params.github
- * @param {string} params.owner
- * @param {string} params.repo
- * @param {string} params.username
- * @returns {Promise<boolean>}
+ * Date when the Beginner label began being used in this repository.
+ * Used as a hard cutoff to avoid scanning PRs that cannot qualify.
  */
+const BEGINNER_LABEL_INTRODUCED_AT = new Date('2026-01-01');
+
 const hasCompletedBeginner = async ({
     github,
     owner,
     repo,
     username,
+    requiredCount,
 }) => {
+    // Log the start of the eligibility check for traceability
     console.log('[has-beginner] Start check:', {
         owner,
         repo,
         username,
+        requiredCount,
     });
 
-    // Fetch merged PRs authored by the contributor, newest first.
+    // Fetch merged pull requests authored by the contributor.
+    // Results are ordered newest → oldest to allow early exits
+    // both on success and on label cutoff.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -62,12 +66,30 @@ const hasCompletedBeginner = async ({
         }
     );
 
+    // If the contributor has never merged a PR, they cannot
+    // have completed any Beginner issues.
     if (!prs.length) {
         console.log('[has-beginner] Exit: no merged PRs found');
         return false;
     }
 
+    let completedCount = 0;
+
     for (const pr of prs) {
+        // Prefer `closed_at` when available, as it best represents
+        // when the PR was actually merged.
+        const mergedAt = new Date(pr.closed_at ?? pr.updated_at);
+
+        // Stop scanning once PRs predate the Beginner label introduction.
+        // Older PRs cannot possibly qualify.
+        if (mergedAt < BEGINNER_LABEL_INTRODUCED_AT) {
+            console.log('[has-beginner] Stop: PR predates Beginner label', {
+                prNumber: pr.number,
+                mergedAt: mergedAt.toISOString(),
+            });
+            break;
+        }
+
         console.log('[has-beginner] Inspecting PR:', {
             prNumber: pr.number,
             prTitle: pr.title,
@@ -85,13 +107,14 @@ const hasCompletedBeginner = async ({
         );
 
         for (const event of timeline) {
+            // We only care about "closed" events that reference an issue.
             if (
                 event.event === 'closed' &&
                 event?.source?.issue?.number
             ) {
                 const issueNumber = event.source.issue.number;
 
-                // Fetch the linked issue to inspect its labels.
+                // Fetch the linked issue so we can inspect its labels.
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
@@ -103,26 +126,44 @@ const hasCompletedBeginner = async ({
                     issue.labels?.map(label => label.name) ?? [];
 
                 if (labels.includes(BEGINNER_ISSUE_LABEL)) {
+                    completedCount += 1;
+
                     console.log(
-                        '[has-beginner] Success: completed Beginner issue found',
+                        '[has-beginner] Found completed Beginner issue',
                         {
                             username,
                             prNumber: pr.number,
                             issueNumber,
+                            completedCount,
                         }
                     );
 
-                    // Early exit on first qualifying Beginner issue.
-                    return true;
+                    // Early exit once the required number of
+                    // Beginner issues has been reached.
+                    if (completedCount >= requiredCount) {
+                        console.log(
+                            '[has-beginner] Success: Beginner requirement satisfied',
+                            {
+                                username,
+                                completedCount,
+                                requiredCount,
+                            }
+                        );
+
+                        return true;
+                    }
                 }
             }
         }
     }
 
-    console.log(
-        '[has-beginner] Exit: no completed Beginner issue found',
-        { username }
-    );
+    // Contributor has merged PRs, but not enough that close
+    // Beginner-labeled issues to meet the requirement.
+    console.log('[has-beginner] Exit: insufficient completed Beginner issues', {
+        username,
+        completedCount,
+        requiredCount,
+    });
 
     return false;
 };

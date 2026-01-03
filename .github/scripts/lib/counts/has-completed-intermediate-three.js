@@ -1,12 +1,13 @@
 /**
- * Determines whether a contributor has completed the required number
- * of Intermediate issues in the given repository.
+ * Determines whether a contributor has completed at least `requiredCount`
+ * Intermediate issues in the given repository.
  *
  * An Intermediate issue is counted when a merged pull request authored
  * by the contributor closes an issue labeled `intermediate`.
  *
- * This helper is used for eligibility checks (for example, gating
- * access to advanced issues).
+ * This helper is intentionally generic and parameterized. Policy decisions
+ * (for example, whether 2 or 3 Intermediate issues are required) should be
+ * expressed at the call site, not hard-coded here.
  *
  * IMPLEMENTATION NOTES:
  * - Searches merged PRs authored by the contributor (newest → oldest).
@@ -19,28 +20,29 @@
  * @param {string} params.owner - Repository owner
  * @param {string} params.repo - Repository name
  * @param {string} params.username - GitHub username to check
- * @returns {Promise<boolean>} Whether the contributor meets the Intermediate requirement
+ * @param {number} params.requiredCount - Number of Intermediate issues required
+ * @returns {Promise<boolean>} Whether the contributor meets the requirement
  */
 const INTERMEDIATE_ISSUE_LABEL = 'intermediate';
-
-/**
- * Number of completed Intermediate issues required to qualify.
- */
-const REQUIRED_INTERMEDIATE_COUNT = 3;
 
 const hasCompletedIntermediate = async ({
     github,
     owner,
     repo,
     username,
+    requiredCount,
 }) => {
+    // Log the start of the eligibility check for traceability
     console.log('[has-intermediate] Start check:', {
         owner,
         repo,
         username,
-        required: REQUIRED_INTERMEDIATE_COUNT,
+        requiredCount,
     });
 
+    // Fetch merged pull requests authored by the contributor.
+    // Results are ordered newest → oldest to allow early exits
+    // once the required number of Intermediate issues is found.
     const prs = await github.paginate(
         github.rest.search.issuesAndPullRequests,
         {
@@ -51,6 +53,8 @@ const hasCompletedIntermediate = async ({
         }
     );
 
+    // If the contributor has never merged a PR, they cannot
+    // have completed any Intermediate issues.
     if (!prs.length) {
         console.log('[has-intermediate] Exit: no merged PRs found');
         return false;
@@ -58,12 +62,11 @@ const hasCompletedIntermediate = async ({
 
     let completedCount = 0;
 
+    // Inspect each merged PR to determine whether it closed
+    // one or more Intermediate-labeled issues.
     for (const pr of prs) {
-        console.log('[has-intermediate] Inspecting PR:', {
-            prNumber: pr.number,
-            prTitle: pr.title,
-        });
-
+        // Fetch the PR timeline to identify issues that were closed
+        // as a result of this PR being merged.
         const timeline = await github.paginate(
             github.rest.issues.listEventsForTimeline,
             {
@@ -75,12 +78,16 @@ const hasCompletedIntermediate = async ({
         );
 
         for (const event of timeline) {
+            // We only care about "closed" events that reference an issue
             if (
                 event.event === 'closed' &&
                 event?.source?.issue?.number
             ) {
                 const issueNumber = event.source.issue.number;
 
+                // Fetch the linked issue so we can inspect its labels.
+                // If the issue is labeled `intermediate`, it counts
+                // toward the contributor's Intermediate requirement.
                 const { data: issue } =
                     await github.rest.issues.get({
                         owner,
@@ -104,13 +111,15 @@ const hasCompletedIntermediate = async ({
                         }
                     );
 
-                    // Early exit once the requirement is met.
-                    if (completedCount >= REQUIRED_INTERMEDIATE_COUNT) {
+                    // Early exit once the required number of
+                    // Intermediate issues has been reached.
+                    if (completedCount >= requiredCount) {
                         console.log(
                             '[has-intermediate] Success: Intermediate requirement satisfied',
                             {
                                 username,
                                 completedCount,
+                                requiredCount,
                             }
                         );
 
@@ -121,14 +130,13 @@ const hasCompletedIntermediate = async ({
         }
     }
 
-    console.log(
-        '[has-intermediate] Exit: insufficient completed Intermediate issues',
-        {
-            username,
-            completedCount,
-            required: REQUIRED_INTERMEDIATE_COUNT,
-        }
-    );
+    // Contributor has merged PRs, but not enough that close
+    // Intermediate-labeled issues to meet the requirement.
+    console.log('[has-intermediate] Exit: insufficient completed Intermediate issues', {
+        username,
+        completedCount,
+        requiredCount,
+    });
 
     return false;
 };
