@@ -3,6 +3,8 @@
  * a Good First Issue (GFI) in this repository.
  *
  * ELIGIBILITY RULES:
+ * - Repository team members (triage / write / maintain / admin)
+ *   are always eligible and bypass all checks.
  * - Normal contributors may have up to `MAX_OPEN_ISSUES_NORMAL`
  *   open issue assignments.
  * - Contributors listed in the spam list may have up to
@@ -16,7 +18,6 @@
  * - It does NOT post comments.
  * - Callers must invoke this before attempting assignment.
  *
- *
  * @param {Object} params
  * @param {import('@actions/github').GitHub} params.github - Authenticated GitHub client
  * @param {string} params.owner - Repository owner
@@ -24,8 +25,9 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned a GFI
  */
-const { countOpenAssignedIssues } = require('..counts/count-open-assigned-issues');
+const { isTeam } = require('./is-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
+const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 const MAX_OPEN_ISSUES_NORMAL = 2;
 const MAX_OPEN_ISSUES_SPAM_LIST = 1;
@@ -42,6 +44,14 @@ const hasGfiEligibility = async ({
         repo,
         username,
     });
+
+    // Repository team members bypass all GFI eligibility checks.
+    if (await isTeam({ github, owner, repo, username })) {
+        console.log('[has-gfi-eligibility] Skipped: user is team member', {
+            username,
+        });
+        return true;
+    }
 
     // Determine whether the contributor is listed in the spam list.
     // Spam-listed contributors are subject to stricter limits.
@@ -74,11 +84,12 @@ const hasGfiEligibility = async ({
         maxAllowed,
     });
 
-    // If the contributor has reached or exceeded their allowed capacity,
-    // they are not eligible for assignment.
+    // Enforce assignment capacity limits
     if (openAssignedCount >= maxAllowed) {
         console.log('[has-gfi-eligibility] Exit: assignment limit reached', {
             username,
+            openAssignedCount,
+            maxAllowed,
         });
         return false;
     }

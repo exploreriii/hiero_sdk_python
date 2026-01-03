@@ -2,17 +2,15 @@
  * Determines whether a contributor is eligible to be assigned
  * an Intermediate issue in this repository.
  *
- * ELIGIBILITY RULES (for non-triage contributors):
+ * ELIGIBILITY RULES:
+ * - Repository team members (triage / write / maintain / admin)
+ *   bypass all eligibility and capacity checks.
  * - Contributors on the spam list are never eligible.
  * - Contributors must have completed at least:
  *   - `REQUIRED_GFI_COUNT` Good First Issues
  *   - `REQUIRED_BEGINNER_COUNT` Beginner issues
  * - Contributors may have fewer than `MAX_OPEN_ASSIGNED_ISSUES`
  *   open issue assignments.
- *
- * EXEMPTION RULE:
- * - Triage members and above (triage / write / maintain / admin)
- *   bypass all eligibility checks and capacity limits.
  *
  * IMPORTANT NOTES:
  * - This helper is policy-only.
@@ -32,17 +30,17 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned an Intermediate issue
  */
-const { isTriager } = require('./is-triager');
+const { isTeam } = require('./is-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { hasCompletedGfi } = require('./has-gfi');
 const { hasCompletedBeginner } = require('./has-beginner');
-const { countOpenAssignedIssues } = require('./count-open-assigned-issues');
+const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 /**
  * Maximum number of open issues allowed for Intermediate eligibility.
  *
- * This value represents a policy decision and should be kept
- * in sync with guard messaging and documentation.
+ * This value represents a policy decision and must remain in sync
+ * with guard messaging and documentation.
  */
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
 
@@ -71,20 +69,20 @@ const hasIntermediateEligibility = async ({
         username,
     });
 
-    // Contributors on the spam list are never eligible
+    // Repository team members bypass all Intermediate eligibility checks.
+    if (await isTeam({ github, owner, repo, username })) {
+        console.log('[has-intermediate-eligibility] Skipped: user is team member', {
+            username,
+        });
+        return true;
+    }
+
+    // Contributors on the spam list are never eligible.
     if (await isOnSpamList({ github, owner, repo, username })) {
         console.log('[has-intermediate-eligibility] Exit: user is on spam list', {
             username,
         });
         return false;
-    }
-
-    // Triage members and above bypass all eligibility checks
-    if (await isTriager({ github, owner, repo, username })) {
-        console.log('[has-intermediate-eligibility] Skipped: user is triage+', {
-            username,
-        });
-        return true;
     }
 
     // Enforce capacity limits for open issue assignments.
@@ -106,7 +104,7 @@ const hasIntermediateEligibility = async ({
         return false;
     }
 
-    // Verify Good First Issue completion requirement
+    // Verify Good First Issue completion requirement.
     const hasRequiredGfi = await hasCompletedGfi({
         github,
         owner,
@@ -123,7 +121,7 @@ const hasIntermediateEligibility = async ({
         return false;
     }
 
-    // Verify Beginner Issue completion requirement
+    // Verify Beginner Issue completion requirement.
     const hasRequiredBeginner = await hasCompletedBeginner({
         github,
         owner,
@@ -140,10 +138,11 @@ const hasIntermediateEligibility = async ({
         return false;
     }
 
-    // Contributor meets all Intermediate eligibility requirements
-    console.log('[has-intermediate-eligibility] Success: contributor eligible for Intermediate issues', {
-        username,
-    });
+    // Contributor meets all Intermediate eligibility requirements.
+    console.log(
+        '[has-intermediate-eligibility] Success: contributor eligible for Intermediate issues',
+        { username }
+    );
 
     return true;
 };

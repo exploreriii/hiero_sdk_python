@@ -3,9 +3,11 @@
  * a Beginner issue in this repository.
  *
  * ELIGIBILITY RULES:
- * - Committers (write / maintain / admin) bypass all checks.
+ * - Repository team members (triage / write / maintain / admin)
+ *   bypass all eligibility and capacity checks.
  * - Contributors on the spam list are never eligible.
- * - Contributors must have completed at least one Good First Issue.
+ * - Contributors must have completed at least `REQUIRED_GFI_COUNT`
+ *   Good First Issues.
  * - Contributors may have fewer than `MAX_OPEN_ASSIGNED_ISSUES`
  *   open issue assignments.
  *
@@ -27,15 +29,15 @@
  * @param {string} params.username - GitHub username to check
  * @returns {Promise<boolean>} Whether the contributor may be assigned a Beginner issue
  */
-const { isCommitter } = require('./is-committer');
+const { isTeam } = require('./is-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { hasCompletedGfi } = require('./has-gfi');
-const { countOpenAssignedIssues } = require('./count-open-assigned-issues');
+const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 /**
  * Maximum number of open issues allowed for Beginner eligibility.
  *
- * This value represents a policy decision and should be kept in sync
+ * This value represents a policy decision and must stay in sync
  * with guard messaging and documentation.
  */
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
@@ -43,7 +45,7 @@ const MAX_OPEN_ASSIGNED_ISSUES = 2;
 /**
  * Number of Good First Issues required to qualify for Beginner issues.
  *
- * Expressed here explicitly to keep policy decisions out of helpers.
+ * Expressed explicitly to keep policy decisions out of helpers.
  */
 const REQUIRED_GFI_COUNT = 1;
 
@@ -60,9 +62,9 @@ const hasBeginnerEligibility = async ({
         username,
     });
 
-    // Committers bypass all Beginner eligibility checks.
-    if (await isCommitter({ github, owner, repo, username })) {
-        console.log('[has-beginner-eligibility] Skipped: user is committer', {
+    // Repository team members bypass all Beginner eligibility checks.
+    if (await isTeam({ github, owner, repo, username })) {
+        console.log('[has-beginner-eligibility] Skipped: user is team member', {
             username,
         });
         return true;
@@ -77,7 +79,7 @@ const hasBeginnerEligibility = async ({
     }
 
     // Enforce capacity limits for open issue assignments.
-    // This helper fails open, returning a large number on error,
+    // This helper fails open and returns a large number on error,
     // which conservatively blocks assignment.
     const openAssignedCount = await countOpenAssignedIssues({
         github,
@@ -95,8 +97,7 @@ const hasBeginnerEligibility = async ({
         return false;
     }
 
-    // Verify that the contributor has completed the required number
-    // of Good First Issues.
+    // Verify Good First Issue completion requirement.
     const hasRequiredGfi = await hasCompletedGfi({
         github,
         owner,

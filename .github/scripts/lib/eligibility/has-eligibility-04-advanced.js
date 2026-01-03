@@ -2,19 +2,17 @@
  * Determines whether a contributor is eligible to be assigned
  * an Advanced issue in this repository.
  *
- * ELIGIBILITY RULES (for non-committers):
+ * ELIGIBILITY RULES:
+ * - Committers (write / maintain / admin) bypass all eligibility
+ *   checks and capacity limits.
  * - Contributors on the spam list are never eligible.
  * - Contributors must have completed at least
  *   `REQUIRED_INTERMEDIATE_COUNT` Intermediate issues.
  * - Contributors may have fewer than `MAX_OPEN_ASSIGNED_ISSUES`
  *   open issue assignments.
  *
- * EXEMPTION RULE:
- * - Committers (write / maintain / admin) bypass all eligibility
- *   checks and capacity limits.
- * - Triage members are NOT exempt and must meet all requirements.
- *
  * IMPORTANT NOTES:
+ * - Triage members are NOT exempt and must meet all requirements.
  * - This helper is policy-only.
  * - It does NOT assign issues.
  * - It does NOT post comments.
@@ -34,8 +32,8 @@
  */
 const { isCommitter } = require('./is-committer');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
-const { hasCompletedAdvanced } = require('./has-advanced');
-const { countOpenAssignedIssues } = require('./count-open-assigned-issues');
+const { hasCompletedIntermediate } = require('./has-intermediate');
+const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
 
 /**
  * Maximum number of open issues allowed for Advanced eligibility.
@@ -72,7 +70,7 @@ const hasAdvancedEligibility = async ({
         return true;
     }
 
-    // Contributors on the spam list are never eligible for Advanced issues.
+    // Contributors on the spam list are never eligible.
     if (await isOnSpamList({ github, owner, repo, username })) {
         console.log('[has-advanced-eligibility] Exit: user is on spam list', {
             username,
@@ -100,7 +98,7 @@ const hasAdvancedEligibility = async ({
     }
 
     // Verify Intermediate issue completion requirement.
-    const hasRequiredIntermediate = await hasCompletedAdvanced({
+    const hasRequiredIntermediate = await hasCompletedIntermediate({
         github,
         owner,
         repo,
@@ -120,9 +118,10 @@ const hasAdvancedEligibility = async ({
     }
 
     // Contributor meets all Advanced eligibility requirements.
-    console.log('[has-advanced-eligibility] Success: contributor eligible for Advanced issues', {
-        username,
-    });
+    console.log(
+        '[has-advanced-eligibility] Success: contributor eligible for Advanced issues',
+        { username }
+    );
 
     return true;
 };
