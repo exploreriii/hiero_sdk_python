@@ -1,10 +1,12 @@
 /**
- * Determines whether a contributor has triage-level or higher
- * permissions on the repository.
+ * Determines whether a contributor is a member of the repository’s
+ * triage team **only**.
  *
- * Triage-level contributors can perform moderation actions
- * (labeling, issue management, etc.) but do NOT bypass
- * tier eligibility or capacity checks.
+ * This helper returns true **only if** the contributor’s highest
+ * permission level is exactly `triage`.
+ *
+ * IMPORTANT:
+ * - Committers (write / maintain / admin) are intentionally excluded.
  *
  * FAILURE BEHAVIOR:
  * - If the permission lookup fails for any reason other than
@@ -15,9 +17,9 @@
  * @param {string} params.owner - Repository owner
  * @param {string} params.repo - Repository name
  * @param {string} params.username - GitHub username to check
- * @returns {Promise<boolean>} Whether the contributor has triage-level access
+ * @returns {Promise<boolean>} Whether the contributor is a triage-only member
  */
-const TRIAGE_PERMISSION_LEVELS = ['triage', 'write', 'maintain', 'admin'];
+const TRIAGE_PERMISSION_LEVEL = 'triage';
 
 const isTriager = async ({
     github,
@@ -26,9 +28,8 @@ const isTriager = async ({
     username,
 }) => {
     try {
-        // Fetch the collaborator permission level for the user.
-        // This endpoint returns the user's highest permission
-        // within the repository.
+        // Fetch the collaborator permission level for the user, expect some to have triage.
+        // This returns the user's highest effective permission.
         const { data } =
             await github.rest.repos.getCollaboratorPermissionLevel({
                 owner,
@@ -36,12 +37,10 @@ const isTriager = async ({
                 username,
             });
 
-        // Normalize permission for safe comparison.
         const permission =
             data?.permission?.toLowerCase() ?? 'none';
 
-        const isTriager =
-            TRIAGE_PERMISSION_LEVELS.includes(permission);
+        const isTriager = permission === TRIAGE_PERMISSION_LEVEL;
 
         console.log('[is-triager] Permission check:', {
             username,
@@ -51,7 +50,7 @@ const isTriager = async ({
 
         return isTriager;
     } catch (error) {
-        // 404 indicates the user is not a collaborator on the repo.
+        // 404 indicates the user is not a collaborator.
         if (error?.status === 404) {
             console.log('[is-triager] User is not a collaborator', {
                 username,
@@ -59,8 +58,7 @@ const isTriager = async ({
             return false;
         }
 
-        // Any other error (API failure, auth issues, etc.)
-        // fails closed to avoid granting unintended privileges.
+        // Fail closed to avoid granting unintended privileges.
         console.log('[is-triager] Permission lookup failed', {
             username,
             message: error.message,
