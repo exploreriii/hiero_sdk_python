@@ -2,7 +2,7 @@ const { isTeam } = require('../team/has-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
 const { hasCompletedBeginner } = require('../counts/has-completed-n-02-beginner');
-const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
+const { countOpenAssignedIssues } = require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS = require('./rejection-reasons');
 
 const MAX_OPEN_ASSIGNED_ISSUES = 2;

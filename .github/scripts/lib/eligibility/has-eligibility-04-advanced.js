@@ -5,7 +5,7 @@ const { isOnSpamList } =
 const { hasCompletedIntermediate } =
     require('../counts/has-completed-n-03-intermediate');
 const { countOpenAssignedIssues } =
-    require('../counts/count-open-assigned-issues');
+    require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS =
     require('./rejection-reasons');
 
