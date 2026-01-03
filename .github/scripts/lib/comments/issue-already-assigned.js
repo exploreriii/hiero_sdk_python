@@ -1,13 +1,31 @@
-function alreadyAssigned({ username, assignee, browseUrl, tierLabel }) {
-    return `Hi @${username}! 👋
+/**
+ * Generates a message when an issue cannot be assigned because it
+ * already has an assignee.
+ *
+ * This helper is informational only and does not perform any
+ * assignment or eligibility logic.
+ *
+ * @param {Object} params
+ * @param {string} params.username - GitHub username of the requester
+ * @param {string} params.assignee - Current assignee of the issue
+ * @param {string} params.browseUrl - URL to browse unassigned issues
+ * @param {string} params.tierLabel - Issue tier label (e.g. Beginner, Intermediate)
+ * @returns {string} Formatted markdown message explaining the status
+ */
+const alreadyAssigned = ({
+    username,
+    assignee,
+    browseUrl,
+    tierLabel,
+}) => `Hi @${username}, thank you for your interest in this issue.
 
-Thanks so much for your interest in this issue - we look forward to your contributions! 😊
+This issue is currently assigned to **${assignee}**, so it can’t be assigned again at the moment.
 
-This issue is currently assigned to ${assignee}, so I can’t assign it again right now.
+You can browse other unassigned **${tierLabel}** issues here:  
+**[View unassigned ${tierLabel} issues](${browseUrl})**
 
-👉 **Browse open ${tierLabel} issues that are still unassigned:**  
-[View unassigned ${tierLabel} issues](${browseUrl})
+If you find an issue you’d like to work on, feel free to comment \`/assign\` and we’ll take it from there.`;
 
-If you find one you’d like to work on, just comment \`/assign\` and I’ll take care of the rest 🤖`;
-}
-
+module.exports = {
+    alreadyAssigned,
+};

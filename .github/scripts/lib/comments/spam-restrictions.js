@@ -1,15 +1,19 @@
-// Spam-related bot messages
-//
-// These messages are used when a user is on the repository spam list.
-// They are intentionally strict and mirror the legacy bash-based
-// Assignment Bot wording exactly.
-
-function spamNonGfiAssignment(username) {
-    return `Hi @${username}, this is the Assignment Bot. 
+/**
+ * Generates a message when a contributor with restricted privileges
+ * attempts to be assigned to a non–Good First Issue.
+ *
+ * This helper is informational only and does not perform any
+ * assignment or eligibility logic.
+ *
+ * @param {string} username - GitHub username of the contributor
+ * @returns {string} Formatted markdown message explaining the restriction
+ */
+const spamNonGfiAssignment = (username) => {
+    return `Hi @${username}, this is the Assignment Bot.
 
 :warning: **Assignment Restricted**
 
-Your account currently has limited assignment privileges. You may only be assigned to issues labeled **Good First Issue**. 
+Your account currently has limited assignment privileges. You may only be assigned to issues labeled **Good First Issue**.
 
 **Current Restrictions:**
 - :white_check_mark: Can be assigned to 'Good First Issue' labeled issues (maximum 1 at a time)
@@ -21,16 +25,27 @@ Your account currently has limited assignment privileges. You may only be assign
 3. Contact a maintainer to review your restriction status
 
 Thank you for your understanding!`;
-}
+};
 
-function spamAssignmentLimitExceeded(username, openCount) {
+/**
+ * Generates a message when a contributor with restricted privileges
+ * exceeds the maximum number of allowed open assignments.
+ *
+ * This helper is informational only and does not perform any
+ * assignment or eligibility logic.
+ *
+ * @param {string} username - GitHub username of the contributor
+ * @param {number} openCount - Number of currently open assignments
+ * @returns {string} Formatted markdown message explaining the limit
+ */
+const spamAssignmentLimitExceeded = (username, openCount) => {
     return `Hi @${username}, this is the Assignment Bot.
 
 :warning: **Assignment Limit Exceeded**
 
 Your account currently has limited assignment privileges with a maximum of **1 open assignment** at a time.
 
-You currently have ${openCount} open issue(s) assigned.  Please complete and merge your existing assignment before requesting a new one.
+You currently have ${openCount} open issue(s) assigned. Please complete and merge your existing assignment before requesting a new one.
 
 **Current Restrictions:**
 - Maximum 1 open assignment at a time
@@ -42,7 +57,7 @@ You currently have ${openCount} open issue(s) assigned.  Please complete and mer
 3. Contact a maintainer to review your restriction status
 
 Thank you for your cooperation!`;
-}
+};
 
 module.exports = {
     spamNonGfiAssignment,

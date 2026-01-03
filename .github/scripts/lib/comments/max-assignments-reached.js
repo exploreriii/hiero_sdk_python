@@ -1,17 +1,27 @@
-// Capacity-related bot messages
-//
-// Used when a user exceeds the maximum number of open
-// issue assignments allowed across the repository.
+/**
+ * Generates a message when a contributor has reached the maximum
+ * number of open issue assignments allowed.
+ *
+ * This helper is informational only and does not perform any
+ * assignment or eligibility logic.
+ *
+ * @param {Object} params
+ * @param {string} params.username - GitHub username of the contributor
+ * @param {number} params.openAssignedCount - Number of currently assigned open issues
+ * @param {number} params.maxAllowed - Maximum number of allowed open issues
+ * @returns {string} Formatted markdown message explaining the limit
+ */
+const capacityLimitReached = ({
+    username,
+    openAssignedCount,
+    maxAllowed,
+}) => `Hi @${username}, thank you for your interest.
 
-function capacityLimitReached({ username, openAssignedCount, maxAllowed }) {
-    return `Hi @${username}! 👋
+You currently have **${openAssignedCount} open issue${openAssignedCount === 1 ? '' : 's'}** assigned.
 
-You currently have **${openAssignedCount} open issues** assigned.
+To keep assignments manageable, contributors may have at most **${maxAllowed} open issues** assigned at one time.
 
-To keep things manageable for everyone, contributors can have **at most ${maxAllowed} open issues** assigned at a time.
-
-Once you complete or unassign one of your current issues, feel free to come back and request another 👍`;
-}
+Once you complete or unassign one of your current issues, you’re welcome to request another.`;
 
 module.exports = {
     capacityLimitReached,
