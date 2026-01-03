@@ -1,6 +1,6 @@
 const { isTeam } = require('../team/has-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
-const { countOpenAssignedIssues } = require('../counts/count-open-assigned-issues');
+const { countOpenAssignedIssues } = require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS = require('./rejection-reasons');
 
 const MAX_OPEN_ISSUES_NORMAL = 2;
