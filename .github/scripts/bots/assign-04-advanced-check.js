@@ -1,5 +1,5 @@
 const { hasAdvancedEligibility } =
-    require('../lib/eligibility/has-advanced-eligibility');
+    require('../lib/eligibility/has-eligibility-04-advanced');
 const { rejectionRouter } =
     require('../lib/comments/rejection-router');
 
