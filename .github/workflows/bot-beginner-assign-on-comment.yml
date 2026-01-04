@@ -10,7 +10,7 @@ permissions:
     contents: read
 
 jobs:
-    gfi-assign:
+    beginner-assign:
         # Only run on issue comments (not PR comments)
         if: github.event.issue.pull_request == null
 
@@ -18,7 +18,7 @@ jobs:
 
         # Prevent race conditions: always wait for the first assignment request to finish processing
         concurrency:
-            group: gfi-assign-${{ github.event.issue.number }}
+            group: beginner-assign-${{ github.event.issue.number }}
             cancel-in-progress: false
 
         steps:

@@ -10,11 +10,11 @@ permissions:
     contents: read
 
 jobs:
-    enforce-advanced:
+    enforce-intermediate:
         runs-on: ubuntu-latest
 
         concurrency:
-            group: advanced-assign-${{ github.event.issue.number }}
+            group: intermediate-assign-${{ github.event.issue.number }}
             cancel-in-progress: false
 
         steps:
