@@ -9,10 +9,6 @@ const BROWSE_URLS = {
         '?q=is%3Aissue+state%3Aopen+label%3A"Good+First+Issue"+no%3Aassignee',
 };
 
-function requestsAssignment(body) {
-    return typeof body === 'string' && /(^|\s)\/assign(\s|$)/i.test(body);
-}
-
 function isGfiCandidate(issue) {
     return (issue.labels ?? []).some(
         l => l.name?.toLowerCase() === GFI_CANDIDATE_LABEL.toLowerCase()
@@ -20,28 +16,23 @@ function isGfiCandidate(issue) {
 }
 
 module.exports = async ({ github, context }) => {
-    console.log('[gfi-candidate-guard] Workflow triggered', {
-        issue: context.payload.issue?.number,
-        commenter: context.payload.comment?.user?.login,
-        labels: context.payload.issue?.labels?.map(l => l.name),
-        body: context.payload.comment?.body,
-    });
-
-    const { issue, comment } = context.payload;
+    const { issue, assignee, sender } = context.payload;
     const { owner, repo } = context.repo;
 
-    if (!issue || !comment) {
-        console.log('[gfi-candidate-guard] Exit: missing issue or comment');
+    console.log('[gfi-candidate-guard] Workflow triggered', {
+        issue: issue?.number,
+        assignee: assignee?.login,
+        assignedBy: sender?.login,
+        labels: issue?.labels?.map(l => l.name),
+    });
+
+    if (!issue || !assignee) {
+        console.log('[gfi-candidate-guard] Exit: missing issue or assignee');
         return;
     }
 
-    if (comment.user?.type === 'Bot') {
-        console.log('[gfi-candidate-guard] Exit: bot comment');
-        return;
-    }
-
-    if (!requestsAssignment(comment.body)) {
-        console.log('[gfi-candidate-guard] Exit: no /assign command');
+    if (sender?.type === 'Bot') {
+        console.log('[gfi-candidate-guard] Exit: bot actor');
         return;
     }
 
@@ -50,12 +41,21 @@ module.exports = async ({ github, context }) => {
         return;
     }
 
-    console.log('[gfi-candidate-guard] GFI candidate assignment attempted', {
+    console.log('[gfi-candidate-guard] Invalid assignment detected', {
         issue: issue.number,
-        username: comment.user.login,
+        assignee: assignee.login,
+        assignedBy: sender.login,
     });
 
-    // Prevent duplicate comments
+    // 🚨 ENFORCEMENT: remove the assignee
+    await github.rest.issues.removeAssignees({
+        owner,
+        repo,
+        issue_number: issue.number,
+        assignees: [assignee.login],
+    });
+
+    // Prevent duplicate rejection comments
     const comments = await github.paginate(
         github.rest.issues.listComments,
         {
@@ -71,15 +71,13 @@ module.exports = async ({ github, context }) => {
     );
 
     if (alreadyPosted) {
-        console.log('[gfi-candidate-guard] Exit: rejection already posted', {
-            issue: issue.number,
-        });
+        console.log('[gfi-candidate-guard] Exit: rejection already posted');
         return;
     }
 
     console.log('[gfi-candidate-guard] Posting rejection comment', {
         issue: issue.number,
-        username: comment.user.login,
+        username: assignee.login,
     });
 
     await github.rest.issues.createComment({
@@ -87,13 +85,13 @@ module.exports = async ({ github, context }) => {
         repo,
         issue_number: issue.number,
         body: gfiCandidateNotReady({
-            username: comment.user.login,
+            username: assignee.login,
             browseGfiUrl: BROWSE_URLS.gfi,
         }),
     });
 
-    console.log('[gfi-candidate-guard] Redirected user to available GFIs', {
+    console.log('[gfi-candidate-guard] Assignment reverted and user notified', {
         issue: issue.number,
-        username: comment.user.login,
+        username: assignee.login,
     });
 };
