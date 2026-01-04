@@ -20,13 +20,40 @@ function isGfiCandidate(issue) {
 }
 
 module.exports = async ({ github, context }) => {
+    console.log('[gfi-candidate-guard] Workflow triggered', {
+        issue: context.payload.issue?.number,
+        commenter: context.payload.comment?.user?.login,
+        labels: context.payload.issue?.labels?.map(l => l.name),
+        body: context.payload.comment?.body,
+    });
+
     const { issue, comment } = context.payload;
     const { owner, repo } = context.repo;
 
-    if (!issue || !comment) return;
-    if (comment.user?.type === 'Bot') return;
-    if (!requestsAssignment(comment.body)) return;
-    if (!isGfiCandidate(issue)) return;
+    if (!issue || !comment) {
+        console.log('[gfi-candidate-guard] Exit: missing issue or comment');
+        return;
+    }
+
+    if (comment.user?.type === 'Bot') {
+        console.log('[gfi-candidate-guard] Exit: bot comment');
+        return;
+    }
+
+    if (!requestsAssignment(comment.body)) {
+        console.log('[gfi-candidate-guard] Exit: no /assign command');
+        return;
+    }
+
+    if (!isGfiCandidate(issue)) {
+        console.log('[gfi-candidate-guard] Exit: issue is not GFI candidate');
+        return;
+    }
+
+    console.log('[gfi-candidate-guard] GFI candidate assignment attempted', {
+        issue: issue.number,
+        username: comment.user.login,
+    });
 
     // Prevent duplicate comments
     const comments = await github.paginate(
@@ -43,7 +70,17 @@ module.exports = async ({ github, context }) => {
         c.body?.includes('<!-- gfi-candidate-not-ready -->')
     );
 
-    if (alreadyPosted) return;
+    if (alreadyPosted) {
+        console.log('[gfi-candidate-guard] Exit: rejection already posted', {
+            issue: issue.number,
+        });
+        return;
+    }
+
+    console.log('[gfi-candidate-guard] Posting rejection comment', {
+        issue: issue.number,
+        username: comment.user.login,
+    });
 
     await github.rest.issues.createComment({
         owner,
