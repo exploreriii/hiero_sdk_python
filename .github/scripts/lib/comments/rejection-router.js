@@ -2,7 +2,10 @@ const { beginnerRejection } = require('./difficulty-02-beginner');
 const { intermediateRejection } = require('./difficulty-03-intermediate');
 const { advancedRejection } = require('./difficulty-04-advanced');
 const { capacityLimitReached } = require('./max-assignments-reached');
-const { spamNonGfiAssignment } = require('./spam-restrictions');
+const {
+    spamNonGfiAssignment,
+    spamAssignmentLimitExceeded,
+} = require('./spam-restrictions');
 
 const REJECTION_REASONS =
     require('../eligibility/rejection-reasons');
@@ -28,14 +31,26 @@ const rejectionRouter = ({ reason, context = {}, username, urls = {} }) => {
                 browseIntermediateUrl: urls.intermediate,
             });
 
-        // ───── Shared rules
+        // ─────────────────────────────────────────
+        // Capacity limits (branch on spam status)
+        // ─────────────────────────────────────────
         case REJECTION_REASONS.CAPACITY:
+            if (context.isSpamListed) {
+                return spamAssignmentLimitExceeded(
+                    username,
+                    context.openAssignedCount
+                );
+            }
+
             return capacityLimitReached({
                 username,
                 openAssignedCount: context.openAssignedCount,
                 maxAllowed: context.maxAllowed,
             });
 
+        // ─────────────────────────────────────────
+        // Spam attempting non-GFI assignment
+        // ─────────────────────────────────────────
         case REJECTION_REASONS.SPAM:
             return spamNonGfiAssignment(username);
 

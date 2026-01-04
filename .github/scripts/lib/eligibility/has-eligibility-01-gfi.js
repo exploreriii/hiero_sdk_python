@@ -16,7 +16,12 @@ const hasGfiEligibility = async ({
         return { eligible: true };
     }
 
-    const isSpamListed = await isOnSpamList({ github, owner, repo, username });
+    const isSpamListed = await isOnSpamList({
+        github,
+        owner,
+        repo,
+        username,
+    });
 
     const maxAllowed = isSpamListed
         ? MAX_OPEN_ISSUES_SPAM_LIST
@@ -33,7 +38,11 @@ const hasGfiEligibility = async ({
         return {
             eligible: false,
             reason: REJECTION_REASONS.CAPACITY,
-            context: { openAssignedCount, maxAllowed },
+            context: {
+                openAssignedCount,
+                maxAllowed,
+                isSpamListed,
+            },
         };
     }
 
