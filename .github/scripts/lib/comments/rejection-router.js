@@ -12,18 +12,29 @@ const REJECTION_REASONS =
 
 const rejectionRouter = ({ reason, context = {}, username, urls = {} }) => {
     switch (reason) {
-        // ───── Beginner → Intermediate ladder
+        // ─────────────────────────────────────────
+        // Beginner eligibility failures
+        // ─────────────────────────────────────────
         case REJECTION_REASONS.MISSING_GFI:
+            return beginnerRejection({
+                username,
+                completedGfiCount: context.completedGfiCount ?? 0,
+                browseGfiUrl: urls.gfi,
+            });
+
+        // ─────────────────────────────────────────
+        // Intermediate eligibility failures
+        // ─────────────────────────────────────────
         case REJECTION_REASONS.MISSING_BEGINNER:
             return intermediateRejection({
                 username,
-                requiredGfiCount: context.requiredGfiCount ?? 1,
                 requiredBeginnerCount: context.requiredBeginnerCount ?? 1,
-                browseGfiUrl: urls.gfi,
                 browseBeginnerUrl: urls.beginner,
             });
 
-        // ───── Intermediate → Advanced ladder
+        // ─────────────────────────────────────────
+        // Advanced eligibility failures
+        // ─────────────────────────────────────────
         case REJECTION_REASONS.MISSING_INTERMEDIATE:
             return advancedRejection({
                 username,
@@ -49,7 +60,7 @@ const rejectionRouter = ({ reason, context = {}, username, urls = {} }) => {
             });
 
         // ─────────────────────────────────────────
-        // Spam attempting non-GFI assignment
+        // Spam attempting disallowed assignment
         // ─────────────────────────────────────────
         case REJECTION_REASONS.SPAM:
             return spamNonGfiAssignment(username);
