@@ -9,8 +9,10 @@ const { countOpenAssignedIssues } =
 const REJECTION_REASONS =
     require('./rejection-reasons');
 
+// Configurable
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
 const REQUIRED_INTERMEDIATE_COUNT = 2;
+// Spam users are disabled for advanced issues
 
 const hasAdvancedEligibility = async ({
     github,

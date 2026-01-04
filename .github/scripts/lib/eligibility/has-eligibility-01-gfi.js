@@ -3,6 +3,7 @@ const { isOnSpamList } = require('../counts/is-on-spam-list');
 const { countOpenAssignedIssues } = require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS = require('./rejection-reasons');
 
+// Eligibility is configurable to flex with project needs
 const MAX_OPEN_ISSUES_NORMAL = 2;
 const MAX_OPEN_ISSUES_SPAM_LIST = 1;
 

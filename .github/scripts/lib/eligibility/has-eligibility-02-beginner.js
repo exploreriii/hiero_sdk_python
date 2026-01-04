@@ -4,8 +4,10 @@ const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
 const { countOpenAssignedIssues } = require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS = require('./rejection-reasons');
 
+// Configurable
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
 const REQUIRED_GFI_COUNT = 1;
+// Spam users are disabled for beginner issues
 
 const hasBeginnerEligibility = async ({
     github,
