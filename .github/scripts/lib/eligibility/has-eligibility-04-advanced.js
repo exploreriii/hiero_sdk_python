@@ -11,7 +11,7 @@ const REJECTION_REASONS =
 
 // Configurable
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
-const REQUIRED_INTERMEDIATE_COUNT = 2;
+const REQUIRED_INTERMEDIATE_COUNT = 1;
 // Spam users are disabled for advanced issues
 
 const hasAdvancedEligibility = async ({
