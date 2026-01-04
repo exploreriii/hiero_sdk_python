@@ -1,3 +1,25 @@
+/**
+ * Determines whether a contributor is eligible to be assigned
+ * an Advanced issue.
+ *
+ * ELIGIBILITY RULES:
+ * - Committers / maintainers bypass all checks
+ * - Spam-listed users are never eligible
+ * - Max N open assignments allowed
+ * - Must have completed REQUIRED_INTERMEDIATE_COUNT Intermediate issues
+ *
+ * @param {Object} params
+ * @param {import('@actions/github').GitHub} params.github
+ * @param {string} params.owner
+ * @param {string} params.repo
+ * @param {string} params.username
+ * @returns {Promise<{
+ *   eligible: boolean,
+ *   reason?: string,
+ *   context?: Object
+ * }>}
+ */
+
 const { isCommitter } =
     require('../team/has-team-committer-maintainer');
 const { isOnSpamList } =
@@ -9,10 +31,11 @@ const { countOpenAssignedIssues } =
 const REJECTION_REASONS =
     require('./rejection-reasons');
 
-// Configurable
+// ─────────────────────────────────────────────
+// Policy configuration
+// ─────────────────────────────────────────────
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
 const REQUIRED_INTERMEDIATE_COUNT = 1;
-// Spam users are disabled for advanced issues
 
 const hasAdvancedEligibility = async ({
     github,
@@ -26,20 +49,41 @@ const hasAdvancedEligibility = async ({
         username,
     });
 
-    // Committers bypass all checks
+    // ─────────────────────────────────────────────
+    // Committers / maintainers bypass all checks
+    // ─────────────────────────────────────────────
     if (await isCommitter({ github, owner, repo, username })) {
+        console.log('[has-advanced-eligibility] Bypass: committer', {
+            username,
+        });
+
         return { eligible: true };
     }
 
+    // ─────────────────────────────────────────────
     // Spam-listed users are never eligible
-    if (await isOnSpamList({ github, owner, repo, username })) {
+    // ─────────────────────────────────────────────
+    const isSpamListed = await isOnSpamList({
+        github,
+        owner,
+        repo,
+        username,
+    });
+
+    if (isSpamListed) {
+        console.log('[has-advanced-eligibility] Rejected: spam listed', {
+            username,
+        });
+
         return {
             eligible: false,
             reason: REJECTION_REASONS.SPAM,
         };
     }
 
+    // ─────────────────────────────────────────────
     // Capacity check
+    // ─────────────────────────────────────────────
     const openAssignedCount = await countOpenAssignedIssues({
         github,
         owner,
@@ -47,7 +91,17 @@ const hasAdvancedEligibility = async ({
         username,
     });
 
+    console.log('[has-advanced-eligibility] Capacity evaluation', {
+        username,
+        openAssignedCount,
+        maxAllowed: MAX_OPEN_ASSIGNED_ISSUES,
+    });
+
     if (openAssignedCount >= MAX_OPEN_ASSIGNED_ISSUES) {
+        console.log('[has-advanced-eligibility] Rejected: capacity exceeded', {
+            username,
+        });
+
         return {
             eligible: false,
             reason: REJECTION_REASONS.CAPACITY,
@@ -58,7 +112,9 @@ const hasAdvancedEligibility = async ({
         };
     }
 
-    // Intermediate completion requirement
+    // ─────────────────────────────────────────────
+    // Intermediate prerequisite
+    // ─────────────────────────────────────────────
     const hasRequiredIntermediate =
         await hasCompletedIntermediate({
             github,
@@ -68,15 +124,33 @@ const hasAdvancedEligibility = async ({
             requiredCount: REQUIRED_INTERMEDIATE_COUNT,
         });
 
+    console.log('[has-advanced-eligibility] Intermediate prerequisite', {
+        username,
+        hasRequiredIntermediate,
+        requiredCount: REQUIRED_INTERMEDIATE_COUNT,
+    });
+
     if (!hasRequiredIntermediate) {
+        console.log(
+            '[has-advanced-eligibility] Rejected: missing intermediate',
+            { username }
+        );
+
         return {
             eligible: false,
             reason: REJECTION_REASONS.MISSING_INTERMEDIATE,
             context: {
-                requiredCount: REQUIRED_INTERMEDIATE_COUNT,
+                requiredIntermediateCount: REQUIRED_INTERMEDIATE_COUNT,
             },
         };
     }
+
+    // ─────────────────────────────────────────────
+    // Eligible
+    // ─────────────────────────────────────────────
+    console.log('[has-advanced-eligibility] Eligible', {
+        username,
+    });
 
     return { eligible: true };
 };
