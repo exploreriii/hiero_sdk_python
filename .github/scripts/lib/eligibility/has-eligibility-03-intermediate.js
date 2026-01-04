@@ -1,14 +1,14 @@
 const { isTeam } = require('../team/has-team');
 const { isOnSpamList } = require('../counts/is-on-spam-list');
-const { hasCompletedGfi } = require('../counts/has-completed-n-01-gfi');
 const { hasCompletedBeginner } = require('../counts/has-completed-n-02-beginner');
 const { countOpenAssignedIssues } = require('../counts/count-opened-assigned-issues');
 const REJECTION_REASONS = require('./rejection-reasons');
 
+// Configurable
 const MAX_OPEN_ASSIGNED_ISSUES = 2;
-const REQUIRED_GFI_COUNT = 1;
 const REQUIRED_BEGINNER_COUNT = 1;
 
+// Spam users are disabled for intermediate issues
 const hasIntermediateEligibility = async ({
     github,
     owner,
@@ -53,26 +53,6 @@ const hasIntermediateEligibility = async ({
         };
     }
 
-    // GFI requirement
-    const hasRequiredGfi = await hasCompletedGfi({
-        github,
-        owner,
-        repo,
-        username,
-        requiredCount: REQUIRED_GFI_COUNT,
-    });
-
-    if (!hasRequiredGfi) {
-        return {
-            eligible: false,
-            reason: REJECTION_REASONS.MISSING_GFI,
-            context: {
-                requiredCount: REQUIRED_GFI_COUNT,
-            },
-        };
-    }
-
-    // Beginner requirement
     const hasRequiredBeginner = await hasCompletedBeginner({
         github,
         owner,
