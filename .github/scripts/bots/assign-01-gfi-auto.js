@@ -196,7 +196,10 @@ module.exports = async ({ github, context }) => {
     await assignMentor({
         github,
         context: {
-            ...context,
+            repo: {
+                owner,
+                repo,
+            },
             payload: {
                 issue,
                 assignee: {
