@@ -70,16 +70,9 @@ echo "$ALL_ISSUES_JSON" | jq -c '.' | while read -r ISSUE_JSON; do
   echo "[INFO] Assignees: $ASSIGNEES"
   echo
 
-  # Check if this issue already has a reminder comment from ReminderBot
-  EXISTING_COMMENT=$(gh api "repos/$REPO/issues/$ISSUE/comments" \
-    --jq ".[] | select(.user.login == \"github-actions[bot]\") | select(.body | contains(\"ReminderBot\")) | .id" \
-    | head -n1)
-
-  if [ -n "$EXISTING_COMMENT" ]; then
-    echo "[INFO] Reminder comment already posted on this issue."
-    echo
-    continue
-  fi
+  # Previously: skip if a prior ReminderBot comment existed.
+  # Change behavior: always consider posting a reminder (do not skip when previous reminders exist).
+  echo "[INFO] Posting reminders regardless of existing ReminderBot comments."
 
   # Get assignment time (use the last assigned event)
   ASSIGN_TS=$(gh api "repos/$REPO/issues/$ISSUE/events" \

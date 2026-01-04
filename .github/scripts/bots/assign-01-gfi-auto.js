@@ -86,26 +86,22 @@ module.exports = async ({ github, context }) => {
                 }
             );
 
-            const alreadyReminded = comments.some(c =>
-                c.body?.includes(ASSIGN_REMINDER_MARKER)
-            );
-
+            // Always post a reminder regardless of previous reminders.
             console.log('[gfi-assign] Reminder presence', {
-                alreadyReminded,
+                remindersFound: comments.some(c => c.body?.includes(ASSIGN_REMINDER_MARKER)),
             });
 
-            if (!alreadyReminded) {
-                await github.rest.issues.createComment({
-                    owner,
-                    repo,
-                    issue_number: issue.number,
-                    body:
-                        ASSIGN_REMINDER_MARKER +
-                        assignReminder(username, 'Good First'),
-                });
+            // Post reminder every time (do not skip when prior reminder exists)
+            await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body:
+                    ASSIGN_REMINDER_MARKER +
+                    assignReminder(username, 'Good First'),
+            });
 
-                console.log('[gfi-assign] Posted assign reminder');
-            }
+            console.log('[gfi-assign] Posted assign reminder');
         }
 
         console.log('[gfi-assign] Exit: reminder path complete');
