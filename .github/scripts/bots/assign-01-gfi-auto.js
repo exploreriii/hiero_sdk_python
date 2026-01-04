@@ -12,6 +12,8 @@ const { hasGfiEligibility } = require('../lib/eligibility/has-eligibility-01-gfi
 const { rejectionRouter } = require('../lib/comments/rejection-router');
 const { assignReminder } = require('../lib/comments/reminder-to-request-assign');
 const { alreadyAssigned } = require('../lib/comments/issue-already-assigned');
+const assignMentor =
+    require('./assign-01-gfi-mentor');
 
 const GOOD_FIRST_ISSUE_LABEL = 'Good First Issue';
 const ASSIGN_REMINDER_MARKER = '<!-- GFI assign reminder -->';
@@ -188,6 +190,21 @@ module.exports = async ({ github, context }) => {
         repo,
         issue_number: issue.number,
         assignees: [username],
+    });
+    console.log('[gfi-assign] Triggering mentor assignment');
+
+    await assignMentor({
+        github,
+        context: {
+            ...context,
+            payload: {
+                issue,
+                assignee: {
+                    login: username,
+                    type: 'User',
+                },
+            },
+        },
     });
 
     console.log('[gfi-assign] Assigned successfully', {
