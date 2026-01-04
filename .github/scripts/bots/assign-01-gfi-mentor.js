@@ -12,10 +12,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const {
-    COMMENT_MARKER,
-    buildMentorAssignmentComment,
-} = require('../lib/comments/assign-mentor-gfi');
+const { buildMentorComment, COMMENT_MARKER } =
+    require('../lib/comments/assign-mentor-gfi');
 
 // Defaults (can be overridden via env)
 const MENTOR_TEAM_ALIAS =
@@ -158,7 +156,7 @@ module.exports = async ({ github, context }) => {
         // ─────────────────────────────────────────
         // Build & post comment (from lib)
         // ─────────────────────────────────────────
-        const body = buildMentorAssignmentComment({
+        const body = buildMentorComment({
             mentee,
             mentor,
             owner,
