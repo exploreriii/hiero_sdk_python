@@ -136,6 +136,7 @@ const hasIntermediateEligibility = async ({
             eligible: false,
             reason: REJECTION_REASONS.MISSING_BEGINNER,
             context: {
+                completedBeginnerCount: 0,
                 requiredBeginnerCount: REQUIRED_BEGINNER_COUNT,
             },
         };

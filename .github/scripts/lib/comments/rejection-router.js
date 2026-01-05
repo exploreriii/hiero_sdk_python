@@ -28,7 +28,10 @@ const rejectionRouter = ({ reason, context = {}, username, urls = {} }) => {
         case REJECTION_REASONS.MISSING_BEGINNER:
             return intermediateRejection({
                 username,
-                requiredBeginnerCount: context.requiredBeginnerCount ?? 1,
+                completedBeginnerCount:
+                    context.completedBeginnerCount ?? 0,
+                requiredBeginnerCount:
+                    context.requiredBeginnerCount ?? 1,
                 browseBeginnerUrl: urls.beginner,
             });
 
@@ -38,7 +41,10 @@ const rejectionRouter = ({ reason, context = {}, username, urls = {} }) => {
         case REJECTION_REASONS.MISSING_INTERMEDIATE:
             return advancedRejection({
                 username,
-                requiredIntermediateCount: context.requiredCount ?? 1,
+                completedIntermediateCount:
+                    context.completedIntermediateCount ?? 0,
+                requiredIntermediateCount:
+                    context.requiredIntermediateCount ?? 1,
                 browseIntermediateUrl: urls.intermediate,
             });
 

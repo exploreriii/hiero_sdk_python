@@ -135,6 +135,7 @@ const hasBeginnerEligibility = async ({
             eligible: false,
             reason: REJECTION_REASONS.MISSING_GFI,
             context: {
+                completedGfiCount: 0,
                 requiredGfiCount: REQUIRED_GFI_COUNT,
             },
         };

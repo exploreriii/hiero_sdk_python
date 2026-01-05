@@ -140,6 +140,7 @@ const hasAdvancedEligibility = async ({
             eligible: false,
             reason: REJECTION_REASONS.MISSING_INTERMEDIATE,
             context: {
+                completedIntermediateCount: 0,
                 requiredIntermediateCount: REQUIRED_INTERMEDIATE_COUNT,
             },
         };
