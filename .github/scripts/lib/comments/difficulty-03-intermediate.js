@@ -13,43 +13,42 @@
  * @param {string} params.browseBeginnerUrl - URL to browse Beginner issues
  * @returns {string} Formatted markdown message explaining the restriction
  */
+const {
+    ISSUE_TYPES,
+    ELIGIBILITY_REQUIREMENTS,
+} = require('../eligibility/requirements');
+
 const INTERMEDIATE_GUARD_MARKER = '<!-- Intermediate Issue Guard -->';
 
 const intermediateRejection = ({
     username,
-    completedGfiCount,
-    hasBeginner,
-    browseGfiUrl,
+    completedBeginnerCount,
     browseBeginnerUrl,
 }) => {
-    const gfiPlural = completedGfiCount === 1 ? '' : 's';
-    const reasons = [];
+    const req =
+        ELIGIBILITY_REQUIREMENTS[ISSUE_TYPES.INTERMEDIATE];
 
-    if (completedGfiCount === 0) {
-        reasons.push('• You have not completed a **Good First Issue** yet');
-    }
+    const beginnerReq =
+        req.prerequisites.find(p => p.type === 'beginner');
 
-    if (!hasBeginner) {
-        reasons.push('• You have not completed a **Beginner issue** yet');
-    }
+    const requiredCount = beginnerReq.requiredCount;
+    const met = completedBeginnerCount >= requiredCount;
 
     return `${INTERMEDIATE_GUARD_MARKER}
 Hi @${username}, thank you for your interest in this issue.
 
-This issue is labeled **Intermediate**, which means it requires some prior experience with the project.
+This issue is labeled **Intermediate**, which requires prior experience working on **Beginner issues**.
 
-**Why you can’t be assigned right now:**
-${reasons.join('\n')}
+**Requirements:**  
+- Completion of **${requiredCount} Beginner issue${requiredCount === 1 ? '' : 's'}**
 
-**Your progress so far:**
-- Completed **${completedGfiCount}** Good First Issue${gfiPlural}
-- Beginner issue completed: **${hasBeginner ? 'Yes' : 'No'}**
+**Your progress:**  
+- Beginner issues completed: **${completedBeginnerCount} / ${requiredCount}** ${met ? '✅' : '❌'}
 
-**Suggested next steps:**
-- [Browse unassigned Good First Issues](${browseGfiUrl})
+**Suggested next steps:**  
 - [Browse unassigned Beginner issues](${browseBeginnerUrl})
 
-Once you meet the requirements, you’re welcome to come back and request this issue again.`;
+Once the requirement is met, you’re welcome to come back and request this issue again.`;
 };
 
 module.exports = {

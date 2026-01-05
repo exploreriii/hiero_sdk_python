@@ -12,21 +12,39 @@
  * @param {string} params.suggestionUrl - URL to suggested issues - pass advanced URL
  * @returns {string} Formatted markdown message explaining the restriction
  */
+const {
+  ISSUE_TYPES,
+  ELIGIBILITY_REQUIREMENTS,
+} = require('../eligibility/requirements');
+
 const advancedRejection = ({
   username,
-  intermediateCount,
+  completedIntermediateCount,
   suggestionLabel,
   suggestionUrl,
-}) => `Hi @${username}, I can’t assign you to this issue just yet.
+}) => {
+  const req =
+    ELIGIBILITY_REQUIREMENTS[ISSUE_TYPES.ADVANCED];
+
+  const intermediateReq =
+    req.prerequisites.find(p => p.type === 'intermediate');
+
+  const requiredCount = intermediateReq.requiredCount;
+  const met = completedIntermediateCount >= requiredCount;
+
+  return `Hi @${username}, I can’t assign you to this issue just yet.
 
 **Why?**  
 Advanced issues involve higher-risk changes to core parts of the codebase. They typically require more extensive testing and may impact automation and CI behavior.
 
 **Requirements:**  
-- Completion of at least **2 intermediate issues**  
-  (you have completed **${intermediateCount}**)
+- Completion of **${requiredCount} Intermediate issue${requiredCount === 1 ? '' : 's'}**
 
-To build the required experience, please review our **[${suggestionLabel}](${suggestionUrl})** tasks. Once you’ve completed a few more, you’ll be eligible to work on advanced issues.`;
+**Your progress:**  
+- Intermediate issues completed: **${completedIntermediateCount} / ${requiredCount}** ${met ? '✅' : '❌'}
+
+To build the required experience, please review our **[${suggestionLabel}](${suggestionUrl})** tasks. Once the requirement is met, you’ll be eligible to work on advanced issues.`;
+};
 
 module.exports = {
   advancedRejection,
