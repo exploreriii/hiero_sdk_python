@@ -311,7 +311,7 @@ module.exports = async ({ github, context }) => {
 
         if (openCount >= maxAllowed) {
             const message = spamUser
-                ? `Hi @${requesterUsername}, you are limited to **1 active Good First Issue** at a time. Please complete your current assignment before requesting another.`
+                ? `Hi @${requesterUsername}, you are limited to **1 active issue** at a time. Please complete your current assignment before requesting another.`
                 : `Hi @${requesterUsername}, you already have **2 open assignments**. Please finish one before requesting another.`;
 
             await github.rest.issues.createComment({

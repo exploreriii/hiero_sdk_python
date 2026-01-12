@@ -167,11 +167,31 @@ module.exports = async ({ github, context }) => {
         return; // Exit after warning
       }
 
+      // Block spam users from beginner issues
+
+      const spamUser = isSpamUser(commenter);
+
+      if (spamUser) {
+        console.log(`[Beginner Bot] Spam user @${commenter} attempted to assign to beginner issue. Blocked.`);
+
+        try {
+          await github.rest.issues.createComment({
+            owner: repo.owner.login,
+            repo: repo.name,
+            issue_number: issue.number,
+            body: `Hi @${commenter}, your account is currently restricted to **Good First Issues** issues. Please complete a Good First Issue or contact a maintainer to have restrictions reviewed.`,
+          });
+        } catch (error) {
+          console.error(`[Beginner Bot] Failed to post spam restriction message: ${error.message}`);
+        }
+
+        return;
+      }
+
       // Enforce Assignment Limits
 
       const openCount = await getOpenAssignments(commenter);
-      const spamUser = isSpamUser(commenter);
-      const maxAllowed = spamUser ? 1 : 2;
+      const maxAllowed = 2;
 
       console.log("[Beginner Bot] Limit check:", {
         commenter,
@@ -181,9 +201,7 @@ module.exports = async ({ github, context }) => {
       });
 
       if (openCount >= maxAllowed) {
-        const message = spamUser
-          ? `👋 Hi @${commenter}, you are limited to **1 active beginner issue** at a time. Please complete your current assignment before requesting another.`
-          : `👋 Hi @${commenter}, you already have **2 open assignments**. Please finish one before requesting another.`;
+        const message = `👋 Hi @${commenter}, you already have **2 open assignments**. Please finish one before requesting another.`;
 
         try {
           await github.rest.issues.createComment({
