@@ -104,12 +104,10 @@ async function isNewContributor(github, owner, repo, login) {
   }
 }
 
-function buildComment(mentor, mentee) {
-    const repoUrl = "https://github.com/hiero-ledger/hiero-sdk-python";
-    const MENTOR_TEAM_ALIAS = "@hiero-ledger/hiero-sdk-python-triage";
-    const SUPPORT_TEAM_ALIAS = "@hiero-ledger/hiero-sdk-good-first-issue-support";
+function buildComment({ mentee, mentor, owner, repo }) {
+    const repoUrl = owner && repo ? `https://github.com/${owner}/${repo}` : "https://github.com/hiero-ledger/hiero-sdk-python";
 
-    return `👋 Hi @${mentee}, welcome to the Hiero Python SDK community!
+    return `${COMMENT_MARKER}👋 Hi @${mentee}, welcome to the Hiero Python SDK community!
 You've been assigned this **Good First Issue**. Your on-call mentor today from ${MENTOR_TEAM_ALIAS} is **@${mentor}**, and the **Good First Issue Support Team** is **${SUPPORT_TEAM_ALIAS}**.
 We’re here to help you get your first PR merged successfully 🚀
 
