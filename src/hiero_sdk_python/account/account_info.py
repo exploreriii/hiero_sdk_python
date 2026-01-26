@@ -99,13 +99,14 @@ class AccountInfo:
             account_memo=proto.memo,
             owned_nfts=proto.ownedNfts,
             max_automatic_token_associations=proto.max_automatic_token_associations,
+            staking_info=(
+                StakingInfo.from_proto(proto.staking_info)
+                if proto.HasField("staking_info")
+                else None
+         )
         )
 
-        staking_info=(
-           StakingInfo.from_proto(proto.staking_info)
-           if proto.HasField("staking_info")
-           else None
-         )
+        
 
         return account_info
 
@@ -140,9 +141,9 @@ class AccountInfo:
             ownedNfts=self.owned_nfts,
             max_automatic_token_associations=self.max_automatic_token_associations,
             staking_info=(
-            self.staking_info.to_proto()
-            if self.staking_info is not None
-            else None
+                self.staking_info.to_proto()
+                if self.staking_info is not None
+                else None
           ),
         )
 
@@ -158,8 +159,7 @@ class AccountInfo:
             (self.account_memo, "Memo"),
             (self.owned_nfts, "Owned NFTs"),
             (self.max_automatic_token_associations, "Max Automatic Token Associations"),
-            (self.staking_info, "Staked Account ID"),
-            (self.staking_info, "Staked Node ID"),
+            (self.staking_info, "Staked Info"),
             (self.proxy_received, "Proxy Received"),
             (self.expiration_time, "Expiration Time"),
             (self.auto_renew_period, "Auto Renew Period"),
@@ -194,7 +194,7 @@ class AccountInfo:
             f"receiver_signature_required={self.receiver_signature_required!r}, "
             f"owned_nfts={self.owned_nfts!r}, "
             f"account_memo={self.account_memo!r}, "
-            f"staked_node_id={self.staking_info!r}, "
+            f"staked_info={self.staking_info!r}, "
             f"staked_account_id={self.staking_info!r}"
             f")"
         )
