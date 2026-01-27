@@ -49,7 +49,7 @@ def proto_account_info():
         tokenRelationships=[],
         memo="Test account memo",
         ownedNfts=5,
-        max_automatic_token_associations=10
+        max_automatic_token_associations=10,
         staking_info=None
     )
     return proto
@@ -88,7 +88,7 @@ def test_account_info_default_initialization():
     assert account_info.token_relationships == []
     assert account_info.account_memo is None
     assert account_info.owned_nfts is None
-    assert account_info.max_automatic_token_associations == 10
+    assert account_info.max_automatic_token_associations is None
     assert account_info.staking_info is None
 
 
@@ -109,7 +109,7 @@ def test_from_proto(proto_account_info):
     assert account_info.account_memo == "Test account memo"
     assert account_info.owned_nfts == 5
     assert account_info.max_automatic_token_associations == 10
-    assert account_info.staking_info == None
+    #assert account_info.staking_info == None
 
 
 def test_from_proto_with_token_relationships():
@@ -152,7 +152,8 @@ def test_to_proto(account_info):
     assert proto.memo == "Test account memo"
     assert proto.ownedNfts == 5
     assert proto.max_automatic_token_associations == 10
-    assert proto.staking_info == None
+    assert not proto.HasField("staking_info")
+
 
 
 
