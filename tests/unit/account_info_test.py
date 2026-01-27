@@ -28,6 +28,8 @@ def account_info():
         token_relationships=[],
         account_memo="Test account memo",
         owned_nfts=5,
+        max_automatic_token_associations=10,
+        staking_info=None
     )
 
 
@@ -47,6 +49,8 @@ def proto_account_info():
         tokenRelationships=[],
         memo="Test account memo",
         ownedNfts=5,
+        max_automatic_token_associations=10
+        staking_info=None
     )
     return proto
 
@@ -65,6 +69,8 @@ def test_account_info_initialization(account_info):
     assert account_info.token_relationships == []
     assert account_info.account_memo == "Test account memo"
     assert account_info.owned_nfts == 5
+    assert account_info.max_automatic_token_associations == 10
+    assert account_info.staking_info is None
 
 
 def test_account_info_default_initialization():
@@ -82,6 +88,8 @@ def test_account_info_default_initialization():
     assert account_info.token_relationships == []
     assert account_info.account_memo is None
     assert account_info.owned_nfts is None
+    assert account_info.max_automatic_token_associations == 10
+    assert account_info.staking_info is None
 
 
 def test_from_proto(proto_account_info):
@@ -100,6 +108,8 @@ def test_from_proto(proto_account_info):
     assert account_info.token_relationships == []
     assert account_info.account_memo == "Test account memo"
     assert account_info.owned_nfts == 5
+    assert account_info.max_automatic_token_associations == 10
+    assert account_info.staking_info == None
 
 
 def test_from_proto_with_token_relationships():
@@ -141,6 +151,10 @@ def test_to_proto(account_info):
     assert proto.tokenRelationships == []
     assert proto.memo == "Test account memo"
     assert proto.ownedNfts == 5
+    assert proto.max_automatic_token_associations == 10
+    assert proto.staking_info == None
+
+
 
 
 def test_to_proto_with_none_values():
@@ -192,6 +206,7 @@ def test_proto_conversion(account_info):
     )
     assert converted_account_info.account_memo == account_info.account_memo
     assert converted_account_info.owned_nfts == account_info.owned_nfts
+    assert converted_account_info.staking_info == account_info.staking_info
 
 
 def test_str_and_repr(account_info):

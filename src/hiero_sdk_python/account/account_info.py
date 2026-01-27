@@ -141,7 +141,7 @@ class AccountInfo:
             ownedNfts=self.owned_nfts,
             max_automatic_token_associations=self.max_automatic_token_associations,
             staking_info=(
-                self.staking_info.to_proto()
+                self.staking_info._to_proto()
                 if self.staking_info is not None
                 else None
           ),
@@ -174,9 +174,6 @@ class AccountInfo:
 
         if self.receiver_signature_required is not None:
             lines.append(f"Receiver Signature Required: {self.receiver_signature_required}")
-            
-        if self.staking_info is not None:
-            lines.append(f"Decline Staking Reward: {self.staking_info}")
 
         if self.token_relationships:
             lines.append(f"Token Relationships: {len(self.token_relationships)}")
@@ -195,6 +192,5 @@ class AccountInfo:
             f"owned_nfts={self.owned_nfts!r}, "
             f"account_memo={self.account_memo!r}, "
             f"staked_info={self.staking_info!r}, "
-            f"staked_account_id={self.staking_info!r}"
             f")"
         )
