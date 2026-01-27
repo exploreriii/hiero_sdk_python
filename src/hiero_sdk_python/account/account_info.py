@@ -9,7 +9,7 @@ from typing import Optional
 from hiero_sdk_python.account.account_id import AccountId
 from hiero_sdk_python.crypto.public_key import PublicKey
 from hiero_sdk_python.Duration import Duration
-from hiero_sdk_python.hapi.services.basic_types_pb2 import StakingInfo
+from hiero_sdk_python.staking_info import StakingInfo
 from hiero_sdk_python.hapi.services.crypto_get_info_pb2 import CryptoGetInfoResponse
 from hiero_sdk_python.hbar import Hbar
 from hiero_sdk_python.timestamp import Timestamp
@@ -100,7 +100,7 @@ class AccountInfo:
             owned_nfts=proto.ownedNfts,
             max_automatic_token_associations=proto.max_automatic_token_associations,
             staking_info=(
-                StakingInfo.from_proto(proto.staking_info)
+                StakingInfo._from_proto(proto.staking_info)
                 if proto.HasField("staking_info")
                 else None
          )

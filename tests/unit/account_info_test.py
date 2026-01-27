@@ -9,6 +9,7 @@ from hiero_sdk_python.timestamp import Timestamp
 from hiero_sdk_python.tokens.token_relationship import TokenRelationship
 from hiero_sdk_python.tokens.token_id import TokenId
 from hiero_sdk_python.hapi.services.crypto_get_info_pb2 import CryptoGetInfoResponse
+from hiero_sdk_python.staking_info import StakingInfo
 
 pytestmark = pytest.mark.unit
 
@@ -72,6 +73,28 @@ def test_account_info_initialization(account_info):
     assert account_info.max_automatic_token_associations == 10
     assert account_info.staking_info is None
 
+def test_from_proto_with_staking_info():
+    """Test the from_proto method of the AccountInfo class with staking info"""
+    public_key = PrivateKey.generate_ed25519().public_key()
+    
+    proto = CryptoGetInfoResponse.AccountInfo(
+        accountID=AccountId(0, 0, 100)._to_proto(),
+        key=public_key._to_proto(),
+        balance=5000000,
+        
+        staking_info={
+            "decline_reward": True,
+            "staked_node_id": 3,
+            "staked_account_id": None 
+        }
+    )
+
+    account_info = AccountInfo._from_proto(proto)
+    
+    assert account_info.staking_info is not None
+    assert account_info.staking_info.decline_reward is True
+    assert account_info.staking_info.staked_node_id == 3
+
 
 def test_account_info_default_initialization():
     """Test the default initialization of the AccountInfo class"""
@@ -91,6 +114,22 @@ def test_account_info_default_initialization():
     assert account_info.max_automatic_token_associations is None
     assert account_info.staking_info is None
 
+def test_staking_info_persistence(account_info):
+    """Ensure staking info is preserved through proto conversion"""
+    
+    account_info.staking_info = StakingInfo(
+        decline_reward=True,
+        staked_node_id=5,
+        staked_account_id=None
+    )
+    
+    proto = account_info._to_proto()
+    converted_info = AccountInfo._from_proto(proto)
+
+    assert converted_info.staking_info is not None
+    assert converted_info.staking_info.decline_reward is True
+    assert converted_info.staking_info.staked_node_id == 5
+    assert converted_info.staking_info.staked_account_id is None
 
 def test_from_proto(proto_account_info):
     """Test the from_proto method of the AccountInfo class"""
@@ -109,7 +148,7 @@ def test_from_proto(proto_account_info):
     assert account_info.account_memo == "Test account memo"
     assert account_info.owned_nfts == 5
     assert account_info.max_automatic_token_associations == 10
-    #assert account_info.staking_info == None
+    assert account_info.staking_info == None
 
 
 def test_from_proto_with_token_relationships():
