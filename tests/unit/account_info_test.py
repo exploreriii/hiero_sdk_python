@@ -77,16 +77,18 @@ def test_from_proto_with_staking_info():
     """Test the from_proto method of the AccountInfo class with staking info"""
     public_key = PrivateKey.generate_ed25519().public_key()
     
+    staking_info={
+            "decline_reward": True,
+            "staked_node_id": 3,
+            "staked_account_id": None 
+        }
+    
     proto = CryptoGetInfoResponse.AccountInfo(
         accountID=AccountId(0, 0, 100)._to_proto(),
         key=public_key._to_proto(),
         balance=5000000,
         
-        staking_info={
-            "decline_reward": True,
-            "staked_node_id": 3,
-            "staked_account_id": None 
-        }
+        
     )
 
     account_info = AccountInfo._from_proto(proto)
