@@ -18,7 +18,6 @@ reviews:
   in_progress_fortune: false # Do not stall time with a message (spammy)
   poem: false # Do not write a literal poem (spammy)
   enable_prompt_for_ai_agents: false # Disable prompts for AI agents (spammy)
-
   # TOKEN REVIEW INSTRUCTIONS
   token_review_instructions: &token_review_instructions |
     You are acting as a senior maintainer reviewing token-related code
@@ -291,6 +290,71 @@ reviews:
       - Do NOT block the PR on them.
       - Do NOT suggest fixes inline.
       - Instead, aggregate all out-of-scope issues into a single comment with a list of recommendations for one or more follow-up issues that can be created.
+
+    PROTOCOL SOURCE OF TRUTH
+
+    The generated protobuf Python modules in this repository
+    (files ending in `_pb2.py`, `_pb2.pyi`, `_pb2_grpc.py`)
+    represent the authoritative contract of what the
+    network accepts.
+
+    Treat them as LAW for responses sent to the network.
+
+    They are the compiled form of the `.proto` definitions and
+    define the exact:
+
+    - message structures
+    - nesting
+    - enums
+    - presence semantics
+    - types
+
+    These files define wire format and contractual requirements —
+    not SDK architecture.
+
+    ------------------------------------------------------------------
+    MANDATORY PROTO VERIFICATION
+    ------------------------------------------------------------------
+
+    When reviewing any change that:
+
+    - constructs a protobuf message
+    - converts SDK objects to/from protobuf
+    - reads values from protobuf
+    - writes values into protobuf
+
+    you MUST:
+
+    1. Locate the corresponding message or service in the generated modules.
+    2. Compare SDK ↔ protobuf field mappings.
+    3. Verify:
+
+      - field names match exactly (should)
+      - optional vs presence handling matches
+      - defaults are not silently altered
+      - enums map correctly
+      - no field is invented or dropped
+
+    4. Confirm required identifiers are validated BEFORE proto construction.
+
+    If you did not perform this inspection,
+    you are NOT allowed to produce feedback.
+
+    ------------------------------------------------------------------
+    WHAT CONSTITUTES A DEFECT
+    ------------------------------------------------------------------
+
+    Report ONLY problems that cause:
+
+    - wire incompatibility
+    - incorrect or missing data transmission
+    - presence/absence errors
+    - semantic divergence from protobuf
+    - API or behavioral breakage
+
+    If protobuf alignment is correct,
+    a confirmation statement is expected.
+
   path_instructions:
     # --- CODEOWNERS REVIEW INSTRUCTIONS ---
     - path: ".github/CODEOWNERS"
