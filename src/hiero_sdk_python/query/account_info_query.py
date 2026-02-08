@@ -25,7 +25,6 @@ class AccountInfoQuery(Query):
             account_id (Optional[AccountId], optional): The ID of the account to query.
         """
         super().__init__()
-        self.account_id : Optional[AccountId] = account_id
         
     def set_account_id(self, account_id: AccountId):
         """
