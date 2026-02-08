@@ -17,7 +17,6 @@ myenv/
 
 # Generated protobuf files
 .protos
-src/hiero_sdk_python/hapi
 
 # VS Code settings
 .vscode/
