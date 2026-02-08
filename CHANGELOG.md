@@ -153,6 +153,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Replaced the docstring in `entity_id_helper.py` with one that is correct. (#1623)
 
 ### Changed
+- Refactored AccountInfo class to use the staking_info(#1366)
 - Refactored `setup_client()` in all `examples/query/` files to use `Client.from_env()` for simplified client initialization (#1449)
 - Updated return of to_bytes function in `src/hiero_sdk_python/transaction/transaction.py`. (#1631)
 - Added missing return type `src/hiero_sdk_python/utils/entity_id_helper.py`. (#1622)
