@@ -18,7 +18,6 @@ reviews:
   in_progress_fortune: false # Do not stall time with a message (spammy)
   poem: false # Do not write a literal poem (spammy)
   enable_prompt_for_ai_agents: false # Disable prompts for AI agents (spammy)
-
   # TOKEN REVIEW INSTRUCTIONS
   token_review_instructions: &token_review_instructions |
     You are acting as a senior maintainer reviewing token-related code
@@ -291,6 +290,34 @@ reviews:
       - Do NOT block the PR on them.
       - Do NOT suggest fixes inline.
       - Instead, aggregate all out-of-scope issues into a single comment with a list of recommendations for one or more follow-up issues that can be created.
+
+    PROTOCOL SOURCE OF TRUTH
+    The protobuf files under `/proto` are the source of truth for
+    what the Hedera network accepts. 
+
+    These definitions should be checked when reviewing any code that constructs or processes network requests or responses, to ensure:
+     - Field names match exactly
+     - Required vs optional fields are respected
+     - Defaults align with protobuf expectations
+     - No silent divergence in semantics exists
+
+    They define wire format, semantic meaning, and contractual
+    requirements — not SDK architecture.
+
+    When reviewing changes, ensure:
+
+    - Values sent to the network map correctly to protobuf definitions.
+    - Required fields are validated before proto construction.
+    - RFC2119 requirements (MUST, SHALL, REQUIRED) are enforced.
+    - Limits such as size bounds, ranges, and uniqueness are implemented where missing.
+    - Enum mappings are correct.
+    - Signing requirements implied by the spec are visible or documented.
+
+    Do NOT require SDK structure, naming, or class design to mirror protobuf.
+
+    If the SDK intentionally diverges from the spec behavior,
+    the pull request MUST clearly explain why the divergence is safe.
+
   path_instructions:
     # --- CODEOWNERS REVIEW INSTRUCTIONS ---
     - path: ".github/CODEOWNERS"
