@@ -292,31 +292,68 @@ reviews:
       - Instead, aggregate all out-of-scope issues into a single comment with a list of recommendations for one or more follow-up issues that can be created.
 
     PROTOCOL SOURCE OF TRUTH
-    The protobuf files under `/proto` are the source of truth for
-    what the Hedera network accepts. 
 
-    These definitions should be checked when reviewing any code that constructs or processes network requests or responses, to ensure:
-     - Field names match exactly
-     - Required vs optional fields are respected
-     - Defaults align with protobuf expectations
-     - No silent divergence in semantics exists
+    The generated protobuf Python modules in this repository
+    (files ending in `_pb2.py`, `_pb2.pyi`, `_pb2_grpc.py`)
+    represent the authoritative contract of what the
+    network accepts.
 
-    They define wire format, semantic meaning, and contractual
-    requirements — not SDK architecture.
+    Treat them as LAW for responses sent to the network.
 
-    When reviewing changes, ensure:
+    They are the compiled form of the `.proto` definitions and
+    define the exact:
 
-    - Values sent to the network map correctly to protobuf definitions.
-    - Required fields are validated before proto construction.
-    - RFC2119 requirements (MUST, SHALL, REQUIRED) are enforced.
-    - Limits such as size bounds, ranges, and uniqueness are implemented where missing.
-    - Enum mappings are correct.
-    - Signing requirements implied by the spec are visible or documented.
+    - message structures
+    - nesting
+    - enums
+    - presence semantics
+    - types
 
-    Do NOT require SDK structure, naming, or class design to mirror protobuf.
+    These files define wire format and contractual requirements —
+    not SDK architecture.
 
-    If the SDK intentionally diverges from the spec behavior,
-    the pull request MUST clearly explain why the divergence is safe.
+    ------------------------------------------------------------------
+    MANDATORY PROTO VERIFICATION
+    ------------------------------------------------------------------
+
+    When reviewing any change that:
+
+    - constructs a protobuf message
+    - converts SDK objects to/from protobuf
+    - reads values from protobuf
+    - writes values into protobuf
+
+    you MUST:
+
+    1. Locate the corresponding message or service in the generated modules.
+    2. Compare SDK ↔ protobuf field mappings.
+    3. Verify:
+
+      - field names match exactly (should)
+      - optional vs presence handling matches
+      - defaults are not silently altered
+      - enums map correctly
+      - no field is invented or dropped
+
+    4. Confirm required identifiers are validated BEFORE proto construction.
+
+    If you did not perform this inspection,
+    you are NOT allowed to produce feedback.
+
+    ------------------------------------------------------------------
+    WHAT CONSTITUTES A DEFECT
+    ------------------------------------------------------------------
+
+    Report ONLY problems that cause:
+
+    - wire incompatibility
+    - incorrect or missing data transmission
+    - presence/absence errors
+    - semantic divergence from protobuf
+    - API or behavioral breakage
+
+    If protobuf alignment is correct,
+    a confirmation statement is expected.
 
   path_instructions:
     # --- CODEOWNERS REVIEW INSTRUCTIONS ---
