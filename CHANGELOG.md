@@ -329,7 +329,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Breaking Change
 
-- Remove deprecated 'in_tinybars' parameter and update related tests `/src/hiero_sdk_python/hbar.py`, `/tests/unit/hbar_test.py` and `/src/hiero_sdk_python/tokens/custom_fixed_fee.py`.
+- Remove deprecated 'in_tinybars' parameter and update related tests `/src/hiero_sdk_python/hbar.py`, `/tests/unit/hbar_test.py` and `/src/hiero_sdk_python/tokens/custom_fixed_fee.py`. 
 
 ## [0.1.10] - 2025-12-03
 
