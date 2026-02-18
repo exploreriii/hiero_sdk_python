@@ -277,7 +277,7 @@ reviews:
     - Payment-safe
     - Execution-consistent
     - Strictly aligned with Hedera query semantics
-  
+
   # TRANSACTION REVIEW INSTRUCTIONS - CORE FOUNDATION (MOST CRITICAL MODULE)
   transaction_review_instructions: &transaction_review_instructions |
     You are acting as a senior maintainer and security architect reviewing the **core transaction module** in the hiero-sdk-python project.
@@ -599,7 +599,7 @@ reviews:
     - Changes encoding/decoding results for same inputs
     - Modifies ContractId EVM alias ↔ numeric mapping
     - Alters payable amount (amount vs initial_balance) semantics
-    
+
     If breaking: require deprecation warnings (e.g. warnings.warn(..., DeprecationWarning)), migration docs, dual-behavior tests.
     ----------------------------------------------------------
     REVIEW FOCUS 2 — ABI ENCODING/DECODING SAFETY (CRITICAL)
@@ -670,7 +670,7 @@ reviews:
     - Protobuf-aligned with Hedera/Hiero
     - Gas/value safe
     - Deterministic and user-protective
-  
+
   # NODES REVIEW INSTRUCTIONS — PRIVILEGED NODE LIFECYCLE OPERATIONS
   node_review_instructions: &node_review_instructions |
     You are acting as a senior maintainer and security architect reviewing the nodes module
@@ -795,7 +795,7 @@ reviews:
     - Certificate and endpoint handling edge cases are tested
 
     Missing coverage should be flagged clearly.
-    
+
     ----------------------------------------------------------
     EXPLICIT NON-GOALS
     ----------------------------------------------------------
@@ -819,7 +819,7 @@ reviews:
   file_review_instructions: &file_review_instructions |
     You are acting as a senior maintainer reviewing file service-related code
     in the hiero-sdk-python project.
-    
+
     This includes:
     - File transactions (FileCreateTransaction, FileUpdateTransaction, FileAppendTransaction, FileDeleteTransaction)
     - File query (FileContentsQuery, FileInfoQuery)
@@ -839,19 +839,19 @@ reviews:
     (HIGH SENSITIVITY)
     ----------------------------------------------------------
     Public API contracts for FileId, FileInfo, and file transactions are user-facing.
-    
+
     Verify that:
     - Setter method signatures (e.g., set_contents, set_file_memo) stay backward compatible.
     - Method chaining (returning self) is preserved.
     - FileId constructors and string representations don't break existing use cases.
-    
+
     If breaking changes are necessary, they must be explicit and deprecation warnings should be added.
 
     ----------------------------------------------------------
     REVIEW FOCUS 2 — CHUNKING SEMANTICS (HIGH VERIFICATION)
     ----------------------------------------------------------
     Specific to FileAppendTransaction, which natively handles chunking.
-    
+
     Verify that:
     - freeze_with() correctly generates sequential TransactionIds for each chunk.
     - valid_start timestamps for each chunk are spaced out correctly (e.g., incremented by at least 1 nanosecond).
@@ -864,7 +864,7 @@ reviews:
     REVIEW FOCUS 3 — MEMO HANDLING
     ----------------------------------------------------------
     Nuanced memo distinction across the file module:
-    
+
     Verify that:
     - The distinction between file_memo (the metadata attribute of the file) and transaction_memo (the note on the transaction itself) is respected.
     - FileCreateTransaction handles file_memo as a native string.
@@ -876,7 +876,7 @@ reviews:
     REVIEW FOCUS 4 — TRANSACTION BASE CLASS CONTRACT
     ----------------------------------------------------------
     All file transaction classes MUST inherit from Transaction.
-    
+
     Required implementations:
     - _build_proto_body()
     - build_transaction_body()
@@ -891,7 +891,7 @@ reviews:
     REVIEW FOCUS 5 — PROTOBUF ALIGNMENT
     ----------------------------------------------------------
     Serialization and deserialization MUST map directly to Hedera protobufs.
-    
+
     Verify that:
     - fileCreate, fileUpdate, fileAppend, and fileDelete fields map exactly to their respective protobuf bodies.
     - Null-safe conversions are handling optional properties safely.
