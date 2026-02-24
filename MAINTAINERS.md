@@ -4,7 +4,7 @@ The general handling of Maintainer rights and all groups in this GitHub org is d
 
 ## Maintainer Scopes, GitHub Roles and GitHub Teams
 
-Maintainers are assigned the following scopes in this repository:
+Maintainers are assigned the following scopes in this repository: 
 
 |        Scope        |            Definition             | GitHub Role |          GitHub Team           |
 |---------------------|-----------------------------------|-------------|--------------------------------|
