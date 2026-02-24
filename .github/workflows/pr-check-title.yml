@@ -17,7 +17,7 @@ on:
       - edited
       - synchronize
 
-      defaults:
+defaults:
   run:
     shell: bash
 
@@ -46,8 +46,8 @@ jobs:
           egress-policy: audit
 
       - name: Check PR Title
-        id: check-title 
-        uses: amannn/action-semantic-pull-request@v48f256284bd46cdaab1048c3721360e808335d50 # v3.0.0      
+        id: check-title
+        uses: amannn/action-semantic-pull-request@v48f256284bd46cdaab1048c3721360e808335d50 # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
