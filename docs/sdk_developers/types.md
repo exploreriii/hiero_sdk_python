@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
 query_hbar_balance function takes account as an argument, which is of custom type AccountId, then the function returns type None. It returns None because there is no return statement in the function, and it instead prints.
 
-### Example 2
+### Example 2 
 ```python
 from dataclasses import dataclass
 from hiero_sdk import AccountId
