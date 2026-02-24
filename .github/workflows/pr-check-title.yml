@@ -17,7 +17,7 @@ on:
       - edited
       - synchronize
 
-defaults:
+      defaults:
   run:
     shell: bash
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Check PR Title
         id: check-title
-        uses: step-security/conventional-pr-title-action@cb1c5657ccf4c42f5c0a6c0708cb8251b960d902 # v3.2.5
+        uses: amannn/action-semantic-pull-request@v48f256284bd46cdaab1048c3721360e808335d50 # v3.0.0      
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
