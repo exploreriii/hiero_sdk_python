@@ -34,7 +34,6 @@ jobs:
   title-check:
     name: Title Check
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.base.repo.fork }}
     permissions:
       checks: write
       statuses: write
