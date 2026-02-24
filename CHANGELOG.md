@@ -263,7 +263,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Improved the contributing section for sdk developers in CONTRIBUTING.md for clarity and including new documentation
 - chore: Move account allowance example to correct folder
 - Added more tests to the CustomFee class for different functionalities (#991)
-- Changed messaged for test failure summaries so it is clearer by extracting test failure names into summary
+- Changed messaged for test failure summaries so it is clearer by extracting test failure names into summary 
 - Renamed example files to match src naming (#1053)
 - Updated bot naming conventions in `.github/workflows` to be consistent (#1042)
 - Renamed workflow files for consistent PR check naming:
