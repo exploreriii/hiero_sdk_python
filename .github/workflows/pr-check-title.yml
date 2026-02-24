@@ -1,13 +1,13 @@
 # Workflow to check PR titles follow conventional commit format
 # and provide automated guidance when titles are invalid
 
-name: 'PR Formatting'
+name: "PR Formatting"
 
 on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Run without posting comments'
+        description: "Run without posting comments"
         type: boolean
         default: true
   pull_request_target:
