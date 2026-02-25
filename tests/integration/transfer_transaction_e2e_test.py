@@ -23,7 +23,7 @@ from tests.integration.utils import (
 
 @pytest.mark.integration
 def test_integration_transfer_transaction_can_transfer_hbar():
-    env = IntegrationTestEnv()
+    env = IntegrationTestEnv() 
 
     try:
         new_account_private_key = PrivateKey.generate()
