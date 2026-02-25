@@ -6,7 +6,7 @@ To test safely, developers should use their personal **fork** of the repository.
 
 ## Prerequisites
 
-By default, GitHub Actions are often disabled on forks to save resources. You must enable them manually:
+By default, GitHub Actions are often disabled on forks to save resources. You must enable them manually: 
 
 1.  Go to your fork on GitHub (e.g., `github.com/<your-username>/hiero-sdk-python`).
 2.  Click on the **Settings** tab.
