@@ -7,6 +7,7 @@ function isBotLogin(login = "") {
 function extractLinkedIssueNumbers(prBody = "") {
   const closingReferenceRegex =
     /\b(?:fix(?:es|ed)?|close(?:s|d)?|resolve(?:s|d)?)\s*:?\s*((?:#\d+)(?:\s*(?:,|and)\s*#\d+)*)/gi;
+
   const numbers = new Set();
   let referenceMatch;
 
@@ -94,8 +95,7 @@ async function collectLabelsFromLinkedIssues({ github, owner, repo, linkedIssueN
 
       const issueLabelNames = normalizeLabelNames(issueResponse?.data?.labels || []);
       console.log(
-        `[sync-issue-labels] Issue #${issueNumber} labels: ${
-          issueLabelNames.length ? issueLabelNames.join(", ") : "(none)"
+        `[sync-issue-labels] Issue #${issueNumber} labels: ${issueLabelNames.length ? issueLabelNames.join(", ") : "(none)"
         }`
       );
 
@@ -133,6 +133,57 @@ async function addLabelsToPullRequest({ github, owner, repo, prNumber, labelsToA
   console.log(`[sync-issue-labels] Added labels to PR #${prNumber}: ${labelsToAdd.join(", ")}`);
 }
 
+// Logs context that helps diagnose permission / fork / event issues.
+function logExecutionDiagnostics(context, prNumber, owner, repo, isDryRun) {
+  const pr = context?.payload?.pull_request;
+
+  const baseRepo = pr?.base?.repo?.full_name;
+  const headRepo = pr?.head?.repo?.full_name;
+  const isFork = Boolean(pr?.head?.repo?.fork) || (baseRepo && headRepo && baseRepo !== headRepo);
+
+  console.log("[sync-issue-labels] Diagnostics:");
+  console.log(`  eventName=${context?.eventName || "(unknown)"}`);
+  console.log(`  action=${context?.payload?.action || "(none)"}`);
+  console.log(`  actor=${context?.actor || context?.payload?.sender?.login || "(unknown)"}`);
+  console.log(`  repo=${owner}/${repo}`);
+  console.log(`  prNumber=${prNumber}`);
+  console.log(`  dry_run=${isDryRun}`);
+  if (pr) {
+    console.log(`  prAuthor=${pr?.user?.login || "(unknown)"}`);
+    console.log(`  baseRepo=${baseRepo || "(unknown)"}`);
+    console.log(`  headRepo=${headRepo || "(unknown)"}`);
+    console.log(`  isFork=${isFork}`);
+    console.log(`  headRef=${pr?.head?.ref || "(unknown)"}`);
+    console.log(`  baseRef=${pr?.base?.ref || "(unknown)"}`);
+  } else {
+    console.log("  pull_request payload not present (likely workflow_dispatch or API fetch path).");
+  }
+}
+
+// Formats Octokit/GitHub API errors with useful details.
+function logOctokitError(prefix, error) {
+  console.log(prefix);
+  console.log(`  status: ${error?.status ?? "(unknown)"}`);
+  console.log(`  message: ${error?.message ?? "(none)"}`);
+
+  // Octokit typically provides response.data / response.headers on API errors
+  if (error?.response?.data) {
+    try {
+      console.log(`  response.data: ${JSON.stringify(error.response.data, null, 2)}`);
+    } catch {
+      console.log("  response.data: (unserializable)");
+    }
+  }
+
+  const headers = error?.response?.headers;
+  if (headers) {
+    // These are the most useful for “Resource not accessible by integration” cases.
+    console.log(`  x-accepted-github-permissions: ${headers["x-accepted-github-permissions"] || "(missing)"}`);
+    console.log(`  x-github-request-id: ${headers["x-github-request-id"] || "(missing)"}`);
+    console.log(`  github-authentication-token-expiration: ${headers["github-authentication-token-expiration"] || "(missing)"}`);
+  }
+}
+
 // Main entry point: syncs labels from linked issues to the PR.
 module.exports = async ({ github, context }) => {
   const { prNumber, isDryRun, owner, repo } = resolveExecutionContext(context);
@@ -145,10 +196,14 @@ module.exports = async ({ github, context }) => {
     `[sync-issue-labels] Processing PR #${prNumber} in ${owner}/${repo} (dry_run=${isDryRun}).`
   );
 
+  // Added diagnostics early, before any API writes.
+  logExecutionDiagnostics(context, prNumber, owner, repo, isDryRun);
+
   let prData;
   try {
     prData = await getPullRequestData({ github, context, prNumber });
   } catch (error) {
+    logOctokitError(`[sync-issue-labels] Failed to fetch PR #${prNumber}:`, error);
     throw new Error(`[sync-issue-labels] Failed to fetch PR #${prNumber}: ${error?.message || error}`);
   }
 
@@ -180,8 +235,7 @@ module.exports = async ({ github, context }) => {
   const prLabelNames = new Set(normalizeLabelNames(prData?.labels || []));
 
   console.log(
-    `[sync-issue-labels] Existing PR labels: ${
-      prLabelNames.size ? [...prLabelNames].join(", ") : "(none)"
+    `[sync-issue-labels] Existing PR labels: ${prLabelNames.size ? [...prLabelNames].join(", ") : "(none)"
     }`
   );
   console.log(
@@ -201,6 +255,9 @@ module.exports = async ({ github, context }) => {
   try {
     await addLabelsToPullRequest({ github, owner, repo, prNumber, labelsToAdd });
   } catch (error) {
+    // Added rich error logging for permission debugging.
+    logOctokitError(`[sync-issue-labels] Failed to add labels to PR #${prNumber}:`, error);
+
     throw new Error(
       `[sync-issue-labels] Failed to add labels to PR #${prNumber}: ${error?.message || error}`
     );

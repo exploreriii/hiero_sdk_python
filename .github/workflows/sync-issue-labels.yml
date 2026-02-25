@@ -3,6 +3,7 @@ name: Sync Linked Issue Labels to PR
 on:
   pull_request_target:
     types: [opened, edited, reopened, synchronize, ready_for_review]
+
   workflow_dispatch:
     inputs:
       pr_number:
@@ -16,8 +17,8 @@ on:
         default: true
 
 permissions:
-  pull-requests: read
   issues: write
+  pull-requests: read
   contents: read
 
 jobs:
@@ -29,23 +30,23 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - name: Harden the runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e
         with:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: main
 
-      - name: Sync linked issue labels to PR
+      - name: Sync labels from linked issues
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
+          github-token: ${{ github.token }}
           script: |
             const script = require('./.github/scripts/sync-issue-labels.js');
             await script({ github, context, core });
