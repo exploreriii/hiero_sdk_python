@@ -15,6 +15,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Added CodeRabbit review instructions for consensus module `src/hiero_sdk_python/consensus/` with critical focus on protobuf alignment `.coderabbit.yaml`.
 - Added workflow and bot script to automatically sync labels from linked issues to pull requests. (#1716)
 
+- Added CodeRabbit prompt to review the `src/hiero_sdk_python/crypto` module.
 
 ### Fixed
 
@@ -49,6 +50,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### .github
 - Added triage members max assignment is protected from being a mentor in `.github/scripts/bot-assignment-check.sh`. (#1718)
+- Added automated bot to comment on PRs with invalid conventional commit titles, providing guidance on fixing the title format (#1705)
 - Revert PythonBot workflow to restore previous stable behavior. (#1825)
 - Added GitHub Actions workflow to remind draft PR authors to mark ready for review after pushing changes. (#1722)
 - Fixed bot workflow runtime failure caused by strict `FAILED_WORKFLOW_NAME` validation. (`#1690`)
@@ -59,6 +61,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Updated CodeRabbit workflow and script review instructions to nudge higher-quality patterns without imposing rigid rules (`#1799`)
 - Added hiero-sdk-js to the next issue recommendation bot (`#1847`)
 - Added workflow and bot script to automatically sync labels from linked issues to pull requests. (#1716)
+- feat(bot): warn PR authors that unlinked PRs will be closed (#1886)
 
 ## [0.2.0] - 2026-11-02
 
