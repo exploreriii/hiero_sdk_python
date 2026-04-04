@@ -1,15 +1,14 @@
 name: Test Files Naming Check
 
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
+    types: [opened, synchronize, review_requested]
 
 permissions:
   contents: read
 
 concurrency:
-  group: pr-checks-${{ github.workflow }}-${{ github.ref || github.run_id }}
+  group: pr-checks-${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -23,18 +22,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout repository
+      - name: Checkout repository (shallow)
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          fetch-depth: 2 # Fetch at least 2 commits to compare changes in test files
 
-      - name: Set up Hiero SDK Upstream
-        run: |
-          git remote set-url origin https://github.com/hiero-ledger/hiero-sdk-python.git
-
-      - name: Fetch main branch
-        run: |
-          git fetch origin main
-
-      - name: Check added test file names
-        run: |
-          chmod +x .github/scripts/pr-check-test-files.sh
-          .github/scripts/pr-check-test-files.sh
+      - name: Run test file naming check
+        run: node .github/scripts/pr-check-test-files.js
