@@ -1,3 +1,4 @@
+# This workflow checks that any test files added or modified in a pull request follow the correct naming convention.
 name: Test Files Naming Check
 
 on:
@@ -13,7 +14,7 @@ concurrency:
 
 jobs:
   check-test-files:
-    runs-on: ${{ (github.repository_owner != 'hiero-ledger') && 'ubuntu-latest' || 'hl-sdk-py-lin-md' }}
+    runs-on: ${{ (github.event.pull_request.head.repo.full_name == github.repository && github.repository_owner == 'hiero-ledger') && 'hl-sdk-py-lin-md' || 'ubuntu-latest' }}
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
