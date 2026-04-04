@@ -13,7 +13,6 @@ concurrency:
 
 jobs:
   check-test-files:
-    # No fork check needed: push-only workflow; fork pushes have different repository_owner
     runs-on: ${{ (github.repository_owner != 'hiero-ledger') && 'ubuntu-latest' || 'hl-sdk-py-lin-md' }}
 
     steps:
@@ -26,6 +25,9 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           fetch-depth: 2 # Fetch at least 2 commits to compare changes in test files
+
+      - name: Fetch main
+        run: git fetch origin main --depth=1 # Ensure we have the latest main for accurate diff
 
       - name: Run test file naming check
         run: node .github/scripts/pr-check-test-files.js
