@@ -12,14 +12,15 @@ const EXCEPTIONS = ["conftest.py", "__init__.py", "init.py", "mock_server.py", "
 // Collect naming errors to report at the end
 const name_errors = [];
 
-// Get list of changed files compared to main
-const output = execSync("git diff --name-only origin/main...HEAD", { encoding: "utf-8" });
+// Use "git ls-files" to get all tracked files in the repository
+const output = execSync("git ls-files", { encoding: "utf-8" });
 // Split output into lines and filter out empty lines for easy manipulation
 // e.g. output = "tests/unit/my_test.py\ntests/integration/other_test.py"
 const files = output.split("\n").filter(Boolean);
 
-
 for (const file of files) {
+  console.log("Checking ALL test files for correct naming");
+  console.log("Locating the test paths...");
   // --- PATH FILTERING ---
   // Skip files that are not in any of the specified test directories
   if (!TEST_DIRS.some(dir => file.startsWith(dir))) continue;
@@ -34,11 +35,13 @@ for (const file of files) {
 
   // Extract the file name from the path
   // e.g. from file = "tests/unit/my_test.py" get name = "my_test.py"
+  console.log("Locating the test names...");
   const name = file.split("/").pop();
 
   // Skip allowed special files
   if (EXCEPTIONS.includes(name)) continue;
 
+  console.log("Checking the test names...");
   // Enforce naming rule on files 
   if (!name.endsWith("_test.py")) {
     console.error(`::error file=${file}::Must end with '_test.py'`);

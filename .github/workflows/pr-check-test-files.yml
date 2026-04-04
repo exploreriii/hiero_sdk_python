@@ -1,4 +1,4 @@
-# This workflow checks that any test files added or modified in a pull request follow the correct naming convention.
+# This workflow checks that all test files in the repository follow the naming convention of ending with "_test.py".
 name: Test Files Naming Check
 
 on:
@@ -25,10 +25,7 @@ jobs:
       - name: Checkout repository (shallow)
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          fetch-depth: 2 # Fetch at least 2 commits to compare changes in test files
-
-      - name: Fetch main
-        run: git fetch origin main --depth=1 # Ensure we have the latest main for accurate diff
+          fetch-depth: 1 # Only fetch the latest commit
 
       - name: Run test file naming check
         run: node .github/scripts/pr-check-test-files.js
