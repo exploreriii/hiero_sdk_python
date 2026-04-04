@@ -41,6 +41,7 @@ for (const file of files) {
 
   // Enforce naming rule on files 
   if (!name.endsWith("_test.py")) {
+    console.error(`Name invalid test file: ${file}`);
     console.error(`::error file=${file}::Must end with '_test.py'`);
     name_errors.push(file);
   }
