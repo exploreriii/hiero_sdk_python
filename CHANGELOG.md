@@ -11,7 +11,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Tests
 - Refactor `mock_server` setup for network level TLS handling and added thread safety
-
+- Ensured /fuzz and /unit tests end in _test (#2063)
 
 ### Examples
 
@@ -25,6 +25,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Refactored the Advanced Issue Template to V2 with stricter prerequisites and a focus on architectural design (#2016).
 - Refactored the Advanced Issue Template to ensure PR-level quality checklists do not block maintainers during issue creation (#2036)
 - Add automated label sync workflow to propagate labels from linked issues to pull requests (#1716)
+- Added support to fuzz and TCK test naming check, converted to JS from shell and ensure it checks all tests (#2064)
 
 ## [0.2.3] - 2026-03-26
 
