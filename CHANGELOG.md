@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+- here is a PR with an invalid entry
 
 ### Src
 - 
@@ -21,6 +22,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 
 ### .github
+- refactor: changelog workflow into js plus add tests (#2069)
 - chore: update GitHub Actions runners from ubuntu-latest to hl-sdk-py-lin-md (#2021)
 - Refactored the Advanced Issue Template to V2 with stricter prerequisites and a focus on architectural design (#2016).
 - Refactored the Advanced Issue Template to ensure PR-level quality checklists do not block maintainers during issue creation (#2036)
@@ -29,6 +31,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [0.2.3] - 2026-03-26
 
 ### Added
+- And another invalid entry
 - Add `__repr__` method to `TokenId` class for cleaner debugging output (#1653)
 
 ### Src
